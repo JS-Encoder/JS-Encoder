@@ -3,7 +3,7 @@
     <div class="title noselect flex flex-ali">
       <span>{{title}}</span>
     </div>
-    <div :ref="'textbox'+index" class="text-box">
+    <div :class="index === 3?'bgc':''" :ref="'textbox'+index" class="text-box">
       <codemirror
         :options="cmOptions"
         :value="message"
@@ -12,6 +12,7 @@
         v-if="showCode"
         v-model="message"
       ></codemirror>
+      <Console v-if="index === 3"></Console>
       <iframe
         allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media"
         frameborder="0"
@@ -43,6 +44,7 @@ import jsMethods from './cmpsMethods/jsMethods'
 import consoleMethods from './cmpsMethods/consoleMethods'
 import outputMethods from './cmpsMethods/outputMethods'
 import publicMethods from './cmpsMethods/publicMethods'
+import Console from './console'
 import { codemirror } from 'vue-codemirror'
 require('codemirror/mode/javascript/javascript.js')
 require('codemirror/mode/xml/xml.js')
@@ -101,7 +103,8 @@ export default {
     }
   },
   components: {
-    codemirror
+    codemirror,
+    Console
   },
   mounted() {
     this.init()
@@ -191,9 +194,7 @@ export default {
     },
     spliceHtml() {
       setTimeout(() => {
-        this.$refs.iframeBox.contentDocument.getElementById(
-          'compOlCss'
-        ).innerText = this.$store.state.textBoxContent.CSS
+        this.$refs.iframeBox.contentDocument.getElementById('compOlCss').innerText = this.$store.state.textBoxContent.CSS
         let script = this.$refs.iframeBox.contentDocument.getElementById('src')
         const code = `
         (function(){
@@ -203,7 +204,12 @@ export default {
         if (script) script.parentNode.removeChild(script)
         this.$refs.iframeBox.contentDocument.body.innerHTML = this.$store.state.textBoxContent.HTML
         this.createScript('script', 'src', code)
+        const info = this.$refs.iframeBox.contentWindow.consoleInfo
+        this.$store.commit('updateConsole', info)
       }, 1000)
+    },
+    clearConsole() {
+      this.$refs.iframeBox.contentWindow.consoleInfo = []
     },
     createScript(element, id, code) {
       let ele = this.$refs.iframeBox.contentDocument.createElement(element)
@@ -216,6 +222,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.bgc {
+  background-color: #1e1e1e;
+}
 #textareaBox {
   height: 100%;
   display: flex;

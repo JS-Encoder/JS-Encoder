@@ -6,6 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
+  <script>
+    consoleInfo = []
+    window.onerror = function (msg, url, row, col) {
+      consoleInfo.push({ data: { msg, url, row, col }, type: 'error' })
+      return true
+    }
+    if (console) {
+      ableMethods = ['log', 'info', 'debug', 'warn', 'error']
+      for (let item of ableMethods) {
+        console[item] = function (data) {
+          consoleInfo.push({ data, type: item })
+        }
+      }
+    }
+  </script>
   <style id="compOlCss">
   </style>
 </head>

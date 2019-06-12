@@ -31,7 +31,8 @@ const store = new VueX.Store({
       JavaScript: '',
       Console: '',
       Output: ''
-    }
+    },
+    consoleInfo: ''
   },
   mutations: {
     change: (state, info) => {
@@ -39,6 +40,9 @@ const store = new VueX.Store({
     },
     updateOutput: (state, newVal) => {
       state.textBoxContent.Output = newVal
+    },
+    updateConsole: (state, newVal) => {
+      state.consoleInfo = newVal
     }
   }
 })
