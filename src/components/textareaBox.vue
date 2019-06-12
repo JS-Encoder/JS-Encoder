@@ -3,7 +3,7 @@
     <div class="title noselect flex flex-ali">
       <span>{{title}}</span>
     </div>
-    <div :class="index === 3?'bgc':''" :ref="'textbox'+index" class="text-box">
+    <div :class="title === 'Console'?'bgc':''" :ref="'textbox'+index" class="text-box">
       <codemirror
         :options="cmOptions"
         :value="message"
@@ -12,7 +12,7 @@
         v-if="showCode"
         v-model="message"
       ></codemirror>
-      <Console v-if="index === 3"></Console>
+      <Console v-if="title === 'Console'"></Console>
       <iframe
         allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media"
         frameborder="0"
