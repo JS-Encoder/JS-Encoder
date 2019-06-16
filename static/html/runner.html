@@ -6,26 +6,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
-  <script>
-    consoleInfo = []
-    window.onerror = function (msg, url, row, col) {
-      consoleInfo.push({ data: { msg, url, row, col }, type: 'error' })
-      return true
+  <script src="../js/runner.js"></script>
+  <link rel="stylesheet" href="../css/runner.css">
+  <style>
+    html{
+      width: 100%;
+      height: 100%; 
     }
-    if (console) {
-      ableMethods = ['log', 'info', 'debug', 'warn', 'error']
-      for (let item of ableMethods) {
-        console[item] = function (data) {
-          consoleInfo.push({ data, type: item })
-        }
-      }
+    body{
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: auto;
     }
-  </script>
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+      background-color: #cccccc;
+    }
+
+    ::-webkit-scrollbar-track {
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      background-color: #ffffff;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+      background-color: #cccccc;
+    }
+
+    ::-webkit-scrollbar-corner {
+      background-color: #ffffff;
+    }
+  </style>
   <style id="compOlCss">
   </style>
 </head>
 
-<body>
+<body id="compBody">
 </body>
-
 </html>

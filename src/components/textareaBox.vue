@@ -13,6 +13,7 @@
         v-model="message"
       ></codemirror>
       <Console v-if="title === 'Console'"></Console>
+      <button v-if="title==='Output'" class="clear" @click="reSetConsole">clear</button>
       <iframe
         allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media"
         frameborder="0"
@@ -24,6 +25,7 @@
         src="../../static/html/runner.html"
         v-if="showIframe"
       ></iframe>
+      
       <div
         @mousedown="boxMouseDown"
         @mouseout="boxMouseOut"
@@ -38,32 +40,8 @@
 </template>
 
 <script>
-import htmlMethods from './cmpsMethods/htmlMethods'
-import cssMethods from './cmpsMethods/cssMethods'
-import jsMethods from './cmpsMethods/jsMethods'
-import consoleMethods from './cmpsMethods/consoleMethods'
-import outputMethods from './cmpsMethods/outputMethods'
-import publicMethods from './cmpsMethods/publicMethods'
 import Console from './console'
 import { codemirror } from 'vue-codemirror'
-require('codemirror/mode/javascript/javascript.js')
-require('codemirror/mode/xml/xml.js')
-require('codemirror/mode/css/css.js')
-require('codemirror/keymap/vim.js')
-require('codemirror/addon/fold/foldcode.js')
-require('codemirror/addon/fold/foldgutter.js')
-require('codemirror/addon/fold/brace-fold.js')
-require('codemirror/addon/display/fullscreen.js')
-require('codemirror/addon/hint/show-hint.js')
-require('codemirror/addon/hint/anyword-hint.js')
-require('codemirror/addon/search/searchcursor.js')
-require('codemirror/addon/dialog/dialog.js')
-require('codemirror/addon/fold/xml-fold.js')
-require('codemirror/addon/edit/closetag.js')
-require('codemirror/addon/edit/closebrackets.js')
-require('codemirror/addon/selection/active-line.js')
-require('codemirror/addon/edit/matchtags')
-require('codemirror/addon/edit/matchbrackets')
 
 export default {
   props: {
@@ -80,6 +58,7 @@ export default {
       showIframe: false,
       message: '',
       cmOptions: {
+        flattenSpans: false,// 默认情况下，CodeMirror会将使用相同class的两个span合并成一个。通过设置此项为false禁用此功能
         tabSize: this.space, // tab缩进空格数
         mode: '', // 模式
         theme: 'monokai', // 主题
@@ -87,15 +66,14 @@ export default {
         lineNumbers: true, // 显示行号
         matchBrackets: true, // 匹配符号
         lineWiseCopyCut: true, // 如果在复制或剪切时没有选择文本，那么就会自动操作光标所在的整行
-        lineWrapping: true, // 在长行时文字是换行(wrap)还是滚动(scroll)
-        indentWithTabs: true, // 在缩进时，是否需要把 n*tab宽度个空格替换成n个tab字符
-        electricChars: true, // 在输入可能改变当前的缩进时，是否重新缩进
+        //indentWithTabs: true, // 在缩进时，是否需要把 n*tab宽度个空格替换成n个tab字符
+        // electricChars: true, // 在输入可能改变当前的缩进时，是否重新缩进
         indentUnit: 4, // 缩进单位，默认2
         autoCloseTags: true, // 自动关闭标签 addon/edit/
         autoCloseBrackets: true, // 自动输入括弧  addon/edit/
         foldGutter: true, // 允许在行号位置折叠
+        extraKeys: {"Ctrl-Alt": "autocomplete"},//智能提示
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'], // 用来添加额外的gutter
-        extraKeys: { 'Ctrl-Space': 'autocomplete' }, // 给编辑器绑定与前面keyMap配置不同的快捷键
         styleActiveLine: true // 激活当前行样式
       },
       later: true,
@@ -216,6 +194,10 @@ export default {
       ele.id = id
       ele.text = code
       this.$refs.iframeBox.contentDocument.body.appendChild(ele)
+    },
+    reSetConsole(){
+      this.$refs.iframeBox.contentWindow.consoleInfo = []
+      this.$store.state.consoleInfo = ''
     }
   }
 }
@@ -264,6 +246,18 @@ export default {
       outline: none;
       border: none;
       color: #fff;
+    }
+    .clear{
+      position: absolute;
+      width: 40px;
+      height: 20px;
+      top: -21px;
+      left: -41px;
+      border: 1px solid #1e1e1e;
+      outline: none;
+    }
+    .clear:active{
+      background-color: #eee;
     }
     iframe {
       width: 100%;

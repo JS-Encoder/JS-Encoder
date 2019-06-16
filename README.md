@@ -12,12 +12,20 @@
 
 ---
 
-一共有五个窗口： `HTML`,`CSS`,`JavaScript`,`Console`和`Output`
+一共有五个窗口： `HTML`, `CSS`, `JavaScript`, `Console` 和 `Output`
 
-`Console`显示控制台输出的信息
+`Console` 显示控制台输出的信息
 
-`Output`显示效果
+`Output` 显示效果
 
 ![截图未命名.jpg](https://i.loli.net/2019/06/12/5d00ec3466abb47300.jpg)
 
 本人不才,现在编译器功能还很少,而且有些功能还没完善,比如自定义缩进等,可能还有很多 bug 没发现,之后会继续修复并且添加更多功能
+
+### 2019-6-16 更新
+
+- `Console` 窗口增加 `clear` 功能
+- 添加智能提示功能
+- 修复 `document.write` 导致重写 `html` 的问题
+- 修复滚动条显示问题
+- 修复代码窗宽度改变后光标位置问题

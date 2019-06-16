@@ -6,3 +6,24 @@
   -ms-user-select: none;
   user-select: none;
 }
+.flex{
+  display: flex;
+}
+.flex-1{
+  flex: 1
+}
+.flex-clo{
+  flex-direction: column;
+}
+.flex-ai{
+  align-items: center;
+}
+.flex-jcc{
+  justify-content: center;
+}
+.flex-jcb{
+  justify-content: space-between;
+}
+.flex-jca{
+  justify-content: space-around;
+}
