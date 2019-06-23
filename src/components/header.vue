@@ -5,35 +5,36 @@
     </h3>
     <ul class="header-menu flex">
       <li>
-        <a class="github-link" href="https://github.com/Longgererer">
+        <a class="github-link" href="https://github.com/Longgererer/Compiler-ol" target="black">
           <i class="icon iconfont icon-git"></i>
         </a>
       </li>
-      <li @click="openPop">
+      <li @click="openConfig">
         <i class="icon iconfont icon-config"></i>
       </li>
-      <li @click="openPop">
+      <li @click="openHelp">
         <i class="icon iconfont icon-help"></i>
       </li>
     </ul>
-    <popUp :pop="pop" class="noselect">
+    <popUp :pop="config" class="noselect">
+      <el-collapse accordion v-model="activeName">
+        <el-collapse-item name="1" title="1">
+          <div>1</div>
+        </el-collapse-item>
+        <el-collapse-item name="2" title="1">
+          <div>1</div>
+        </el-collapse-item>
+      </el-collapse>
+    </popUp>
+    <popUp :pop="help" class="noselect">
       <el-collapse accordion v-model="activeName">
         <el-collapse-item name="1" title="shortcut key">
           <div>CTRL + ALT ---------------------------- Trun on smart tips</div>
           <div>CTRL + Q ---------------------------- Fold the code</div>
+          <div>CTRL + / ---------------- Toggle comment on selected lines</div>
         </el-collapse-item>
         <el-collapse-item name="2" title="Feedback">
-          <div>1</div>
-          <div>1</div>
-        </el-collapse-item>
-        <el-collapse-item name="3" title="Efficiency">
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-        </el-collapse-item>
-        <el-collapse-item name="4" title="Controllability">
-          <div>1</div>
-          <div>1</div>
+          <div>If you find bugs, you can give feedback on github <a href="https://github.com/Longgererer/Compiler-ol/issues" target="black">issues</a></div>
         </el-collapse-item>
       </el-collapse>
     </popUp>
@@ -44,7 +45,10 @@ import popUp from './popUp'
 export default {
   data() {
     return {
-      pop: {
+      help: {
+        isShow: false
+      },
+      config: {
         isShow: false
       },
       activeName: ''
@@ -54,8 +58,11 @@ export default {
     popUp
   },
   methods: {
-    openPop() {
-      this.pop.isShow = true
+    openConfig() {
+      this.config.isShow = true
+    },
+    openHelp() {
+      this.help.isShow = true
     }
   }
 }

@@ -17,6 +17,7 @@ body {
 
 .CodeMirror {
   height: 100% !important;
+  font-family: Consolas, "Courier New", monospace !important;
 }
 
 .CodeMirror-scroll {

@@ -30,7 +30,10 @@ require('codemirror/addon/edit/closebrackets.js')
 require('codemirror/addon/selection/active-line.js')
 require('codemirror/addon/edit/matchtags')
 require('codemirror/addon/edit/matchbrackets')
+require('codemirror/addon/comment/comment.js')
+require('codemirror/keymap/sublime.js')
 require('codemirror/addon/display/fullscreen.js')
+
 Vue.use(codemirror)
 Vue.config.productionTip = false
 

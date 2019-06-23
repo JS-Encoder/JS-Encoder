@@ -7,7 +7,6 @@
       <codemirror
         :options="cmOptions"
         :value="message"
-        @optionChange="changeOptions"
         class="code"
         ref="editor"
         v-if="showCode"
@@ -61,7 +60,7 @@ export default {
       message: '',
       cmOptions: {
         flattenSpans: false, // 默认情况下，CodeMirror会将使用相同class的两个span合并成一个。通过设置此项为false禁用此功能
-        tabSize: this.space, // tab缩进空格数
+        tabSize: 2, // tab缩进空格数
         mode: '', // 模式
         theme: 'monokai', // 主题
         smartIndent: true, // 是否智能缩进
@@ -70,21 +69,15 @@ export default {
         lineWiseCopyCut: true, // 如果在复制或剪切时没有选择文本，那么就会自动操作光标所在的整行
         indentWithTabs: true, // 在缩进时，是否需要把 n*tab宽度个空格替换成n个tab字符
         electricChars: true, // 在输入可能改变当前的缩进时，是否重新缩进
-        indentUnit: 4, // 缩进单位，默认2
+        indentUnit: 2, // 缩进单位，默认2
         autoCloseTags: true, // 自动关闭标签 addon/edit/
         autoCloseBrackets: true, // 自动输入括弧  addon/edit/
         foldGutter: true, // 允许在行号位置折叠
+        keyMap: 'sublime',// 快捷键集合
         extraKeys: {
           'Ctrl-Alt': 'autocomplete',
           'Ctrl-Q': cm => {
             cm.foldCode(cm.getCursor())
-          },
-          F11: cm => {
-            cm.setOption('tabSize', 8)
-            console.log(cm.getOption('tabSize'))
-          },
-          ESC: cm => {
-            if (cm.getOption('fullScreen')) cm.setOptions('fullScreen', false)
           }
         }, //智能提示
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'], // 用来添加额外的gutter
@@ -104,10 +97,9 @@ export default {
   watch: {
     space() {
       if (this.$refs.editor) {
-        console.log(codemirror)
-        this.$refs.editor.$listeners.optionChange()
-        // console.log(this.$emit)
-        // this.$emit('optionChange')
+        const options = this.$refs.editor.$options.parent.cmOptions
+        options.tabSize = this.space
+        options.indentUnit = this.space
       }
     },
     typeList(newVal) {
@@ -174,14 +166,11 @@ export default {
           this.$store.state.textBoxW[nextBox] = wholeW - finW + 'px'
         }
       }
-      document.onmouseup = function() {
+      document.onmouseup = () => {
         document.onmousemove = null
         this.$store.commit('updateScreen', false)
       }
       return false
-    },
-    changeOptions(cm) {
-      console.log(cm)
     },
     init() {
       //页面初始化执行函数

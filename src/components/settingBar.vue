@@ -36,7 +36,7 @@ export default {
       this.$emit('hasChanged', this.checkType)
     },
     applySpace(){
-      this.$emit('changeTab', this.applySpace * 2)
+      this.$emit('changeTab', this.applySpace)
     }
   }
 }

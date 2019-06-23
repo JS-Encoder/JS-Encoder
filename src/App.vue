@@ -38,7 +38,7 @@ export default {
         Output: 5
       },
       boxW: '',
-      tabSpace: 4
+      tabSpace: 2
     }
   },
   mounted() {
