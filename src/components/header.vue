@@ -4,6 +4,11 @@
       <i class="icon iconfont icon-daimahuaban"></i> Compiler ol
     </h3>
     <ul class="header-menu flex">
+      <li>
+        <a class="github-link" href="https://github.com/Longgererer">
+          <i class="icon iconfont icon-git"></i>
+        </a>
+      </li>
       <li @click="openPop">
         <i class="icon iconfont icon-config"></i>
       </li>
@@ -11,10 +16,11 @@
         <i class="icon iconfont icon-help"></i>
       </li>
     </ul>
-    <popUp :pop="pop">
+    <popUp :pop="pop" class="noselect">
       <el-collapse accordion v-model="activeName">
         <el-collapse-item name="1" title="shortcut key">
           <div>CTRL + ALT ---------------------------- Trun on smart tips</div>
+          <div>CTRL + Q ---------------------------- Fold the code</div>
         </el-collapse-item>
         <el-collapse-item name="2" title="Feedback">
           <div>1</div>
@@ -39,7 +45,7 @@ export default {
   data() {
     return {
       pop: {
-        isShow: true
+        isShow: false
       },
       activeName: ''
     }
@@ -77,6 +83,7 @@ export default {
   .header-menu {
     position: absolute;
     right: 20px;
+    top: 0px;
     li {
       list-style: none;
       margin: 0 15px;
@@ -85,8 +92,14 @@ export default {
       i {
         font-size: 20px;
       }
+      .github-link {
+        color: #ccc;
+        text-decoration: none;
+        transition: all 0.3s ease;
+      }
     }
-    li:hover {
+    li:hover,
+    .github-link:hover {
       color: #f2f2f2;
     }
   }

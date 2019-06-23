@@ -7,13 +7,14 @@
       <codemirror
         :options="cmOptions"
         :value="message"
+        @optionChange="changeOptions"
         class="code"
         ref="editor"
         v-if="showCode"
         v-model="message"
       ></codemirror>
       <Console v-if="title === 'Console'"></Console>
-      <button v-if="title==='Output'" class="clear" @click="reSetConsole">clear</button>
+      <button @click="reSetConsole" class="clear noselect" v-if="showClear && this.title === 'Output'">clear</button>
       <iframe
         allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media"
         frameborder="0"
@@ -25,7 +26,7 @@
         src="../../static/html/runner.html"
         v-if="showIframe"
       ></iframe>
-      
+      <div class="screen-box" v-if="showScreen && title === 'Output'"></div>
       <div
         @mousedown="boxMouseDown"
         @mouseout="boxMouseOut"
@@ -56,9 +57,10 @@ export default {
       src: 'hello world',
       showCode: true,
       showIframe: false,
+      showClear: true,
       message: '',
       cmOptions: {
-        flattenSpans: false,// 默认情况下，CodeMirror会将使用相同class的两个span合并成一个。通过设置此项为false禁用此功能
+        flattenSpans: false, // 默认情况下，CodeMirror会将使用相同class的两个span合并成一个。通过设置此项为false禁用此功能
         tabSize: this.space, // tab缩进空格数
         mode: '', // 模式
         theme: 'monokai', // 主题
@@ -66,13 +68,25 @@ export default {
         lineNumbers: true, // 显示行号
         matchBrackets: true, // 匹配符号
         lineWiseCopyCut: true, // 如果在复制或剪切时没有选择文本，那么就会自动操作光标所在的整行
-        //indentWithTabs: true, // 在缩进时，是否需要把 n*tab宽度个空格替换成n个tab字符
-        // electricChars: true, // 在输入可能改变当前的缩进时，是否重新缩进
+        indentWithTabs: true, // 在缩进时，是否需要把 n*tab宽度个空格替换成n个tab字符
+        electricChars: true, // 在输入可能改变当前的缩进时，是否重新缩进
         indentUnit: 4, // 缩进单位，默认2
         autoCloseTags: true, // 自动关闭标签 addon/edit/
         autoCloseBrackets: true, // 自动输入括弧  addon/edit/
         foldGutter: true, // 允许在行号位置折叠
-        extraKeys: {"Ctrl-Alt": "autocomplete"},//智能提示
+        extraKeys: {
+          'Ctrl-Alt': 'autocomplete',
+          'Ctrl-Q': cm => {
+            cm.foldCode(cm.getCursor())
+          },
+          F11: cm => {
+            cm.setOption('tabSize', 8)
+            console.log(cm.getOption('tabSize'))
+          },
+          ESC: cm => {
+            if (cm.getOption('fullScreen')) cm.setOptions('fullScreen', false)
+          }
+        }, //智能提示
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'], // 用来添加额外的gutter
         styleActiveLine: true // 激活当前行样式
       },
@@ -88,6 +102,18 @@ export default {
     this.init()
   },
   watch: {
+    space() {
+      if (this.$refs.editor) {
+        console.log(codemirror)
+        this.$refs.editor.$listeners.optionChange()
+        // console.log(this.$emit)
+        // this.$emit('optionChange')
+      }
+    },
+    typeList(newVal) {
+      const index = newVal.indexOf('Console')
+      index === -1 ? (this.showClear = false) : (this.showClear = true)
+    },
     message(newVal) {
       if (this.timer) {
         clearTimeout(this.timer)
@@ -115,6 +141,9 @@ export default {
     },
     content() {
       return this.$store.state.textBoxContent
+    },
+    showScreen() {
+      return this.$store.state.showScreen
     }
   },
   methods: {
@@ -133,6 +162,7 @@ export default {
       const starLeft = elInfo.offsetWidth + elInfo.offsetLeft
       const starTop = elInfo.offsetHeight + elInfo.offsetTop
       const nextBox = this.typeList[this.index + 1]
+      if (nextBox === 'Output') this.$store.commit('updateScreen', true)
       const wholeW =
         parseFloat(this.textBoxW[nextBox]) +
         parseFloat(this.textBoxW[this.title])
@@ -146,8 +176,12 @@ export default {
       }
       document.onmouseup = function() {
         document.onmousemove = null
+        this.$store.commit('updateScreen', false)
       }
       return false
+    },
+    changeOptions(cm) {
+      console.log(cm)
     },
     init() {
       //页面初始化执行函数
@@ -172,7 +206,9 @@ export default {
     },
     spliceHtml() {
       setTimeout(() => {
-        this.$refs.iframeBox.contentDocument.getElementById('compOlCss').innerText = this.$store.state.textBoxContent.CSS
+        this.$refs.iframeBox.contentDocument.getElementById(
+          'compOlCss'
+        ).innerText = this.$store.state.textBoxContent.CSS
         let script = this.$refs.iframeBox.contentDocument.getElementById('src')
         const code = `
         (function(){
@@ -195,7 +231,7 @@ export default {
       ele.text = code
       this.$refs.iframeBox.contentDocument.body.appendChild(ele)
     },
-    reSetConsole(){
+    reSetConsole() {
       this.$refs.iframeBox.contentWindow.consoleInfo = []
       this.$store.state.consoleInfo = ''
     }
@@ -247,7 +283,7 @@ export default {
       border: none;
       color: #fff;
     }
-    .clear{
+    .clear {
       position: absolute;
       width: 40px;
       height: 20px;
@@ -256,12 +292,18 @@ export default {
       border: 1px solid #1e1e1e;
       outline: none;
     }
-    .clear:active{
+    .clear:active {
       background-color: #eee;
     }
     iframe {
       width: 100%;
       height: 100%;
+    }
+    .screen-box {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      z-index: 10;
     }
     .resize {
       height: 100%;

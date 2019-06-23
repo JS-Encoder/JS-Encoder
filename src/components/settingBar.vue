@@ -28,7 +28,7 @@ export default {
       types: ['HTML', 'CSS', 'JavaScript', 'Console', 'Output'],
       space: [2, 4],
       checkType: ['HTML', 'CSS', 'JavaScript', 'Console', 'Output'],
-      applySpace: 4
+      applySpace: 2
     }
   },
   watch: {
@@ -36,7 +36,7 @@ export default {
       this.$emit('hasChanged', this.checkType)
     },
     applySpace(){
-      this.$emit('changeTab', this.applySpace)
+      this.$emit('changeTab', this.applySpace * 2)
     }
   }
 }

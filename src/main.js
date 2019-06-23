@@ -8,6 +8,7 @@ import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/addon/dialog/dialog.css'
 import '../static/css/codemirror.css'
 import '../static/css/monokai.css'
+import 'codemirror/addon/fold/foldgutter.css'
 require('codemirror/mode/javascript/javascript.js')
 require('codemirror/mode/xml/xml.js')
 require('codemirror/mode/css/css.js')
@@ -29,6 +30,7 @@ require('codemirror/addon/edit/closebrackets.js')
 require('codemirror/addon/selection/active-line.js')
 require('codemirror/addon/edit/matchtags')
 require('codemirror/addon/edit/matchbrackets')
+require('codemirror/addon/display/fullscreen.js')
 Vue.use(codemirror)
 Vue.config.productionTip = false
 
@@ -51,7 +53,8 @@ const store = new VueX.Store({
       Console: '',
       Output: ''
     },
-    consoleInfo: ''
+    consoleInfo: '',
+    showScreen: false
   },
   mutations: {
     change: (state, info) => {
@@ -62,6 +65,9 @@ const store = new VueX.Store({
     },
     updateConsole: (state, newVal) => {
       state.consoleInfo = newVal
+    },
+    updateScreen: (state, newVal) => {
+      state.showScreen = newVal
     }
   }
 })
@@ -75,3 +81,19 @@ new Vue({
   },
   template: '<App />'
 })
+
+// 监测刷新和关闭
+// window.onbeforeunload = function (e) {
+//   let dialogText = 'Dialog text here'
+//   e.returnValue = dialogText
+//   return dialogText
+// }
+// window.isCloseHint = true
+// 初始化关闭
+// window.addEventListener('beforeunload', function (e) {
+//   if (window.isCloseHint) {
+//     let confirmationMessage = '要记得保存！你确定要离开我吗？';
+//     (e || window.event).returnValue = confirmationMessage // 兼容 Gecko + IE
+//     return confirmationMessage // 兼容 Gecko + Webkit, Safari, Chrome
+//   }
+// })
