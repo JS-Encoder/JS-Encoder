@@ -18,7 +18,7 @@
 
 `Output` 显示效果
 
-![](https://cdn.sinaimg.cn.52ecy.cn/large/005BYqpgly1g4b9t8yn98j31h70r5myo.jpg)
+![005BYqpgly1g4b9t8yn98j31h70r5myo.jpg](https://i.loli.net/2019/06/23/5d0f7a8db377979526.jpg)
 
 本人不才,现在编译器功能还很少,而且有些功能还没完善,比如自定义缩进等,还有很多 bug 需要发现并解决,之后会继续修复并且添加更多功能
 
