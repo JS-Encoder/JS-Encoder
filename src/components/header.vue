@@ -4,9 +4,12 @@
       <i class="icon iconfont icon-daimahuaban"></i> Compiler ol
     </h3>
     <ul class="header-menu flex">
+      <li @click="openDownload">
+        <i class="icon iconfont icon-baocun" style="font-size:23px"></i>
+      </li>
       <li>
         <a class="github-link" href="https://github.com/Longgererer/Compiler-ol" target="black">
-          <i class="icon iconfont icon-git"></i>
+          <i class="icon iconfont icon-git" style="font-size:22px"></i>
         </a>
       </li>
       <li @click="openConfig">
@@ -34,17 +37,48 @@
           <div>CTRL + / ---------------- Toggle comment on selected lines</div>
         </el-collapse-item>
         <el-collapse-item name="2" title="Feedback">
-          <div>If you find bugs, you can give feedback on github <a href="https://github.com/Longgererer/Compiler-ol/issues" target="black">issues</a></div>
+          <div>
+            If you find bugs, you can give feedback on github
+            <a
+              href="https://github.com/Longgererer/Compiler-ol/issues"
+              target="black"
+            >issues</a>
+          </div>
         </el-collapse-item>
       </el-collapse>
+    </popUp>
+    <popUp :pop="download" class="noselect download-pop">
+      <div class="download-box flex flex-ai flex-jcc">
+        <div class="file-download flex flex-clo flex-ai">
+          <i class="icon iconfont icon-flie" style="font-size:40px;color:#333333"></i>
+          <span>Single file download</span>
+          <span class="describe">Combine HTML, CSS, JS into one file</span>
+          <button @click="singleDownload">
+            <i class="icon iconfont icon-xiazai"></i>download
+          </button>
+        </div>
+        <div class="files-download flex flex-clo flex-ai">
+          <i class="icon iconfont icon-youxidefuben" style="font-size:40px;color:#333333"></i>
+          <span>Multi-file download</span>
+          <span class="describe">Separate HTML, CSS, JS into multiple files and put them in a folder</span>
+          <button @click="filesDownload">
+            <i class="icon iconfont icon-xiazai"></i>download
+          </button>
+        </div>
+      </div>
     </popUp>
   </div>
 </template>
 <script>
 import popUp from './popUp'
+import {saveAs} from 'file-saver'
+const JSZip = require('jszip')
 export default {
   data() {
     return {
+      download: {
+        isShow: false
+      },
       help: {
         isShow: false
       },
@@ -63,6 +97,34 @@ export default {
     },
     openHelp() {
       this.help.isShow = true
+    },
+    openDownload() {
+      this.download.isShow = true
+    },
+    singleDownload() {
+      const aTag = document.createElement('a')
+      const content = this.$store.state.textBoxContent.HTML
+      let blob = new Blob([content])
+      aTag.download = 'index.html'
+      aTag.href = URL.createObjectURL(blob)
+      aTag.click()
+      URL.revokeObjectURL(blob)
+      this.download.isShow = false
+    },
+    filesDownload() {
+      const zip = new JSZip()
+      let code = zip.folder('code')
+      const content = this.$store.state.textBoxContent
+      const htmlCode = `<!DOCTYPE html>\n<html lang="en">\n<head>\n\t<meta charset="UTF-8">\n\t<meta name="viewport" content="width=device-width, initial-scale=1.0">\n\t<meta http-equiv="X-UA-Compatible" content="ie=edge">\n\t<title>Document</title>\n\t<link rel="stylesheet" href="./index.css">\n</head>\n<body>\n\t${content.HTML}\n\t<script src="./index.js"><\/script>\n</body>\n</html>`
+      const cssCode = content.CSS
+      const jsCode = content.JavaScript
+      code.file('index.html', htmlCode)
+      code.file('index.css', cssCode)
+      code.file('index.js', jsCode)
+      zip.generateAsync({ type: 'blob' }).then(function(content) {
+        saveAs(content, 'code.zip')
+      })
+      this.download.isShow = false
     }
   }
 }
@@ -108,6 +170,38 @@ export default {
     li:hover,
     .github-link:hover {
       color: #f2f2f2;
+    }
+  }
+  .download-pop {
+    .download-box {
+      width: 100%;
+      height: 200px;
+      .file-download,
+      .files-download {
+        font-size: 15px;
+        width: 200px;
+        height: 150px;
+        padding: 10px;
+        .describe {
+          color: gray;
+          font-size: 12px;
+          height: 50px;
+          margin: 5px 0;
+        }
+        button {
+          padding: 5px 10px;
+          border: none;
+          background-color: #333333;
+          color: #f2f2f2;
+          transition: 0.3s all ease;
+        }
+        button:hover {
+          background-color: #999999;
+        }
+      }
+      .files-download {
+        border-left: 1px dashed #999999;
+      }
     }
   }
 }

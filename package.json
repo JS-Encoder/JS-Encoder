@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "element-ui": "^2.8.2",
+    "file-saver": "^2.0.2",
+    "jszip": "^3.2.1",
     "node-sass": "^4.12.0",
     "sass-loader": "^7.1.0",
     "vue": "^2.5.2",
