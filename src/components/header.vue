@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-ai" id="header">
-    <h3 class="header-title">
-      <i class="icon iconfont icon-daimahuaban"></i> Compiler ol
-    </h3>
+    <span class="header-title noselect flex">
+      <img class="logo" src="../assets/logo.svg" alt="">
+    </span>
     <ul class="header-menu flex">
       <li @click="openDownload">
         <i class="icon iconfont icon-baocun" style="font-size:23px"></i>
@@ -20,14 +20,25 @@
       </li>
     </ul>
     <popUp :pop="config" class="noselect">
-      <el-collapse accordion v-model="activeName">
-        <el-collapse-item name="1" title="1">
-          <div>1</div>
-        </el-collapse-item>
-        <el-collapse-item name="2" title="1">
-          <div>1</div>
-        </el-collapse-item>
-      </el-collapse>
+      <div class="config-box">
+        <div class="run-time">
+          <h4 class="title">Waiting time</h4>
+          <span class="describe">After you finish the code,we will wait for some time to execute it</span>
+          <el-input-number :min="200" :step="50" size="small" v-model="waitTime"></el-input-number>(ms)
+        </div>
+        <div class="line"></div>
+        <div class="another-cfg">
+          <el-checkbox v-model="replace">Replace Spaces equal to TAB width with TAB</el-checkbox>
+        </div>
+        <div class="line"></div>
+        <div class="another-cfg">
+          <el-checkbox v-model="autoUp">Auto-Updating</el-checkbox>
+          <div
+            class="describe"
+          >Turning on autoexecute automatically updates the view, and turning this option off requires that the view be updated when the RUN button is clicked</div>
+        </div>
+        <div class="line"></div>
+      </div>
     </popUp>
     <popUp :pop="help" class="noselect">
       <el-collapse accordion v-model="activeName">
@@ -71,7 +82,7 @@
 </template>
 <script>
 import popUp from './popUp'
-import {saveAs} from 'file-saver'
+import { saveAs } from 'file-saver'
 const JSZip = require('jszip')
 export default {
   data() {
@@ -85,11 +96,28 @@ export default {
       config: {
         isShow: false
       },
-      activeName: ''
+      activeName: '',
+      waitTime: 1000,
+      replace: true,
+      autoUp: true
     }
   },
   components: {
     popUp
+  },
+  computed: {
+    showConfig() {
+      return this.config.isShow
+    }
+  },
+  watch: {
+    showConfig(newVal) {
+      if (!newVal) {
+        this.$store.commit('updateTime', this.waitTime)
+        this.$store.commit('updateReplace', this.replace)
+        this.$store.commit('updateAutoUp', this.autoUp)
+      }
+    }
   },
   methods: {
     openConfig() {
@@ -103,8 +131,13 @@ export default {
     },
     singleDownload() {
       const aTag = document.createElement('a')
-      const content = this.$store.state.textBoxContent.HTML
-      let blob = new Blob([content])
+      const content = this.$store.state.textBoxContent
+      const htmlCode = `<!DOCTYPE html>\n<html lang="en">\n<head>\n\t<meta charset="UTF-8">\n\t<meta name="viewport" content="width=device-width, initial-scale=1.0">\n\t<meta http-equiv="X-UA-Compatible" content="ie=edge">\n\t<title>Document</title>\n\t<style>\n\t${
+        content.CSS
+      }\n\t</style>\n</head>\n<body>\n\t${content.HTML}\n\t<script>\n\t${
+        content.JavaScript
+      }\n\t<\/script>\n</body>\n</html>`
+      let blob = new Blob([htmlCode])
       aTag.download = 'index.html'
       aTag.href = URL.createObjectURL(blob)
       aTag.click()
@@ -115,7 +148,9 @@ export default {
       const zip = new JSZip()
       let code = zip.folder('code')
       const content = this.$store.state.textBoxContent
-      const htmlCode = `<!DOCTYPE html>\n<html lang="en">\n<head>\n\t<meta charset="UTF-8">\n\t<meta name="viewport" content="width=device-width, initial-scale=1.0">\n\t<meta http-equiv="X-UA-Compatible" content="ie=edge">\n\t<title>Document</title>\n\t<link rel="stylesheet" href="./index.css">\n</head>\n<body>\n\t${content.HTML}\n\t<script src="./index.js"><\/script>\n</body>\n</html>`
+      const htmlCode = `<!DOCTYPE html>\n<html lang="en">\n<head>\n\t<meta charset="UTF-8">\n\t<meta name="viewport" content="width=device-width, initial-scale=1.0">\n\t<meta http-equiv="X-UA-Compatible" content="ie=edge">\n\t<title>Document</title>\n\t<link rel="stylesheet" href="./index.css">\n</head>\n<body>\n\t${
+        content.HTML
+      }\n\t<script src="./index.js"><\/script>\n</body>\n</html>`
       const cssCode = content.CSS
       const jsCode = content.JavaScript
       code.file('index.html', htmlCode)
@@ -137,16 +172,19 @@ export default {
 #header {
   width: 100%;
   height: 50px;
-  background-color: #333333;
+  background-color: #1e1e1e;
   padding: 10px 20px;
-  border-bottom: 2px solid #1e1e1e;
+  border-bottom: 2px solid #999;
   box-sizing: border-box;
   position: relative;
   .header-title {
     color: #f2f2f2;
     cursor: pointer;
-    i {
-      font-size: 20px;
+    font-family: 'Merienda', cursive;
+    font-size: 22px;
+    img{
+      width: 180px;
+      height: 100%;
     }
   }
   .header-menu {
@@ -172,6 +210,35 @@ export default {
       color: #f2f2f2;
     }
   }
+  .config-box {
+    width: 100%;
+    .run-time {
+      margin: 10px 0;
+      .title {
+        margin: 5px 0;
+      }
+      .describe {
+        display: block;
+        font-size: 12px;
+        color: #909399;
+        margin-bottom: 5px;
+      }
+    }
+    .line {
+      width: 100%;
+      height: 0;
+      border-top: 1px dashed #999;
+    }
+    .another-cfg {
+      margin: 10px 0;
+      .describe {
+        display: block;
+        font-size: 12px;
+        color: #909399;
+        margin-bottom: 5px;
+      }
+    }
+  }
   .download-pop {
     .download-box {
       width: 100%;
@@ -191,7 +258,7 @@ export default {
         button {
           padding: 5px 10px;
           border: none;
-          background-color: #333333;
+          background-color: #1e1e1e;
           color: #f2f2f2;
           transition: 0.3s all ease;
         }

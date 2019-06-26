@@ -57,7 +57,11 @@ const store = new VueX.Store({
       Output: ''
     },
     consoleInfo: '',
-    showScreen: false
+    waitTime: 1000,
+    replace: true,
+    showScreen: false,
+    autoUp: true,
+    isRun: false
   },
   mutations: {
     change: (state, info) => {
@@ -71,6 +75,18 @@ const store = new VueX.Store({
     },
     updateScreen: (state, newVal) => {
       state.showScreen = newVal
+    },
+    updateTime: (state, newVal) => {
+      state.waitTime = newVal
+    },
+    updateReplace: (state, newVal) => {
+      state.replace = newVal
+    },
+    updateAutoUp: (state, newVal) => {
+      state.autoUp = newVal
+    },
+    updateRun: (state, newVal) => {
+      state.isRun = newVal
     }
   }
 })
@@ -86,17 +102,17 @@ new Vue({
 })
 
 // 监测刷新和关闭
-// window.onbeforeunload = function (e) {
-//   let dialogText = 'Dialog text here'
-//   e.returnValue = dialogText
-//   return dialogText
-// }
-// window.isCloseHint = true
+window.onbeforeunload = function (e) {
+  let dialogText = 'Dialog text here'
+  e.returnValue = dialogText
+  return dialogText
+}
+window.isCloseHint = true
 // 初始化关闭
-// window.addEventListener('beforeunload', function (e) {
-//   if (window.isCloseHint) {
-//     let confirmationMessage = '要记得保存！你确定要离开我吗？';
-//     (e || window.event).returnValue = confirmationMessage // 兼容 Gecko + IE
-//     return confirmationMessage // 兼容 Gecko + Webkit, Safari, Chrome
-//   }
-// })
+window.addEventListener('beforeunload', function (e) {
+  if (window.isCloseHint) {
+    let confirmationMessage = '要记得保存！你确定要离开我吗？';
+    (e || window.event).returnValue = confirmationMessage // 兼容 Gecko + IE
+    return confirmationMessage // 兼容 Gecko + Webkit, Safari, Chrome
+  }
+})

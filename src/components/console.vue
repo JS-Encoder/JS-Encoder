@@ -2,6 +2,7 @@
   <div class="console">
     <div :class="item.type" :key="index" v-for="(item, index) in consoleInfo">
       <div class="error-box" v-if="item.type === 'error'">
+        <i class="icon iconfont icon-error"></i>
         <span>{{item.data.msg}}</span>
         <br>
         <span>{{item.data.url}}</span>
@@ -51,6 +52,10 @@ export default {
     border-top: 1px dashed #999;
   }
   .error-box {
+    i{
+      width: 16px;
+      height: 16px;
+    }
     div{
       text-align: right;
       color: gray;

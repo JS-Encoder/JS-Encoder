@@ -13,7 +13,11 @@
         v-model="message"
       ></codemirror>
       <Console v-if="title === 'Console'"></Console>
-      <button @click="reSetConsole" class="clear noselect" v-if="showClear && this.title === 'Output'">clear</button>
+      <button
+        @click="reSetConsole"
+        class="clear noselect"
+        v-if="showClear && this.title === 'Output'"
+      >clear</button>
       <iframe
         allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media"
         frameborder="0"
@@ -73,7 +77,7 @@ export default {
         autoCloseTags: true, // 自动关闭标签 addon/edit/
         autoCloseBrackets: true, // 自动输入括弧  addon/edit/
         foldGutter: true, // 允许在行号位置折叠
-        keyMap: 'sublime',// 快捷键集合
+        keyMap: 'sublime', // 快捷键集合
         extraKeys: {
           'Ctrl-Alt': 'autocomplete',
           'Ctrl-Q': cm => {
@@ -93,6 +97,29 @@ export default {
   },
   mounted() {
     this.init()
+  },
+  computed: {
+    textBoxW() {
+      return this.$store.state.textBoxW
+    },
+    content() {
+      return this.$store.state.textBoxContent
+    },
+    showScreen() {
+      return this.$store.state.showScreen
+    },
+    waitTime() {
+      return this.$store.state.waitTime
+    },
+    replace() {
+      return this.$store.state.replace
+    },
+    autoUp() {
+      return this.$store.state.autoUp
+    },
+    run() {
+      return this.$store.state.isRun
+    }
   },
   watch: {
     space() {
@@ -116,26 +143,27 @@ export default {
           title,
           newVal
         })
-      }, 1000)
+      }, this.waitTime)
     },
     content: {
       deep: true,
       handler: function() {
-        if (this.showIframe) {
+        if (this.$store.state.autoUp && this.showIframe) {
           this.spliceHtml()
         }
       }
-    }
-  },
-  computed: {
-    textBoxW() {
-      return this.$store.state.textBoxW
     },
-    content() {
-      return this.$store.state.textBoxContent
+    replace(newVal) {
+      if (this.$refs.editor) {
+        this.$refs.editor.$options.parent.cmOptions.indentWithTabs = newVal
+      }
     },
-    showScreen() {
-      return this.$store.state.showScreen
+    run(newVal) {
+      if (this.title === 'Output') {
+        if (newVal) {
+          this.spliceHtml()
+        }
+      }
     }
   },
   methods: {
@@ -195,21 +223,22 @@ export default {
     },
     spliceHtml() {
       setTimeout(() => {
-        this.$refs.iframeBox.contentDocument.getElementById(
-          'compOlCss'
-        ).innerText = this.$store.state.textBoxContent.CSS
-        let script = this.$refs.iframeBox.contentDocument.getElementById('src')
+        const content = this.$store.state.textBoxContent
+        const iframe = this.$refs.iframeBox
+        iframe.contentDocument.getElementById('compOlCss').innerText =
+          content.CSS
+        let script = iframe.contentDocument.getElementById('src')
         const code = `
         (function(){
-          ${this.$store.state.textBoxContent.JavaScript}
+          ${content.JavaScript}
         })()
         `
         if (script) script.parentNode.removeChild(script)
-        this.$refs.iframeBox.contentDocument.body.innerHTML = this.$store.state.textBoxContent.HTML
+        iframe.contentDocument.body.innerHTML = content.HTML
         this.createScript('script', 'src', code)
-        const info = this.$refs.iframeBox.contentWindow.consoleInfo
+        const info = iframe.contentWindow.consoleInfo
         this.$store.commit('updateConsole', info)
-      }, 1000)
+      }, this.waitTime)
     },
     clearConsole() {
       this.$refs.iframeBox.contentWindow.consoleInfo = []
@@ -257,7 +286,7 @@ export default {
     .code {
       width: 100%;
       height: 100%;
-      background-color: #333333;
+      background-color: #1e1e1e;
       resize: none;
       outline: none;
       border: none;
