@@ -1,17 +1,17 @@
 <template>
   <div id="app">
     <Header></Header>
-    <SettingBar @hasChanged="changeTypeList" @changeTab="changeTabSpace"></SettingBar>
-    <div :style="{height:txtBoxHeight}" class="code-box" ref="codeBox">
+    <SettingBar @changeTab="changeTabSpace" @hasChanged="changeTypeList"></SettingBar>
+    <div class="code-box" ref="codeBox">
       <textareaBox
         :index="index"
         :key="item"
         :len="type.length"
+        :space="tabSpace"
         :title="item"
         :typeList="type"
         class="textareaBox"
         v-for="(item,index) in type"
-        :space="tabSpace"
       ></textareaBox>
     </div>
     <router-view/>
@@ -28,8 +28,6 @@ export default {
     return {
       type: ['HTML', 'CSS', 'JavaScript', 'Console', 'Output'],
       screenWidth: document.body.clientWidth,
-      screenHeight: document.body.clientHeight,
-      txtBoxHeight: `${document.body.clientHeight - 100}px`,
       typeListQueue: {
         HTML: 1,
         CSS: 2,
@@ -46,21 +44,10 @@ export default {
     window.onresize = () => {
       return (() => {
         this.screenWidth = document.body.clientWidth
-        this.screenHeight = document.body.clientHeight
       })()
     }
   },
   watch: {
-    screenHeight(val) {
-      if (!this.timerW) {
-        this.screenHeight = val
-        this.timerW = true
-        this.txtBoxHeight = `${val - 100}px`
-        setTimeout(() => {
-          this.timerW = false
-        }, 50)
-      }
-    },
     screenWidth(newVal, oldVal) {
       const changeW = (newVal - oldVal) / this.type.length
       for (let item of this.type) {
@@ -107,7 +94,7 @@ export default {
         this.$store.state.textBoxW[item] = this.boxW
       }
     },
-    changeTabSpace(newVal){
+    changeTabSpace(newVal) {
       this.tabSpace = newVal
     }
   }
@@ -117,6 +104,8 @@ export default {
 <style lang="scss" scoped>
 .code-box {
   display: flex;
+  width: 100%;
+  height: calc(100% - 100px);
 }
 </style>
 

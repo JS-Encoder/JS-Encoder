@@ -2,6 +2,19 @@
   <div :ref="title" :style="{width:textBoxW[title]}" id="textareaBox">
     <div class="title noselect flex flex-ali">
       <span>{{title}}</span>
+      <el-dropdown
+        @command="handleCommand"
+        trigger="click"
+        v-if="title !== 'Console' && title !== 'Output'"
+      >
+        <el-button class="type-menu" type="primary">
+          <i class="icon iconfont icon-xiala"></i>
+        </el-button>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item command="HTML">HTML</el-dropdown-item>
+          <el-dropdown-item command="MarkDown">MarkDown</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
     </div>
     <div :class="title === 'Console'?'bgc':''" :ref="'textbox'+index" class="text-box">
       <codemirror
@@ -17,7 +30,9 @@
         @click="reSetConsole"
         class="clear noselect"
         v-if="showClear && this.title === 'Output'"
-      >clear</button>
+      >
+        <i class="icon iconfont icon-lajitong"></i> clear
+      </button>
       <iframe
         allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media"
         frameborder="0"
@@ -62,6 +77,7 @@ export default {
       showIframe: false,
       showClear: true,
       message: '',
+      preprocessor: this.title,
       cmOptions: {
         flattenSpans: false, // 默认情况下，CodeMirror会将使用相同class的两个span合并成一个。通过设置此项为false禁用此功能
         tabSize: 2, // tab缩进空格数
@@ -77,6 +93,7 @@ export default {
         autoCloseTags: true, // 自动关闭标签 addon/edit/
         autoCloseBrackets: true, // 自动输入括弧  addon/edit/
         foldGutter: true, // 允许在行号位置折叠
+        cursorHeight: 1, // 光标高度
         keyMap: 'sublime', // 快捷键集合
         extraKeys: {
           'Ctrl-Alt': 'autocomplete',
@@ -155,18 +172,24 @@ export default {
     },
     replace(newVal) {
       if (this.$refs.editor) {
-        this.$refs.editor.$options.parent.cmOptions.indentWithTabs = newVal
+        this.changeOptions('indentWithTabs', newVal)
       }
     },
     run(newVal) {
       if (this.title === 'Output') {
         if (newVal) {
-          this.spliceHtml()
+          this.spliceHtml(100)
         }
       }
     }
   },
   methods: {
+    changeOptions(key, val) {
+      this.$refs.editor.$options.parent.cmOptions[key] = val
+    },
+    handleCommand(command) {
+      this.preprocessor = command
+    },
     boxMouseOver(e) {
       this.$refs.line.style.border = '.5px dashed #65d3fd'
     },
@@ -221,33 +244,92 @@ export default {
         }
       }
     },
-    spliceHtml() {
+    spliceHtml(time) {
+      const cssLinks = this.$store.state.cssLinks
+      let validCss = []
+
+      if (cssLinks.length) {
+        for (let item of cssLinks) {
+          if (!item) continue
+          if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
+            validCss.push(item)
+        }
+      }
+      const cdnJs = this.$store.state.cdnJs
+      let validCDN = []
+      if (cdnJs.length) {
+        for (let item of cdnJs) {
+          if (!item) continue
+          if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
+            validCDN.push(item)
+        }
+      }
+      let waitTime = null
+      !time ? (waitTime = this.waitTime) : (waitTime = 0)
       setTimeout(() => {
         const content = this.$store.state.textBoxContent
         const iframe = this.$refs.iframeBox
-        iframe.contentDocument.getElementById('compOlCss').innerText =
-          content.CSS
+
+        let linkArr = iframe.contentDocument.getElementsByTagName('link')
+        if (linkArr.length) {
+          for (let i = linkArr.length - 1; i >= 0; i--) {
+            linkArr[i].parentNode.removeChild(linkArr[i])
+          }
+        }
+        for (let item of validCss) {
+          this.createLink('link', item)
+        }
+
+        let style = iframe.contentDocument.getElementById('compOlCss')
+        if (style) style.parentNode.removeChild(style)
+        this.createStyle('style', 'compOlCss', content.CSS)
+
         let script = iframe.contentDocument.getElementById('src')
         const code = `
         (function(){
           ${content.JavaScript}
         })()
-        `
+`
         if (script) script.parentNode.removeChild(script)
         iframe.contentDocument.body.innerHTML = content.HTML
+        for (let item of validCDN) {
+          this.createCDN('script', item)
+        }
         this.createScript('script', 'src', code)
+
         const info = iframe.contentWindow.consoleInfo
         this.$store.commit('updateConsole', info)
-      }, this.waitTime)
+      }, waitTime)
     },
     clearConsole() {
       this.$refs.iframeBox.contentWindow.consoleInfo = []
     },
     createScript(element, id, code) {
-      let ele = this.$refs.iframeBox.contentDocument.createElement(element)
+      let iframe = this.$refs.iframeBox
+      let ele = iframe.contentDocument.createElement(element)
       ele.id = id
       ele.text = code
-      this.$refs.iframeBox.contentDocument.body.appendChild(ele)
+      iframe.contentDocument.body.appendChild(ele)
+    },
+    createStyle(element, id, code) {
+      let iframe = this.$refs.iframeBox
+      let ele = iframe.contentDocument.createElement(element)
+      ele.id = id
+      ele.innerText = code
+      iframe.contentDocument.head.appendChild(ele)
+    },
+    createCDN(element, url) {
+      let iframe = this.$refs.iframeBox
+      let ele = iframe.contentDocument.createElement(element)
+      ele.src = url
+      iframe.contentDocument.body.appendChild(ele)
+    },
+    createLink(element, url) {
+      let iframe = this.$refs.iframeBox
+      let ele = iframe.contentDocument.createElement(element)
+      ele.href = url
+      ele.rel = 'stylesheet'
+      iframe.contentDocument.head.appendChild(ele)
     },
     reSetConsole() {
       this.$refs.iframeBox.contentWindow.consoleInfo = []
@@ -268,6 +350,7 @@ export default {
   min-width: 100px;
   box-sizing: border-box;
   .title {
+    position: relative;
     span {
       color: #fff;
       font-size: 12px;
@@ -276,6 +359,33 @@ export default {
       display: inline-block;
       line-height: 20px;
       height: 20px;
+      font-family: 'Josefin Sans', sans-serif !important;
+    }
+    .type-menu {
+      height: 22px;
+      width: 25px;
+      border: none;
+      background-color: #1e1e1e;
+      color: #f2f2f2;
+      box-sizing: border-box;
+      border-radius: 0;
+      outline: none;
+      padding: 0;
+      i {
+        display: inline-block;
+        font-size: 12px;
+      }
+    }
+    .type-menu:hover {
+      background-color: #4b4b4b;
+    }
+    .type-box {
+      width: 100px;
+      height: 100px;
+      background-color: #fff;
+      position: absolute;
+      z-index: 100;
+      top: 100%;
     }
   }
   .text-box {
@@ -303,12 +413,15 @@ export default {
     }
     .clear {
       position: absolute;
-      width: 40px;
+      width: 70px;
       height: 20px;
       top: -21px;
-      left: -41px;
+      left: -71px;
+      background-color: #1e1e1e;
       border: 1px solid #1e1e1e;
+      color: #f2f2f2;
       outline: none;
+      font-family: 'Josefin Sans', sans-serif !important;
     }
     .clear:active {
       background-color: #eee;

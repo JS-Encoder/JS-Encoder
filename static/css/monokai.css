@@ -34,7 +34,7 @@
 .cm-s-monokai span.cm-link { color: #ae81ff; }
 .cm-s-monokai span.cm-error { background: #f92672; color: #f8f8f0; }
 
-.cm-s-monokai .CodeMirror-activeline-background { background-color: #1e1e1e;border-top: 2px solid #373831; border-bottom: 2px solid #373831;box-sizing: border-box;}
+.cm-s-monokai .CodeMirror-activeline-background { background-color: #1e1e1e;border-top: 1px solid #5a5a5a; border-bottom: 1px solid #5a5a5a;box-sizing: border-box;}
 .cm-s-monokai .CodeMirror-matchingbracket {
   text-decoration: underline;
   color: white !important;

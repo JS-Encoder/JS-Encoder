@@ -33,6 +33,8 @@ require('codemirror/addon/edit/matchbrackets')
 require('codemirror/addon/comment/comment.js')
 require('codemirror/keymap/sublime.js')
 require('codemirror/addon/display/fullscreen.js')
+require('codemirror/mode/markdown/markdown.js')
+require('codemirror/addon/edit/continuelist')
 
 Vue.use(codemirror)
 Vue.config.productionTip = false
@@ -61,7 +63,9 @@ const store = new VueX.Store({
     replace: true,
     showScreen: false,
     autoUp: true,
-    isRun: false
+    isRun: false,
+    cdnJs: [],
+    cssLinks: []
   },
   mutations: {
     change: (state, info) => {
@@ -87,6 +91,12 @@ const store = new VueX.Store({
     },
     updateRun: (state, newVal) => {
       state.isRun = newVal
+    },
+    updateCDN: (state, newVal) => {
+      state.cdnJs = newVal
+    },
+    updatCssLinks: (state, newVal) => {
+      state.cssLinks = newVal
     }
   }
 })

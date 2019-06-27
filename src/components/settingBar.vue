@@ -1,5 +1,5 @@
 <template>
-  <div id="settingBar" class="noselect">
+  <div class="noselect" id="settingBar">
     <div class="setting">
       <div class="type-setting">
         <el-checkbox-group size="mini" v-model="checkType">
@@ -13,7 +13,7 @@
         </el-radio-group>
       </div>
       <div class="run">
-        <el-button size="mini" type="primary" @click="run">
+        <el-button @click="run" size="mini" type="primary">
           Run
           <i class="icon iconfont icon-o-run"></i>
         </el-button>
@@ -33,21 +33,21 @@ export default {
     }
   },
   watch: {
-    checkType(){
+    checkType() {
       this.$emit('hasChanged', this.checkType)
     },
-    applySpace(){
+    applySpace() {
       this.$emit('changeTab', this.applySpace)
     },
-    isRun(newVal){
+    isRun(newVal) {
       this.$store.commit('updateRun', newVal)
     }
   },
   methods: {
-    run(){
-      if(this.isRun) return
+    run() {
+      if (this.isRun) return
       this.isRun = true
-      setTimeout(()=>{
+      setTimeout(() => {
         this.isRun = false
       }, 500)
     }
@@ -58,19 +58,19 @@ export default {
 #settingBar {
   display: flex;
   padding: 10px 20px;
-  border-bottom: 2px solid #333333;
+  border-bottom: 2px solid #1e1e1e;
   .setting {
     display: flex;
     min-width: 600px;
     justify-content: space-around;
-    .type-setting{
+    .type-setting {
       margin: 0 15px;
     }
-    .tab-space{
+    .tab-space {
       display: flex;
       align-items: center;
       margin: 0 15px;
-      span{
+      span {
         font-size: 14px;
         margin-right: 10px;
       }

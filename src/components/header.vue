@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-ai" id="header">
     <span class="header-title noselect flex">
-      <img class="logo" src="../assets/logo.svg" alt="">
+      <img alt class="logo" src="../assets/logo.svg">
     </span>
     <ul class="header-menu flex">
       <li @click="openDownload">
@@ -19,45 +19,6 @@
         <i class="icon iconfont icon-help"></i>
       </li>
     </ul>
-    <popUp :pop="config" class="noselect">
-      <div class="config-box">
-        <div class="run-time">
-          <h4 class="title">Waiting time</h4>
-          <span class="describe">After you finish the code,we will wait for some time to execute it</span>
-          <el-input-number :min="200" :step="50" size="small" v-model="waitTime"></el-input-number>(ms)
-        </div>
-        <div class="line"></div>
-        <div class="another-cfg">
-          <el-checkbox v-model="replace">Replace Spaces equal to TAB width with TAB</el-checkbox>
-        </div>
-        <div class="line"></div>
-        <div class="another-cfg">
-          <el-checkbox v-model="autoUp">Auto-Updating</el-checkbox>
-          <div
-            class="describe"
-          >Turning on autoexecute automatically updates the view, and turning this option off requires that the view be updated when the RUN button is clicked</div>
-        </div>
-        <div class="line"></div>
-      </div>
-    </popUp>
-    <popUp :pop="help" class="noselect">
-      <el-collapse accordion v-model="activeName">
-        <el-collapse-item name="1" title="shortcut key">
-          <div>CTRL + ALT ---------------------------- Trun on smart tips</div>
-          <div>CTRL + Q ---------------------------- Fold the code</div>
-          <div>CTRL + / ---------------- Toggle comment on selected lines</div>
-        </el-collapse-item>
-        <el-collapse-item name="2" title="Feedback">
-          <div>
-            If you find bugs, you can give feedback on github
-            <a
-              href="https://github.com/Longgererer/Compiler-ol/issues"
-              target="black"
-            >issues</a>
-          </div>
-        </el-collapse-item>
-      </el-collapse>
-    </popUp>
     <popUp :pop="download" class="noselect download-pop">
       <div class="download-box flex flex-ai flex-jcc">
         <div class="file-download flex flex-clo flex-ai">
@@ -78,6 +39,68 @@
         </div>
       </div>
     </popUp>
+    <popUp :pop="config" class="noselect">
+      <div class="config-box">
+        <div class="run-time">
+          <h4 class="title">Waiting time</h4>
+          <span class="describe">After you finish the code,we will wait for some time to execute it</span>
+          <el-input-number :min="200" :step="50" size="small" v-model="waitTime"></el-input-number>(ms)
+        </div>
+        <div class="line"></div>
+        <div class="another-cfg">
+          <el-checkbox v-model="replace">Replace Spaces equal to TAB width with TAB</el-checkbox>
+        </div>
+        <div class="line"></div>
+        <div class="another-cfg">
+          <el-checkbox v-model="autoUp">Auto-Updating</el-checkbox>
+          <div
+            class="describe"
+          >Turning on autoexecute automatically updates the view, and turning this option off requires that the view be updated when the RUN button is clicked</div>
+        </div>
+        <div class="line"></div>
+        <div class="add-cdn">
+          <h4 class="title">CDN</h4>
+          <div
+            class="describe"
+          >The links added here are all run in order before running JavaScript, links that support the HTTP or HTTPS protocols</div>
+          <div :key="index" class="cdn-in flex flex-ai" v-for="(item, index) in showCdnInput">
+            <el-input placeholder="your CDN" size="small" v-model="cdnJs[index]"></el-input>
+            <i @click="delCDN(index)" class="icon iconfont icon-Clear"></i>
+          </div>
+          <div @click="addCDN" class="add-link flex flex-ai flex-jcc">+ Add more links</div>
+        </div>
+        <div class="line"></div>
+        <div class="add-css">
+          <h4 class="title">CSS link</h4>
+          <div
+            class="describe"
+          >The links added here are all run in order before running CSS, links that support the HTTP or HTTPS protocols</div>
+          <div :key="index" class="css-in flex flex-ai" v-for="(item, index) in showCssInput">
+            <el-input placeholder="your CSS link" size="small" v-model="cssLinks[index]"></el-input>
+            <i @click="delCssLink(index)" class="icon iconfont icon-Clear"></i>
+          </div>
+          <div @click="addCssLink" class="add-link flex flex-ai flex-jcc">+ Add more links</div>
+        </div>
+      </div>
+    </popUp>
+    <popUp :pop="help" class="noselect">
+      <el-collapse accordion v-model="activeName">
+        <el-collapse-item name="1" title="Shortcut Key">
+          <div>CTRL + ALT ---------------------------- Trun on smart tips</div>
+          <div>CTRL + Q ---------------------------- Fold the code</div>
+          <div>CTRL + / ---------------- Toggle comment on selected lines</div>
+        </el-collapse-item>
+        <el-collapse-item name="2" title="Feedback">
+          <div>
+            If you find bugs, you can give feedback on github
+            <a
+              href="https://github.com/Longgererer/Compiler-ol/issues"
+              target="black"
+            >issues</a>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
+    </popUp>
   </div>
 </template>
 <script>
@@ -96,6 +119,10 @@ export default {
       config: {
         isShow: false
       },
+      cdnJs: [],
+      cssLinks: [],
+      showCdnInput: 1,
+      showCssInput: 1,
       activeName: '',
       waitTime: 1000,
       replace: true,
@@ -116,6 +143,8 @@ export default {
         this.$store.commit('updateTime', this.waitTime)
         this.$store.commit('updateReplace', this.replace)
         this.$store.commit('updateAutoUp', this.autoUp)
+        this.$store.commit('updateCDN', this.cdnJs)
+        this.$store.commit('updatCssLinks', this.cssLinks)
       }
     }
   },
@@ -130,11 +159,32 @@ export default {
       this.download.isShow = true
     },
     singleDownload() {
+      const cssLinks = this.$store.state.cssLinks
+      let validCss = ''
+
+      if (cssLinks.length) {
+        for (let item of cssLinks) {
+          if (!item) continue
+          if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
+            validCss += `<link rel="stylesheet" href="${item}">`
+        }
+      }
+
+      const cdnJs = this.$store.state.cdnJs
+      let validCDN = ''
+      if (cdnJs.length) {
+        for (let item of cdnJs) {
+          if (!item) continue
+          if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
+            validCDN += `<script src="${item}"><\/script>\n\t`
+        }
+      }
       const aTag = document.createElement('a')
       const content = this.$store.state.textBoxContent
       const htmlCode = `<!DOCTYPE html>\n<html lang="en">\n<head>\n\t<meta charset="UTF-8">\n\t<meta name="viewport" content="width=device-width, initial-scale=1.0">\n\t<meta http-equiv="X-UA-Compatible" content="ie=edge">\n\t<title>Document</title>\n\t<style>\n\t${
         content.CSS
-      }\n\t</style>\n</head>\n<body>\n\t${content.HTML}\n\t<script>\n\t${
+      }\n\t</style>\n</head>\n<body>\n\t${content.HTML +
+        validCDN}\n\t<script>\n\t${
         content.JavaScript
       }\n\t<\/script>\n</body>\n</html>`
       let blob = new Blob([htmlCode])
@@ -145,12 +195,31 @@ export default {
       this.download.isShow = false
     },
     filesDownload() {
+      const cssLinks = this.$store.state.cssLinks
+      let validCss = ''
+
+      if (cssLinks.length) {
+        for (let item of cssLinks) {
+          if (!item) continue
+          if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
+            validCss += `<link rel="stylesheet" href="${item}">`
+        }
+      }
+
+      const cdnJs = this.$store.state.cdnJs
+      let validCDN = ''
+      if (cdnJs.length) {
+        for (let item of cdnJs) {
+          if (!item) continue
+          if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
+            validCDN += `<script src="${item}"><\/script>\n\t`
+        }
+      }
       const zip = new JSZip()
       let code = zip.folder('code')
       const content = this.$store.state.textBoxContent
-      const htmlCode = `<!DOCTYPE html>\n<html lang="en">\n<head>\n\t<meta charset="UTF-8">\n\t<meta name="viewport" content="width=device-width, initial-scale=1.0">\n\t<meta http-equiv="X-UA-Compatible" content="ie=edge">\n\t<title>Document</title>\n\t<link rel="stylesheet" href="./index.css">\n</head>\n<body>\n\t${
-        content.HTML
-      }\n\t<script src="./index.js"><\/script>\n</body>\n</html>`
+      const htmlCode = `<!DOCTYPE html>\n<html lang="en">\n<head>\n\t<meta charset="UTF-8">\n\t<meta name="viewport" content="width=device-width, initial-scale=1.0">\n\t<meta http-equiv="X-UA-Compatible" content="ie=edge">\n\t<title>Document</title>\n\t<link rel="stylesheet" href="./index.css">\n</head>\n<body>\n\t${content.HTML +
+        validCDN}\n\t<script src="./index.js"><\/script>\n</body>\n</html>`
       const cssCode = content.CSS
       const jsCode = content.JavaScript
       code.file('index.html', htmlCode)
@@ -160,6 +229,20 @@ export default {
         saveAs(content, 'code.zip')
       })
       this.download.isShow = false
+    },
+    addCDN() {
+      this.showCdnInput++
+    },
+    delCDN(index) {
+      if (this.showCdnInput > 1) this.showCdnInput--
+      this.cdnJs.splice(index, 1)
+    },
+    addCssLink() {
+      this.showCssInput++
+    },
+    delCssLink(index) {
+      if (this.showCssInput > 1) this.showCssInput--
+      this.cssLinks.splice(index, 1)
     }
   }
 }
@@ -169,6 +252,15 @@ export default {
   margin: 20px 0;
   border: none;
 }
+.describe {
+  display: block;
+  font-size: 12px;
+  color: #909399;
+  margin-bottom: 5px;
+}
+.title {
+  margin: 5px 0;
+}
 #header {
   width: 100%;
   height: 50px;
@@ -177,12 +269,13 @@ export default {
   border-bottom: 2px solid #999;
   box-sizing: border-box;
   position: relative;
+  font-family: 'Josefin Sans', sans-serif !important;
   .header-title {
     color: #f2f2f2;
     cursor: pointer;
     font-family: 'Merienda', cursive;
     font-size: 22px;
-    img{
+    img {
       width: 180px;
       height: 100%;
     }
@@ -212,17 +305,10 @@ export default {
   }
   .config-box {
     width: 100%;
+    max-height: 500px;
+    overflow: auto;
     .run-time {
       margin: 10px 0;
-      .title {
-        margin: 5px 0;
-      }
-      .describe {
-        display: block;
-        font-size: 12px;
-        color: #909399;
-        margin-bottom: 5px;
-      }
     }
     .line {
       width: 100%;
@@ -231,11 +317,45 @@ export default {
     }
     .another-cfg {
       margin: 10px 0;
-      .describe {
-        display: block;
-        font-size: 12px;
-        color: #909399;
+    }
+    .add-cdn {
+      .cdn-in {
         margin-bottom: 5px;
+        i {
+          margin-left: 5px;
+          color: #1e1e1e;
+        }
+      }
+      .add-link {
+        width: 100px;
+        background-color: #1e1e1e;
+        color: #fff;
+        font-size: 12px;
+        padding: 5px;
+        margin-bottom: 5px;
+      }
+      .add-link:hover {
+        background-color: #999999;
+      }
+    }
+    .add-css {
+      .css-in {
+        margin-bottom: 5px;
+        i {
+          margin-left: 5px;
+          color: #1e1e1e;
+        }
+      }
+      .add-link {
+        width: 100px;
+        background-color: #1e1e1e;
+        color: #fff;
+        font-size: 12px;
+        padding: 5px;
+        margin-bottom: 5px;
+      }
+      .add-link:hover {
+        background-color: #999999;
       }
     }
   }
