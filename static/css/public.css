@@ -27,3 +27,9 @@
 .flex-jca{
   justify-content: space-around;
 }
+.flex-nw{
+  flex-wrap: nowrap;
+}
+.flex-w{
+  flex-wrap: wrap;
+}

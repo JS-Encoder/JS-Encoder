@@ -59,7 +59,7 @@
         </div>
         <div class="line"></div>
         <div class="add-cdn">
-          <h4 class="title">CDN</h4>
+          <h4 class="title">Add external scripts</h4>
           <div
             class="describe"
           >The links added here are all run in order before running JavaScript, links that support the HTTP or HTTPS protocols</div>
@@ -71,7 +71,7 @@
         </div>
         <div class="line"></div>
         <div class="add-css">
-          <h4 class="title">CSS link</h4>
+          <h4 class="title">Add external styles</h4>
           <div
             class="describe"
           >The links added here are all run in order before running CSS, links that support the HTTP or HTTPS protocols</div>
@@ -80,6 +80,21 @@
             <i @click="delCssLink(index)" class="icon iconfont icon-Clear"></i>
           </div>
           <div @click="addCssLink" class="add-link flex flex-ai flex-jcc">+ Add more links</div>
+        </div>
+        <div class="line"></div>
+        <div class="preprocessor">
+          <h4 class="title">Preprocessor setup</h4>
+          <div :key="index" class="prep-box" v-for="(item, index) in prep">
+            <span class="prep-title">{{item.title}}：</span>
+            <el-select
+              @change="prepChange(index)"
+              placeholder="none"
+              size="mini"
+              v-model="item.value"
+            >
+              <el-option :key="index" :label="i" :value="i" v-for="(i, index) in item.options"></el-option>
+            </el-select>
+          </div>
         </div>
       </div>
     </popUp>
@@ -118,6 +133,23 @@ export default {
       },
       config: {
         isShow: false
+      },
+      prep: {
+        HTMLPrep: {
+          title: 'HTML',
+          value: 'none',
+          options: ['none', 'MarkDown']
+        },
+        CSSPrep: {
+          title: 'CSS',
+          value: 'none',
+          options: ['none']
+        },
+        JSPrep: {
+          title: 'JavaScript',
+          value: 'none',
+          options: ['none']
+        }
       },
       cdnJs: [],
       cssLinks: [],
@@ -243,11 +275,30 @@ export default {
     delCssLink(index) {
       if (this.showCssInput > 1) this.showCssInput--
       this.cssLinks.splice(index, 1)
+    },
+    prepChange(obj) {
+      const value = this.prep[obj].value
+      this.$store.commit('updateStateAttr', { attr: obj, value })
     }
   }
 }
 </script>
 <style lang="scss" scoped>
+@media screen and (max-width: 500px) {
+  .logo {
+    width: 150px !important;
+  }
+  #header {
+    height: 40px !important;
+    padding: 5px 10px !important;
+  }
+  .header-menu {
+    margin: 9px 0;
+    li {
+      margin: 0 10px !important;
+    }
+  }
+}
 .el-collapse {
   margin: 20px 0;
   border: none;
@@ -266,17 +317,16 @@ export default {
   height: 50px;
   background-color: #1e1e1e;
   padding: 10px 20px;
-  border-bottom: 2px solid #999;
+  border-bottom: 2px solid #999999;
   box-sizing: border-box;
   position: relative;
   font-family: 'Josefin Sans', sans-serif !important;
   .header-title {
     color: #f2f2f2;
     cursor: pointer;
-    font-family: 'Merienda', cursive;
     font-size: 22px;
-    img {
-      width: 180px;
+    .logo {
+      width: 200px;
       height: 100%;
     }
   }
@@ -356,6 +406,15 @@ export default {
       }
       .add-link:hover {
         background-color: #999999;
+      }
+    }
+    .preprocessor {
+      .prep-box {
+        margin: 5px 0;
+        .prep-title {
+          display: inline-block;
+          width: 100px;
+        }
       }
     }
   }

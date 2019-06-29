@@ -1,6 +1,6 @@
 <template>
   <div class="noselect" id="settingBar">
-    <div class="setting">
+    <div class="setting flex flex-w flex-jca">
       <div class="type-setting">
         <el-checkbox-group size="mini" v-model="checkType">
           <el-checkbox-button :key="item" :label="item" v-for="item in types">{{item}}</el-checkbox-button>
@@ -14,8 +14,10 @@
       </div>
       <div class="run">
         <el-button @click="run" size="mini" type="primary">
-          Run
-          <i class="icon iconfont icon-o-run"></i>
+          <span class="btn-txt">
+            Run
+            <i class="icon iconfont icon-o-run"></i>
+          </span>
         </el-button>
       </div>
     </div>
@@ -55,28 +57,37 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@media screen and (max-width: 500px) {
+  #settingBar{
+    padding-bottom: 5px !important;
+  }
+  .type-setting,.tab-space,.run {
+    margin-top: 5px !important;
+  }
+}
 #settingBar {
-  display: flex;
-  padding: 10px 20px;
+  padding-bottom: 10px;
   border-bottom: 2px solid #1e1e1e;
+  font-family: 'Josefin Sans', sans-serif !important;
   .setting {
-    display: flex;
-    min-width: 600px;
-    justify-content: space-around;
-    .type-setting {
-      margin: 0 15px;
+    min-width: 360px;
+    .type-setting{
+      margin-top: 10px;
     }
     .tab-space {
       display: flex;
       align-items: center;
-      margin: 0 15px;
+      margin-top: 10px;
       span {
         font-size: 14px;
         margin-right: 10px;
       }
     }
     .run {
-      margin: 0 15px;
+      margin-top: 10px;
+      .btn-txt{
+        font-family: 'Josefin Sans', sans-serif !important;
+      }
       i {
         font-size: 12px;
       }

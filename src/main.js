@@ -4,6 +4,7 @@ import router from './router'
 import ElementUI from 'element-ui'
 import VueX from 'vuex'
 import { codemirror } from 'vue-codemirror'
+import marked from 'marked'
 import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/addon/dialog/dialog.css'
 import '../static/css/codemirror.css'
@@ -35,7 +36,6 @@ require('codemirror/keymap/sublime.js')
 require('codemirror/addon/display/fullscreen.js')
 require('codemirror/mode/markdown/markdown.js')
 require('codemirror/addon/edit/continuelist')
-
 Vue.use(codemirror)
 Vue.config.productionTip = false
 
@@ -58,6 +58,9 @@ const store = new VueX.Store({
       Console: '',
       Output: ''
     },
+    HTMLPrep: 'none',
+    CSSPrep: 'none',
+    JSPrep: 'none',
     consoleInfo: '',
     waitTime: 1000,
     replace: true,
@@ -70,6 +73,9 @@ const store = new VueX.Store({
   mutations: {
     change: (state, info) => {
       state.textBoxContent[info.title] = info.newVal
+    },
+    updateStateAttr: (state, info) => {
+      state[info.attr] = info.value
     },
     updateOutput: (state, newVal) => {
       state.textBoxContent.Output = newVal
@@ -100,6 +106,7 @@ const store = new VueX.Store({
     }
   }
 })
+
 // const html = '<!DOCTYPE html>\n<html>\n<head>\n\t<meta charset="utf-8">\n\t<meta name="viewport" content="width=device-width">\n\t<title>Compiler ol</title>\n</head>\n<body>\n\n</body>\n</html>'
 new Vue({
   el: '#app',

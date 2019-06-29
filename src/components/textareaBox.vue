@@ -1,20 +1,7 @@
 <template>
   <div :ref="title" :style="{width:textBoxW[title]}" id="textareaBox">
     <div class="title noselect flex flex-ali">
-      <span>{{title}}</span>
-      <el-dropdown
-        @command="handleCommand"
-        trigger="click"
-        v-if="title !== 'Console' && title !== 'Output'"
-      >
-        <el-button class="type-menu" type="primary">
-          <i class="icon iconfont icon-xiala"></i>
-        </el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="HTML">HTML</el-dropdown-item>
-          <el-dropdown-item command="MarkDown">MarkDown</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+      <span>{{preprocessor}}</span>
     </div>
     <div :class="title === 'Console'?'bgc':''" :ref="'textbox'+index" class="text-box">
       <codemirror
@@ -31,7 +18,8 @@
         class="clear noselect"
         v-if="showClear && this.title === 'Output'"
       >
-        <i class="icon iconfont icon-lajitong"></i> clear
+        <i class="icon iconfont icon-lajitong"></i>
+        <span class="clear-txt">Clear</span>
       </button>
       <iframe
         allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media"
@@ -61,7 +49,7 @@
 <script>
 import Console from './console'
 import { codemirror } from 'vue-codemirror'
-
+import marked from 'marked'
 export default {
   props: {
     index: Number,
@@ -136,6 +124,15 @@ export default {
     },
     run() {
       return this.$store.state.isRun
+    },
+    HTMLPrep() {
+      return this.$store.state.HTMLPrep
+    },
+    CSSPrep() {
+      return this.$store.state.CSSPrep
+    },
+    JSPrep() {
+      return this.$store.state.JSPrep
     }
   },
   watch: {
@@ -181,14 +178,48 @@ export default {
           this.spliceHtml(100)
         }
       }
+    },
+    HTMLPrep(newVal) {
+      if (this.title === 'HTML')
+        if (newVal === 'none') this.preprocessor = 'HTML'
+        else this.preprocessor = newVal
+    },
+    CSSPrep(newVal) {},
+    JSPrep(newVal) {},
+    preprocessor(newVal) {
+      if (newVal === 'HTML') {
+        this.changeOptions('mode', 'text/html')
+      } else if (newVal === 'MarkDown') {
+        // 设置markdown参数
+        marked.setOptions({
+          renderer: new marked.Renderer(),
+          gfm: true,
+          tables: true,
+          breaks: true,
+          pedantic: false,
+          sanitize: false,
+          smartLists: true,
+          smartypants: false,
+          highlight(code) {
+            return Hljs.highlightAuto(code).value
+          }
+        })
+        this.changeOptions('mode', 'text/x-markdown')
+      }
     }
   },
   methods: {
+    judgeMode() {
+      const content = this.$store.state.textBoxContent
+      const prep = this.$store.state.HTMLPrep
+      if (prep === 'none') {
+        return content.HTML
+      } else if (prep === 'MarkDown') {
+        return marked(content.HTML, { sanitize: true })
+      }
+    },
     changeOptions(key, val) {
       this.$refs.editor.$options.parent.cmOptions[key] = val
-    },
-    handleCommand(command) {
-      this.preprocessor = command
     },
     boxMouseOver(e) {
       this.$refs.line.style.border = '.5px dashed #65d3fd'
@@ -291,7 +322,7 @@ export default {
         })()
 `
         if (script) script.parentNode.removeChild(script)
-        iframe.contentDocument.body.innerHTML = content.HTML
+        iframe.contentDocument.body.innerHTML = this.judgeMode()
         for (let item of validCDN) {
           this.createCDN('script', item)
         }
@@ -340,6 +371,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@media screen and (max-width: 600px) {
+  .title {
+    span {
+      font-size: 10px !important;
+    }
+  }
+  .clear {
+    left: -31px !important;
+    .clear-txt {
+      display: none;
+    }
+  }
+  #textareaBox {
+    width: 100% !important;
+  }
+}
 .bgc {
   background-color: #1e1e1e;
 }
@@ -347,7 +394,7 @@ export default {
   height: 100%;
   display: flex;
   flex-direction: column;
-  min-width: 100px;
+  min-width: 72px;
   box-sizing: border-box;
   .title {
     position: relative;
@@ -360,24 +407,6 @@ export default {
       line-height: 20px;
       height: 20px;
       font-family: 'Josefin Sans', sans-serif !important;
-    }
-    .type-menu {
-      height: 22px;
-      width: 25px;
-      border: none;
-      background-color: #1e1e1e;
-      color: #f2f2f2;
-      box-sizing: border-box;
-      border-radius: 0;
-      outline: none;
-      padding: 0;
-      i {
-        display: inline-block;
-        font-size: 12px;
-      }
-    }
-    .type-menu:hover {
-      background-color: #4b4b4b;
     }
     .type-box {
       width: 100px;
@@ -413,10 +442,9 @@ export default {
     }
     .clear {
       position: absolute;
-      width: 70px;
       height: 20px;
       top: -21px;
-      left: -71px;
+      left: -68px;
       background-color: #1e1e1e;
       border: 1px solid #1e1e1e;
       color: #f2f2f2;
@@ -429,6 +457,7 @@ export default {
     iframe {
       width: 100%;
       height: 100%;
+      background-color: #fff;
     }
     .screen-box {
       width: 100%;

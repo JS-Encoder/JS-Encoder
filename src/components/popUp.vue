@@ -47,7 +47,7 @@ export default {
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 999999;
+  z-index: 1500;
   width: 100%;
   height: 100%;
 }
@@ -64,7 +64,7 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 1000000;
+  z-index: 1501;
 }
 .content-head {
   display: flex;
