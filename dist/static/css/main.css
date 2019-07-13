@@ -1,0 +1,50 @@
+html {
+  width: 100%;
+  height: 100%;
+  min-width: 360px;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: -Scroll;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  background-color: #f2f2f2;
+  font-family: Consolas, "Courier New", monospace;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+}
+
+.CodeMirror {
+  height: 100% !important;
+  font-family: Consolas, "Courier New", monospace !important;
+}
+
+.CodeMirror-scroll {
+  height: 100%;
+  overflow-y: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: #1e1e1e;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #1e1e1e;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #555;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: #1e1e1e;
+}
