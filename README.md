@@ -1,5 +1,7 @@
 # JS-Encoder
 
+[点击链接体验编译器](https://longgererer.github.io/JS-Encoder/dist)
+
 ![未标题-1.png](https://i.loli.net/2019/06/26/5d1305085801b58179.png)
 
 👉**JS-Encoder**是一个完全开源的 HTML + CSS + JS 编译调试器 👈
