@@ -29,7 +29,7 @@
         ref="iframeBox"
         sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts"
         scrolling="yes"
-        src="../../static/html/runner.html"
+        src="static/html/runner.html"
         v-if="showIframe"
       ></iframe>
       <div class="screen-box" v-if="showScreen && title === 'Output'"></div>
@@ -320,8 +320,7 @@ export default {
       setTimeout(() => {
         const content = this.$store.state.textBoxContent
         const iframe = this.$refs.iframeBox
-
-        let linkArr = iframe.contentDocument.getElementsByTagName('link')
+        let linkArr = iframe.contentWindow.document.getElementsByTagName('link')
         if (linkArr.length) {
           for (let i = linkArr.length - 1; i >= 0; i--) {
             linkArr[i].parentNode.removeChild(linkArr[i])
@@ -331,18 +330,18 @@ export default {
           this.createLink('link', item)
         }
 
-        let style = iframe.contentDocument.getElementById('compOlCss')
+        let style = iframe.contentWindow.document.getElementById('compOlCss')
         if (style) style.parentNode.removeChild(style)
         this.createStyle('style', 'compOlCss', content.CSS)
 
-        let script = iframe.contentDocument.getElementById('src')
+        let script = iframe.contentWindow.document.getElementById('src')
         const code = `
         (function(){
           ${content.JavaScript}
         })()
 `
         if (script) script.parentNode.removeChild(script)
-        iframe.contentDocument.body.innerHTML = this.judgeMode()
+        iframe.contentWindow.document.body.innerHTML = this.judgeMode()
         for (let item of validCDN) {
           this.createCDN('script', item)
         }
@@ -357,30 +356,30 @@ export default {
     },
     createScript(element, id, code) {
       let iframe = this.$refs.iframeBox
-      let ele = iframe.contentDocument.createElement(element)
+      let ele = iframe.contentWindow.document.createElement(element)
       ele.id = id
       ele.text = code
-      iframe.contentDocument.body.appendChild(ele)
+      iframe.contentWindow.document.body.appendChild(ele)
     },
     createStyle(element, id, code) {
       let iframe = this.$refs.iframeBox
-      let ele = iframe.contentDocument.createElement(element)
+      let ele = iframe.contentWindow.document.createElement(element)
       ele.id = id
       ele.innerText = code
-      iframe.contentDocument.head.appendChild(ele)
+      iframe.contentWindow.document.head.appendChild(ele)
     },
     createCDN(element, url) {
       let iframe = this.$refs.iframeBox
-      let ele = iframe.contentDocument.createElement(element)
+      let ele = iframe.contentWindow.document.createElement(element)
       ele.src = url
-      iframe.contentDocument.body.appendChild(ele)
+      iframe.contentWindow.document.body.appendChild(ele)
     },
     createLink(element, url) {
       let iframe = this.$refs.iframeBox
-      let ele = iframe.contentDocument.createElement(element)
+      let ele = iframe.contentWindow.document.createElement(element)
       ele.href = url
       ele.rel = 'stylesheet'
-      iframe.contentDocument.head.appendChild(ele)
+      iframe.contentWindow.document.head.appendChild(ele)
     },
     reSetConsole() {
       this.$refs.iframeBox.contentWindow.consoleInfo = []
