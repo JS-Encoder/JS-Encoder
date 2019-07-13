@@ -59,7 +59,8 @@ export default {
 .pop-content {
   display: flex;
   flex-direction: column;
-  width: 500px;
+  width: 80%;
+  max-width: 500px;
   position: absolute;
   top: 50%;
   left: 50%;

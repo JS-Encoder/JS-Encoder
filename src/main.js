@@ -13,6 +13,7 @@ import 'codemirror/addon/fold/foldgutter.css'
 require('codemirror/mode/javascript/javascript.js')
 require('codemirror/mode/xml/xml.js')
 require('codemirror/mode/css/css.js')
+require('codemirror/mode/sass/sass.js')
 require('codemirror/keymap/vim.js')
 require('codemirror/addon/fold/foldcode.js')
 require('codemirror/addon/fold/foldgutter.js')
@@ -101,7 +102,7 @@ const store = new VueX.Store({
     updateCDN: (state, newVal) => {
       state.cdnJs = newVal
     },
-    updatCssLinks: (state, newVal) => {
+    updateCssLinks: (state, newVal) => {
       state.cssLinks = newVal
     }
   }

@@ -104,6 +104,11 @@
           <div>CTRL + ALT ---------------------------- Trun on smart tips</div>
           <div>CTRL + Q ---------------------------- Fold the code</div>
           <div>CTRL + / ---------------- Toggle comment on selected lines</div>
+          <div>CTRL + SHIFT + D ---------------- Duplicate line</div>
+          <div>CTRL + D ---------------- Select the current row</div>
+          <div>Shift + Ctrl + Up ---------------- Swap line up</div>
+          <div>Shift + Ctrl+ Down ---------------- Swap line down</div>
+          
         </el-collapse-item>
         <el-collapse-item name="2" title="Feedback">
           <div>
@@ -143,7 +148,7 @@ export default {
         CSSPrep: {
           title: 'CSS',
           value: 'none',
-          options: ['none']
+          options: ['none', 'Sass']
         },
         JSPrep: {
           title: 'JavaScript',

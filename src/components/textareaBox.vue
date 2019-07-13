@@ -184,27 +184,47 @@ export default {
         if (newVal === 'none') this.preprocessor = 'HTML'
         else this.preprocessor = newVal
     },
-    CSSPrep(newVal) {},
-    JSPrep(newVal) {},
+    CSSPrep(newVal) {
+      if (this.title === 'CSS')
+        if (newVal === 'none') this.preprocessor = 'CSS'
+        else this.preprocessor = newVal
+    },
+    JSPrep(newVal) {
+      if (this.title === 'JavaScript')
+        if (newVal === 'none') this.preprocessor = 'JavaScript'
+        else this.preprocessor = newVal
+    },
     preprocessor(newVal) {
-      if (newVal === 'HTML') {
-        this.changeOptions('mode', 'text/html')
-      } else if (newVal === 'MarkDown') {
-        // 设置markdown参数
-        marked.setOptions({
-          renderer: new marked.Renderer(),
-          gfm: true,
-          tables: true,
-          breaks: true,
-          pedantic: false,
-          sanitize: false,
-          smartLists: true,
-          smartypants: false,
-          highlight(code) {
-            return Hljs.highlightAuto(code).value
-          }
-        })
-        this.changeOptions('mode', 'text/x-markdown')
+      if (this.title === 'HTML') {
+        if (newVal === 'HTML') {
+          this.changeOptions('mode', 'text/html')
+        } else if (newVal === 'MarkDown') {
+          // 设置markdown参数
+          marked.setOptions({
+            renderer: new marked.Renderer(),
+            gfm: true,
+            tables: true,
+            breaks: true,
+            pedantic: false,
+            sanitize: false,
+            smartLists: true,
+            smartypants: false,
+            highlight(code) {
+              return Hljs.highlightAuto(code).value
+            }
+          })
+          this.changeOptions('mode', 'text/x-markdown')
+        }
+      } else if (this.title === 'CSS') {
+        if (newVal === 'CSS') {
+          this.changeOptions('mode', 'css')
+        } else if (newVal === 'Sass') {
+          this.changeOptions('mode', 'text/x-sass')
+        }
+      } else if (this.title === 'JS') {
+        if (newVal === 'JavaScript') {
+          this.changeOptions('mode', 'javascript')
+        }
       }
     }
   },
