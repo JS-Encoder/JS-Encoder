@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-ai" id="header">
     <span class="header-title noselect flex">
-      <img alt class="logo" src="../assets/logo.svg">
+      <img alt class="logo" src="../assets/logo.svg" />
     </span>
     <ul class="header-menu flex">
       <li @click="openDownload">
@@ -108,7 +108,6 @@
           <div>CTRL + D ---------------- Select the current row</div>
           <div>Shift + Ctrl + Up ---------------- Swap line up</div>
           <div>Shift + Ctrl+ Down ---------------- Swap line down</div>
-          
         </el-collapse-item>
         <el-collapse-item name="2" title="Feedback">
           <div>
@@ -142,18 +141,18 @@ export default {
       prep: {
         HTMLPrep: {
           title: 'HTML',
-          value: 'none',
-          options: ['none', 'MarkDown']
+          value: 'HTML',
+          options: ['HTML', 'MarkDown']
         },
         CSSPrep: {
           title: 'CSS',
-          value: 'none',
-          options: ['none', 'Sass']
+          value: 'CSS',
+          options: ['CSS', 'Sass']
         },
         JSPrep: {
           title: 'JavaScript',
-          value: 'none',
-          options: ['none']
+          value: 'JavaScript',
+          options: ['JavaScript']
         }
       },
       cdnJs: [],
@@ -161,7 +160,7 @@ export default {
       showCdnInput: 1,
       showCssInput: 1,
       activeName: '',
-      waitTime: 1000,
+      waitTime: 500,
       replace: true,
       autoUp: true
     }
@@ -177,11 +176,12 @@ export default {
   watch: {
     showConfig(newVal) {
       if (!newVal) {
-        this.$store.commit('updateTime', this.waitTime)
-        this.$store.commit('updateReplace', this.replace)
-        this.$store.commit('updateAutoUp', this.autoUp)
-        this.$store.commit('updateCDN', this.cdnJs)
-        this.$store.commit('updatCssLinks', this.cssLinks)
+        const store = this.$store
+        store.commit('updateTime', this.waitTime)
+        store.commit('updateReplace', this.replace)
+        store.commit('updateAutoUp', this.autoUp)
+        store.commit('updateCDN', this.cdnJs)
+        store.commit('updateCssLinks', this.cssLinks)
       }
     }
   },
@@ -282,6 +282,7 @@ export default {
       this.cssLinks.splice(index, 1)
     },
     prepChange(obj) {
+      // obj为prep中的属性名称
       const value = this.prep[obj].value
       this.$store.commit('updateStateAttr', { attr: obj, value })
     }
@@ -344,6 +345,7 @@ export default {
       margin: 0 15px;
       transition: all 0.3s ease;
       color: #ccc;
+      cursor: pointer;
       i {
         font-size: 20px;
       }

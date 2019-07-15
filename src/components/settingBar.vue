@@ -24,17 +24,44 @@
   </div>
 </template>
 <script>
+import { mapState } from 'vuex'
 export default {
   data() {
     return {
-      types: ['HTML', 'CSS', 'JavaScript', 'Console', 'Output'],
+      types: [],
       space: [2, 4],
-      checkType: ['HTML', 'CSS', 'JavaScript', 'Console', 'Output'],
+      checkType: [],
       applySpace: 2,
       isRun: false
     }
   },
+  computed: {
+    ...mapState({
+      HTMLPrep: 'HTMLPrep',
+      CSSPrep: 'CSSPrep',
+      JSPrep: 'JSPrep'
+    })
+  },
+  created() {
+    this.types = [this.HTMLPrep, this.CSSPrep, this.JSPrep, 'Console', 'Output']
+    this.checkType = [
+      this.HTMLPrep,
+      this.CSSPrep,
+      this.JSPrep,
+      'Console',
+      'Output'
+    ]
+  },
   watch: {
+    HTMLPrep(newVal, oldVal) {
+      this.changeTypeList(newVal, oldVal, 0)
+    },
+    CSSPrep(newVal, oldVal) {
+      this.changeTypeList(newVal, oldVal, 1)
+    },
+    JSPrep(newVal, oldVal) {
+      this.changeTypeList(newVal, oldVal, 2)
+    },
     checkType() {
       this.$emit('hasChanged', this.checkType)
     },
@@ -47,21 +74,37 @@ export default {
   },
   methods: {
     run() {
-      if (this.isRun) return
+      // Prevent the user from pressing the Run button several times in a row
+      if (this.isRun) return null
       this.isRun = true
       setTimeout(() => {
         this.isRun = false
       }, 500)
+    },
+    changeTypeList(newVal, oldVal, index) {
+      // change this.types and this.checkType, modifying array elements directly does not trigger listening, arrays must be modified by $set or splice
+      let ctIndex
+      this.checkType.forEach((item, i) => {
+        if(item === oldVal){
+          ctIndex = i
+        }
+      })
+      this.types[index] = newVal
+      if (this.checkType.indexOf(oldVal) !== -1) {
+        this.checkType.splice(ctIndex, 1, newVal)
+      }
     }
   }
 }
 </script>
 <style lang="scss" scoped>
 @media screen and (max-width: 500px) {
-  #settingBar{
+  #settingBar {
     padding-bottom: 5px !important;
   }
-  .type-setting,.tab-space,.run {
+  .type-setting,
+  .tab-space,
+  .run {
     margin-top: 5px !important;
   }
 }
@@ -71,7 +114,7 @@ export default {
   font-family: 'Josefin Sans', sans-serif !important;
   .setting {
     min-width: 360px;
-    .type-setting{
+    .type-setting {
       margin-top: 10px;
     }
     .tab-space {
@@ -85,7 +128,7 @@ export default {
     }
     .run {
       margin-top: 10px;
-      .btn-txt{
+      .btn-txt {
         font-family: 'Josefin Sans', sans-serif !important;
       }
       i {

@@ -59,11 +59,11 @@ const store = new VueX.Store({
       Console: '',
       Output: ''
     },
-    HTMLPrep: 'none',
-    CSSPrep: 'none',
-    JSPrep: 'none',
+    HTMLPrep: 'HTML',
+    CSSPrep: 'CSS',
+    JSPrep: 'JavaScript',
     consoleInfo: '',
-    waitTime: 1000,
+    waitTime: 500,
     replace: true,
     showScreen: false,
     autoUp: true,
@@ -74,6 +74,30 @@ const store = new VueX.Store({
   mutations: {
     change: (state, info) => {
       state.textBoxContent[info.title] = info.newVal
+    },
+    updateTextBoxW: (state, info) => {
+      let attr = info.attr
+      switch (attr) {
+        case 'HTML':
+        case 'MarkDown':
+          attr = 'HTML'
+          break
+        case 'CSS':
+        case 'Sass':
+          attr = 'CSS'
+          break
+        case 'JavaScript':
+        case 'TypeScript':
+          attr = 'JavaScript'
+          break
+        case 'Console':
+          attr = 'Console'
+          break
+        case 'Output':
+          attr = 'Output'
+          break
+      }
+      state.textBoxW[attr] = info.value
     },
     updateStateAttr: (state, info) => {
       state[info.attr] = info.value
@@ -120,17 +144,17 @@ new Vue({
 })
 
 // 监测刷新和关闭
-window.onbeforeunload = function (e) {
-  let dialogText = 'Dialog text here'
-  e.returnValue = dialogText
-  return dialogText
-}
-window.isCloseHint = true
+// window.onbeforeunload = function (e) {
+//   let dialogText = 'Dialog text here'
+//   e.returnValue = dialogText
+//   return dialogText
+// }
+// window.isCloseHint = true
 // 初始化关闭
-window.addEventListener('beforeunload', function (e) {
-  if (window.isCloseHint) {
-    let confirmationMessage = '要记得保存！你确定要离开我吗？';
-    (e || window.event).returnValue = confirmationMessage // 兼容 Gecko + IE
-    return confirmationMessage // 兼容 Gecko + Webkit, Safari, Chrome
-  }
-})
+// window.addEventListener('beforeunload', function (e) {
+//   if (window.isCloseHint) {
+//     let confirmationMessage = '要记得保存！你确定要离开我吗？';
+//     (e || window.event).returnValue = confirmationMessage // 兼容 Gecko + IE
+//     return confirmationMessage // 兼容 Gecko + Webkit, Safari, Chrome
+//   }
+// })

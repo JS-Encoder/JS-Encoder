@@ -1,7 +1,7 @@
 <template>
-  <div :ref="title" :style="{width:textBoxW[title]}" id="textareaBox">
+  <div :ref="title" :style="{width:textBoxW[initTitle]}" id="textareaBox">
     <div class="title noselect flex flex-ali">
-      <span>{{preprocessor}}</span>
+      <span>{{title}}</span>
     </div>
     <div :class="title === 'Console'?'bgc':''" :ref="'textbox'+index" class="text-box">
       <codemirror
@@ -16,7 +16,7 @@
       <button
         @click="reSetConsole"
         class="clear noselect"
-        v-if="showClear && this.title === 'Output'"
+        v-if="showClear && this.title === 'Console'"
       >
         <i class="icon iconfont icon-lajitong"></i>
         <span class="clear-txt">Clear</span>
@@ -61,12 +61,13 @@ export default {
   data() {
     return {
       src: 'hello world',
-      showCode: true,
-      showIframe: false,
-      showClear: true,
-      message: '',
-      preprocessor: this.title,
+      showCode: true, // Whether to display the code window
+      showIframe: false, // Whether to display the iframe
+      showClear: true, // Whether to display the clear button
+      message: '', // original text
+      initTitle: '',
       cmOptions: {
+        // codemirror config
         flattenSpans: false, // 默认情况下，CodeMirror会将使用相同class的两个span合并成一个。通过设置此项为false禁用此功能
         tabSize: 2, // tab缩进空格数
         mode: '', // 模式
@@ -101,6 +102,27 @@ export default {
     Console
   },
   mounted() {
+    let initTitle
+    switch (this.title) {
+      case 'HTML':
+      case 'MarkDown':
+        this.initTitle = 'HTML'
+        break
+      case 'CSS':
+      case 'Sass':
+        this.initTitle = 'CSS'
+        break
+      case 'JavaScript':
+      case 'TypeScript':
+        this.initTitle = 'JavaScript'
+        break
+      case 'Console':
+        this.initTitle = 'Console'
+        break
+      case 'Output':
+        this.initTitle = 'Output'
+        break
+    }
     this.init()
   },
   computed: {
@@ -136,7 +158,27 @@ export default {
     }
   },
   watch: {
+    title(newVal) {
+      switch (newVal) {
+        case 'HTML':
+          this.changeOptions('mode', 'text/html')
+          break
+        case 'MarkDown':
+          this.changeOptions('mode', 'text/x-markdown')
+          break
+        case 'CSS':
+          this.changeOptions('mode', 'css')
+          break
+        case 'Sass':
+          this.changeOptions('mode', 'text/x-sass')
+          break
+        case 'JavaScript':
+          this.changeOptions('mode', 'javascript')
+          break
+      }
+    },
     space() {
+      // watch tab-space value changes and resetting tab-space config
       if (this.$refs.editor) {
         const options = this.$refs.editor.$options.parent.cmOptions
         options.tabSize = this.space
@@ -144,6 +186,7 @@ export default {
       }
     },
     typeList(newVal) {
+      // clear button is only displayed when console is displayed
       const index = newVal.indexOf('Console')
       index === -1 ? (this.showClear = false) : (this.showClear = true)
     },
@@ -152,7 +195,20 @@ export default {
         clearTimeout(this.timer)
       }
       this.timer = setTimeout(() => {
-        const title = this.title
+        let title
+        switch (this.title) {
+          case 'HTML':
+          case 'MarkDown':
+            title = 'HTML'
+            break
+          case 'CSS':
+          case 'Sass':
+            title = 'CSS'
+            break
+          case 'JavaScript':
+            title = 'JavaScript'
+            break
+        }
         this.$store.commit('change', {
           title,
           newVal
@@ -178,61 +234,61 @@ export default {
           this.spliceHtml(100)
         }
       }
-    },
-    HTMLPrep(newVal) {
-      if (this.title === 'HTML')
-        if (newVal === 'none') this.preprocessor = 'HTML'
-        else this.preprocessor = newVal
-    },
-    CSSPrep(newVal) {
-      if (this.title === 'CSS')
-        if (newVal === 'none') this.preprocessor = 'CSS'
-        else this.preprocessor = newVal
-    },
-    JSPrep(newVal) {
-      if (this.title === 'JavaScript')
-        if (newVal === 'none') this.preprocessor = 'JavaScript'
-        else this.preprocessor = newVal
-    },
-    preprocessor(newVal) {
-      if (this.title === 'HTML') {
-        if (newVal === 'HTML') {
-          this.changeOptions('mode', 'text/html')
-        } else if (newVal === 'MarkDown') {
-          // 设置markdown参数
-          marked.setOptions({
-            renderer: new marked.Renderer(),
-            gfm: true,
-            tables: true,
-            breaks: true,
-            pedantic: false,
-            sanitize: false,
-            smartLists: true,
-            smartypants: false,
-            highlight(code) {
-              return Hljs.highlightAuto(code).value
-            }
-          })
-          this.changeOptions('mode', 'text/x-markdown')
-        }
-      } else if (this.title === 'CSS') {
-        if (newVal === 'CSS') {
-          this.changeOptions('mode', 'css')
-        } else if (newVal === 'Sass') {
-          this.changeOptions('mode', 'text/x-sass')
-        }
-      } else if (this.title === 'JS') {
-        if (newVal === 'JavaScript') {
-          this.changeOptions('mode', 'javascript')
-        }
-      }
     }
+    // HTMLPrep(newVal) {
+    //   if (this.title === 'HTML')
+    //     if (newVal === 'none') this.preprocessor = 'HTML'
+    //     else this.preprocessor = newVal
+    // },
+    // CSSPrep(newVal) {
+    //   if (this.title === 'CSS')
+    //     if (newVal === 'none') this.preprocessor = 'CSS'
+    //     else this.preprocessor = newVal
+    // },
+    // JSPrep(newVal) {
+    //   if (this.title === 'JavaScript')
+    //     if (newVal === 'none') this.preprocessor = 'JavaScript'
+    //     else this.preprocessor = newVal
+    // },
+    // preprocessor(newVal) {
+    //   if (this.title === 'HTML') {
+    //     if (newVal === 'HTML') {
+    //       this.changeOptions('mode', 'text/html')
+    //     } else if (newVal === 'MarkDown') {
+    //       // 设置markdown参数
+    //       marked.setOptions({
+    //         renderer: new marked.Renderer(),
+    //         gfm: true,
+    //         tables: true,
+    //         breaks: true,
+    //         pedantic: false,
+    //         sanitize: false,
+    //         smartLists: true,
+    //         smartypants: false,
+    //         highlight(code) {
+    //           return Hljs.highlightAuto(code).value
+    //         }
+    //       })
+    //       this.changeOptions('mode', 'text/x-markdown')
+    //     }
+    //   } else if (this.title === 'CSS') {
+    //     if (newVal === 'CSS') {
+    //       this.changeOptions('mode', 'css')
+    //     } else if (newVal === 'Sass') {
+    //       this.changeOptions('mode', 'text/x-sass')
+    //     }
+    //   } else if (this.title === 'JS') {
+    //     if (newVal === 'JavaScript') {
+    //       this.changeOptions('mode', 'javascript')
+    //     }
+    //   }
+    // }
   },
   methods: {
     judgeMode() {
       const content = this.$store.state.textBoxContent
       const prep = this.$store.state.HTMLPrep
-      if (prep === 'none') {
+      if (prep === 'HTML') {
         return content.HTML
       } else if (prep === 'MarkDown') {
         return marked(content.HTML, { sanitize: true })
@@ -249,23 +305,47 @@ export default {
     },
     boxMouseDown(e) {
       const starX = e.clientX
-      const starY = e.clientY
       const elInfo = this.$refs[this.title]
+      let title
+      switch (this.title) {
+        case 'HTML':
+        case 'MarkDown':
+          title = 'HTML'
+          break
+        case 'CSS':
+        case 'Sass':
+          title = 'CSS'
+          break
+        case 'JavaScript':
+        case 'TypeScript':
+          title = 'JavaScript'
+          break
+        case 'Console':
+          title = 'Console'
+          break
+        case 'Output':
+          title = 'Output'
+          break
+      }
       const starW = elInfo.offsetWidth
-      const starH = elInfo.offsetHeight
-      const starLeft = elInfo.offsetWidth + elInfo.offsetLeft
-      const starTop = elInfo.offsetHeight + elInfo.offsetTop
       const nextBox = this.typeList[this.index + 1]
       if (nextBox === 'Output') this.$store.commit('updateScreen', true)
+
       const wholeW =
-        parseFloat(this.textBoxW[nextBox]) +
-        parseFloat(this.textBoxW[this.title])
+        parseFloat(this.textBoxW[nextBox]) + parseFloat(this.textBoxW[title])
       document.onmousemove = ev => {
         let iEvent = ev || event
         const finW = starW + (iEvent.clientX - starX)
         if (finW > 100 && wholeW - finW > 100) {
-          this.$store.state.textBoxW[this.title] = finW + 'px'
-          this.$store.state.textBoxW[nextBox] = wholeW - finW + 'px'
+          const store = this.$store
+          store.commit('updateTextBoxW', {
+            attr: title,
+            value: finW + 'px'
+          })
+          store.commit('updateTextBoxW', {
+            attr: nextBox,
+            value: wholeW - finW + 'px'
+          })
         }
       }
       document.onmouseup = () => {
@@ -278,27 +358,39 @@ export default {
       //页面初始化执行函数
       const initText = this.$store.state.textBoxContent
       const title = this.title
-      if (title === 'HTML') {
-        this.message = initText.HTML
-        this.cmOptions.mode = 'text/html'
-      } else if (title === 'CSS') {
-        this.message = initText.CSS
-        this.cmOptions.mode = 'css'
-      } else if (title === 'JavaScript') {
-        this.message = initText.JavaScript
-        this.cmOptions.mode = 'javascript'
-      } else {
-        this.showCode = false
-        this.cmOptions = ''
-        if (title === 'Output') {
-          this.showIframe = true
-        }
+      switch (this.title) {
+        case 'HTML':
+          this.message = initText.HTML
+          this.cmOptions.mode = 'text/html'
+          break
+        case 'MarkDown':
+          this.message = initText.HTML
+          this.cmOptions.mode = 'text/x-markdown'
+          break
+        case 'CSS':
+          this.message = initText.CSS
+          this.cmOptions.mode = 'css'
+          break
+        case 'Sass':
+          this.message = initText.CSS
+          this.cmOptions.mode = 'text/x-sass'
+          break
+        case 'JavaScript':
+          this.message = initText.JavaScript
+          this.cmOptions.mode = 'javascript'
+          break
+        default:
+          this.showCode = false
+          this.cmOptions = ''
+          if (title === 'Output') {
+            this.showIframe = true
+          }
+          break
       }
     },
     spliceHtml(time) {
       const cssLinks = this.$store.state.cssLinks
       let validCss = []
-
       if (cssLinks.length) {
         for (let item of cssLinks) {
           if (!item) continue
@@ -397,7 +489,7 @@ export default {
     }
   }
   .clear {
-    left: -31px !important;
+    right: 1px !important;
     .clear-txt {
       display: none;
     }
@@ -463,7 +555,7 @@ export default {
       position: absolute;
       height: 20px;
       top: -21px;
-      left: -68px;
+      right: 1px;
       background-color: #1e1e1e;
       border: 1px solid #1e1e1e;
       color: #f2f2f2;
