@@ -21,5 +21,9 @@
 
 - 预处理语言支持，JS-Encoder 在不久的将来会支持更多的预处理语言
 - 加入后台，JS-Encoder 现在完全是一个没有后台的代码编辑器，之后将会使用 Node 编写后台
-- 代码分享，可以通过链接🔗的方式向别人展示你的代码
+- 代码分享，可以通过链接 🔗 的方式向别人展示你的代码
 - 优化用户体验，JS-Encoder 在一个月前才正式开发，现在有很多需要优化的地方，这也是 JS-Encoder 需要解决的最重要的问题 🧐
+
+## LICENSE
+
+[The MIT LICENSE](https://github.com/Longgererer/JS-Encoder/blob/master/LICENSE)
