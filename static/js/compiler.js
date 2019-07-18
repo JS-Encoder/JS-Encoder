@@ -1,13 +1,13 @@
-// eslint-disable import/no-mutable-exports
+/* eslint-disable */
 import marked from 'marked'
 
 function compileMarkDown(code) {
   return marked(code, { sanitize: true })
 }
 
-function compileSass(code = '') {
-  const Sass = require('../../static/js/sass.js')
-  Sass.setWorkerUrl('../../static/js/sass.worker.js')
+async function compileSass(code) {
+  const Sass = require('./sass')
+  Sass.setWorkerUrl('static/js/sass.worker.js')
   const sass = new Sass()
   return new Promise((resolve, reject) => {
     sass.compile(code, result => {
@@ -18,9 +18,14 @@ function compileSass(code = '') {
 }
 
 function compileTypeScript(code) {
-  let tyScript = process.env.TYPESCRIPT_CDN
-  console.log(tyScript)
-  let JSFile = new FileReader()
+  const res = window.typescript.transpileModule(code, {
+    fileName: '/foo.ts',
+    reportDiagnostics: true,
+    compilerOptions: {
+      module: 'es2015'
+    }
+  })
+  console.log(res)
 }
 
 export {
