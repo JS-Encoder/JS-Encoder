@@ -147,12 +147,12 @@ export default {
         CSSPrep: {
           title: 'CSS',
           value: 'CSS',
-          options: ['CSS', 'Sass']
+          options: ['CSS', 'Sass', 'Scss', 'Less', 'Stylus']
         },
         JSPrep: {
           title: 'JavaScript',
           value: 'JavaScript',
-          options: ['JavaScript']
+          options: ['JavaScript', 'TypeScript', 'CoffeeScript', 'LiveScript', 'JSX']
         }
       },
       cdnJs: [],
@@ -196,6 +196,11 @@ export default {
       this.download.isShow = true
     },
     singleDownload() {
+      // Single file download
+      // requires writing all HTML,CSS and JavaScript to a single file
+      // if user uses preprocessing language,so first compile the preprocessing language
+
+      // css link
       const cssLinks = this.$store.state.cssLinks
       let validCss = ''
 
@@ -207,6 +212,7 @@ export default {
         }
       }
 
+      // js cdn
       const cdnJs = this.$store.state.cdnJs
       let validCDN = ''
       if (cdnJs.length) {
@@ -216,6 +222,8 @@ export default {
             validCDN += `<script src="${item}"><\/script>\n\t`
         }
       }
+
+      // create an a tag,splicing file content and trigger click event
       const aTag = document.createElement('a')
       const content = this.$store.state.textBoxContent
       const htmlCode = `<!DOCTYPE html>\n<html lang="en">\n<head>\n\t<meta charset="UTF-8">\n\t<meta name="viewport" content="width=device-width, initial-scale=1.0">\n\t<meta http-equiv="X-UA-Compatible" content="ie=edge">\n\t<title>Document</title>\n\t<style>\n\t${
@@ -232,9 +240,11 @@ export default {
       this.download.isShow = false
     },
     filesDownload() {
+      // files download
       const cssLinks = this.$store.state.cssLinks
       let validCss = ''
 
+      // css link
       if (cssLinks.length) {
         for (let item of cssLinks) {
           if (!item) continue
@@ -243,6 +253,7 @@ export default {
         }
       }
 
+      // js cdn
       const cdnJs = this.$store.state.cdnJs
       let validCDN = ''
       if (cdnJs.length) {
@@ -252,6 +263,8 @@ export default {
             validCDN += `<script src="${item}"><\/script>\n\t`
         }
       }
+
+      // put all files in one folder and converted to compressed file by jszip
       const zip = new JSZip()
       let code = zip.folder('code')
       const content = this.$store.state.textBoxContent
