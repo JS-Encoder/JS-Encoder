@@ -33,7 +33,15 @@ export default {
         HTML: 1,
         MarkDown: 1,
         CSS: 2,
+        Sass: 2,
+        Scss: 2,
+        Less: 2,
+        Stylus: 2,
         JavaScript: 3,
+        TypeScript: 3,
+        CoffeeScript: 3,
+        LiveScript: 3,
+        JSX: 3,
         Console: 4,
         Output: 5
       },
@@ -71,10 +79,16 @@ export default {
             break
           case 'CSS':
           case 'Sass':
+          case 'Scss':
+          case 'Less':
+          case 'Stylus':
             attr = 'CSS'
             break
           case 'JavaScript':
           case 'TypeScript':
+          case 'CoffeeScript':
+          case 'LiveScript':
+          case 'JSX':
             attr = 'JavaScript'
             break
           case 'Console':
@@ -99,21 +113,20 @@ export default {
   },
   methods: {
     changeTypeList(checkType) {
-      // 由于html,css,js,console,output五个窗口是按照顺序排列的，因此在data.typeListQueue中设置为1~5，根据数值大小来判断窗口位置
-      // checkType是数组，存放当前显示在页面的窗口
-      // console.log(checkType)
+      // The five Windows are arranged in sequence, so set it to 1~5 in data.typeListQueue, judge the window position according to the value size
+      // checkType is an array,it is used to store the window currently displayed on the page
       if (checkType.length) {
         const arr = [],
           finalArr = []
         checkType.forEach(item => {
-          arr.push(this.typeListQueue[item]) // 将checkType元素在typeListQueue所对应的数值放到arr中
+          arr.push(this.typeListQueue[item])
         })
         arr.sort((a, b) => {
-          // 给arr中的元素从小到大排序
+          // Sort the elements in the arr from smallest to largest
           return a - b
         })
         arr.forEach(item => {
-          // 将arr的元素来替换成窗口名称，再push到finalArr中作为结果
+          // Replaces the value of the arr elements with the window,and push result into finalArr
           let str = ''
           if (item === 1) str = this.HTMLPrep
           else if (item === 2) str = this.CSSPrep
@@ -122,15 +135,15 @@ export default {
           else if (item === 5) str = 'Output'
           finalArr.push(str)
         })
-        this.types = finalArr // 将finalArr赋给this.types，传给子组件textareaBox
+        this.types = finalArr
         this.changeAllWidth()
         return null
       }
       this.types = checkType
     },
     changeAllWidth() {
-      // 将所有窗口宽度改变为： 浏览器可见宽度 / this.types.length
-      // vuex中textBoxW存放每个窗口宽度
+      // Change all window widths to : browser visible width / this.types.length
+      // this.$store.state.textBoxW is used to store the width of each window
       const len = this.types.length
       const store = this.$store
       this.boxW = `${this.screenWidth / len}px`
