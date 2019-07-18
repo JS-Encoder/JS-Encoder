@@ -16,7 +16,7 @@
       <button
         @click="reSetConsole"
         class="clear noselect"
-        v-if="showClear && this.title === 'Console'"
+        v-if="showClear && this.title === 'Output'"
       >
         <i class="icon iconfont icon-lajitong"></i>
         <span class="clear-txt">Clear</span>
@@ -29,7 +29,7 @@
         ref="iframeBox"
         sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts"
         scrolling="yes"
-        src="static/html/runner.html"
+        src="../../static/html/runner.html"
         v-if="showIframe"
       ></iframe>
       <div class="screen-box" v-if="showScreen && title === 'Output'"></div>
@@ -49,7 +49,8 @@
 <script>
 import Console from './console'
 import { codemirror } from 'vue-codemirror'
-import marked from 'marked'
+import { mapState } from 'vuex'
+import * as compiler from '../../static/js/compiler.js'
 export default {
   props: {
     index: Number,
@@ -110,10 +111,16 @@ export default {
         break
       case 'CSS':
       case 'Sass':
+      case 'Scss':
+      case 'Less':
+      case 'Stylus':
         this.initTitle = 'CSS'
         break
       case 'JavaScript':
       case 'TypeScript':
+      case 'CoffeeScript':
+      case 'LiveScript':
+      case 'JSX':
         this.initTitle = 'JavaScript'
         break
       case 'Console':
@@ -126,57 +133,20 @@ export default {
     this.init()
   },
   computed: {
-    textBoxW() {
-      return this.$store.state.textBoxW
-    },
-    content() {
-      return this.$store.state.textBoxContent
-    },
-    showScreen() {
-      return this.$store.state.showScreen
-    },
-    waitTime() {
-      return this.$store.state.waitTime
-    },
-    replace() {
-      return this.$store.state.replace
-    },
-    autoUp() {
-      return this.$store.state.autoUp
-    },
-    run() {
-      return this.$store.state.isRun
-    },
-    HTMLPrep() {
-      return this.$store.state.HTMLPrep
-    },
-    CSSPrep() {
-      return this.$store.state.CSSPrep
-    },
-    JSPrep() {
-      return this.$store.state.JSPrep
-    }
+    ...mapState({
+      HTMLPrep: 'HTMLPrep',
+      CSSPrep: 'CSSPrep',
+      JSPrep: 'JSPrep',
+      textBoxW: 'textBoxW',
+      content: 'textBoxContent',
+      showScreen: 'showScreen',
+      waitTime: 'waitTime',
+      replace: 'replace',
+      autoUp: 'autoUp',
+      run: 'isRun'
+    })
   },
   watch: {
-    title(newVal) {
-      switch (newVal) {
-        case 'HTML':
-          this.changeOptions('mode', 'text/html')
-          break
-        case 'MarkDown':
-          this.changeOptions('mode', 'text/x-markdown')
-          break
-        case 'CSS':
-          this.changeOptions('mode', 'css')
-          break
-        case 'Sass':
-          this.changeOptions('mode', 'text/x-sass')
-          break
-        case 'JavaScript':
-          this.changeOptions('mode', 'javascript')
-          break
-      }
-    },
     space() {
       // watch tab-space value changes and resetting tab-space config
       if (this.$refs.editor) {
@@ -195,22 +165,8 @@ export default {
         clearTimeout(this.timer)
       }
       this.timer = setTimeout(() => {
-        let title
-        switch (this.title) {
-          case 'HTML':
-          case 'MarkDown':
-            title = 'HTML'
-            break
-          case 'CSS':
-          case 'Sass':
-            title = 'CSS'
-            break
-          case 'JavaScript':
-            title = 'JavaScript'
-            break
-        }
         this.$store.commit('change', {
-          title,
+          title: this.initTitle,
           newVal
         })
       }, this.waitTime)
@@ -235,63 +191,53 @@ export default {
         }
       }
     }
-    // HTMLPrep(newVal) {
-    //   if (this.title === 'HTML')
-    //     if (newVal === 'none') this.preprocessor = 'HTML'
-    //     else this.preprocessor = newVal
-    // },
-    // CSSPrep(newVal) {
-    //   if (this.title === 'CSS')
-    //     if (newVal === 'none') this.preprocessor = 'CSS'
-    //     else this.preprocessor = newVal
-    // },
-    // JSPrep(newVal) {
-    //   if (this.title === 'JavaScript')
-    //     if (newVal === 'none') this.preprocessor = 'JavaScript'
-    //     else this.preprocessor = newVal
-    // },
-    // preprocessor(newVal) {
-    //   if (this.title === 'HTML') {
-    //     if (newVal === 'HTML') {
-    //       this.changeOptions('mode', 'text/html')
-    //     } else if (newVal === 'MarkDown') {
-    //       // 设置markdown参数
-    //       marked.setOptions({
-    //         renderer: new marked.Renderer(),
-    //         gfm: true,
-    //         tables: true,
-    //         breaks: true,
-    //         pedantic: false,
-    //         sanitize: false,
-    //         smartLists: true,
-    //         smartypants: false,
-    //         highlight(code) {
-    //           return Hljs.highlightAuto(code).value
-    //         }
-    //       })
-    //       this.changeOptions('mode', 'text/x-markdown')
-    //     }
-    //   } else if (this.title === 'CSS') {
-    //     if (newVal === 'CSS') {
-    //       this.changeOptions('mode', 'css')
-    //     } else if (newVal === 'Sass') {
-    //       this.changeOptions('mode', 'text/x-sass')
-    //     }
-    //   } else if (this.title === 'JS') {
-    //     if (newVal === 'JavaScript') {
-    //       this.changeOptions('mode', 'javascript')
-    //     }
-    //   }
-    // }
   },
   methods: {
-    judgeMode() {
-      const content = this.$store.state.textBoxContent
-      const prep = this.$store.state.HTMLPrep
-      if (prep === 'HTML') {
-        return content.HTML
-      } else if (prep === 'MarkDown') {
-        return marked(content.HTML, { sanitize: true })
+    async judgeMode() {
+      const state = this.$store.state
+      const content = state.textBoxContent
+      const HTMLPrep = state.HTMLPrep
+      const CSSPrep = state.CSSPrep
+      const JSPrep = state.JSPrep
+      let HTMLCode = '',
+        CSSCode = '',
+        JSCode = ''
+
+      if (HTMLPrep === 'HTML') {
+        HTMLCode = content.HTML
+      } else if (HTMLPrep === 'MarkDown') {
+        HTMLCode = compiler.compileMarkDown(content.HTML)
+      }
+
+      if (CSSPrep === 'CSS') {
+        CSSCode = content.CSS
+      } else if (CSSPrep === 'Sass') {
+        await compiler
+          .compileSass(content.CSS)
+          .then(code => {
+            CSSCode = code
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      } else if (CSSPrep === 'Scss') {
+      } else if (CSSPrep === 'Less') {
+      } else if (CSSPrep === 'Stylus') {
+      }
+
+      if (JSPrep === 'JavaScript') {
+        JSCode = content.JavaScript
+      } else if (JSPrep === 'TypeScript') {
+        JSCode = compiler.compileTypeScript(content.JavaScript)
+        console.log(JSCode)
+      } else if (JSPrep === 'CoffeeScript') {
+      } else if (JSPrep === 'LiveScript') {
+      } else if (JSPrep === 'JSX') {
+      }
+      return {
+        HTMLCode,
+        CSSCode,
+        JSCode
       }
     },
     changeOptions(key, val) {
@@ -306,31 +252,42 @@ export default {
     boxMouseDown(e) {
       const starX = e.clientX
       const elInfo = this.$refs[this.title]
-      let title
-      switch (this.title) {
+      const title = this.initTitle
+      const starW = elInfo.offsetWidth
+      let nextBox = this.typeList[this.index + 1]
+
+      switch (nextBox) {
         case 'HTML':
         case 'MarkDown':
-          title = 'HTML'
+          nextBox = 'HTML'
           break
         case 'CSS':
         case 'Sass':
-          title = 'CSS'
+        case 'Scss':
+        case 'Less':
+        case 'Stylus':
+          nextBox = 'CSS'
           break
         case 'JavaScript':
         case 'TypeScript':
-          title = 'JavaScript'
+        case 'TypeScript':
+        case 'CoffeeScript':
+        case 'LiveScript':
+          nextBox = 'JavaScript'
           break
         case 'Console':
-          title = 'Console'
+          nextBox = 'Console'
           break
         case 'Output':
-          title = 'Output'
+          nextBox = 'Output'
           break
       }
-      const starW = elInfo.offsetWidth
-      const nextBox = this.typeList[this.index + 1]
+
+      // The event binding for this page does not affect the iframe, events are disabled when the mouse is moved over iframe,
+      // screen will appears when the mouseDown event is triggers
       if (nextBox === 'Output') this.$store.commit('updateScreen', true)
 
+      // Calculate the total width of two divs
       const wholeW =
         parseFloat(this.textBoxW[nextBox]) + parseFloat(this.textBoxW[title])
       document.onmousemove = ev => {
@@ -348,6 +305,8 @@ export default {
           })
         }
       }
+
+      // screen will hides when mouseUp event is triggers
       document.onmouseup = () => {
         document.onmousemove = null
         this.$store.commit('updateScreen', false)
@@ -355,7 +314,7 @@ export default {
       return false
     },
     init() {
-      //页面初始化执行函数
+      //Page initializes the execution function
       const initText = this.$store.state.textBoxContent
       const title = this.title
       switch (this.title) {
@@ -375,9 +334,37 @@ export default {
           this.message = initText.CSS
           this.cmOptions.mode = 'text/x-sass'
           break
+        case 'Scss':
+          this.message = initText.CSS
+          this.cmOptions.mode = 'text/x-scss'
+          break
+        case 'Less':
+          this.message = initText.CSS
+          this.cmOptions.mode = 'text/x-less'
+          break
+        case 'Stylus':
+          this.message = initText.CSS
+          this.cmOptions.mode = 'text/x-styl'
+          break
         case 'JavaScript':
           this.message = initText.JavaScript
-          this.cmOptions.mode = 'javascript'
+          this.cmOptions.mode = 'text/javascript'
+          break
+        case 'TypeScript':
+          this.message = initText.JavaScript
+          this.cmOptions.mode = 'text/typescript'
+          break
+        case 'CoffeeScript':
+          this.message = initText.JavaScript
+          this.cmOptions.mode = 'text/coffeescript'
+          break
+        case 'LiveScript':
+          this.message = initText.JavaScript
+          this.cmOptions.mode = 'text/x-livescript'
+          break
+        case 'JSX':
+          this.message = initText.JavaScript
+          this.cmOptions.mode = 'text/jsx'
           break
         default:
           this.showCode = false
@@ -388,7 +375,15 @@ export default {
           break
       }
     },
-    spliceHtml(time) {
+    async spliceHtml(time) {
+      // get code
+      let codeObj
+      await this.judgeMode().then(obj => {
+        codeObj = obj
+      })
+
+      // css link
+      // url format check
       const cssLinks = this.$store.state.cssLinks
       let validCss = []
       if (cssLinks.length) {
@@ -398,6 +393,9 @@ export default {
             validCss.push(item)
         }
       }
+
+      // js cdn
+      // url format check
       const cdnJs = this.$store.state.cdnJs
       let validCDN = []
       if (cdnJs.length) {
@@ -407,8 +405,12 @@ export default {
             validCDN.push(item)
         }
       }
+
+      // waitTime
       let waitTime = null
       !time ? (waitTime = this.waitTime) : (waitTime = 0)
+
+      // splice html, css and js
       setTimeout(() => {
         const content = this.$store.state.textBoxContent
         const iframe = this.$refs.iframeBox
@@ -424,16 +426,16 @@ export default {
 
         let style = iframe.contentWindow.document.getElementById('compOlCss')
         if (style) style.parentNode.removeChild(style)
-        this.createStyle('style', 'compOlCss', content.CSS)
+        this.createStyle('style', 'compOlCss', codeObj.CSSCode)
 
         let script = iframe.contentWindow.document.getElementById('src')
         const code = `
         (function(){
-          ${content.JavaScript}
+          ${codeObj.JSCode}
         })()
 `
         if (script) script.parentNode.removeChild(script)
-        iframe.contentWindow.document.body.innerHTML = this.judgeMode()
+        iframe.contentWindow.document.body.innerHTML = codeObj.HTMLCode
         for (let item of validCDN) {
           this.createCDN('script', item)
         }
@@ -489,7 +491,7 @@ export default {
     }
   }
   .clear {
-    right: 1px !important;
+    left: -31px !important;
     .clear-txt {
       display: none;
     }
@@ -555,7 +557,7 @@ export default {
       position: absolute;
       height: 20px;
       top: -21px;
-      right: 1px;
+      left: -68px;
       background-color: #1e1e1e;
       border: 1px solid #1e1e1e;
       color: #f2f2f2;
