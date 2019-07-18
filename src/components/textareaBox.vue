@@ -216,6 +216,7 @@ export default {
           .compileSass(content.CSS)
           .then(code => {
             CSSCode = code
+            console.log(CSSCode)
           })
           .catch(err => {
             console.log(err)
