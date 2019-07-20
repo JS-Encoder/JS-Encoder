@@ -14,8 +14,26 @@
 
 - 支持离线使用，你可以直接将仓库克隆到本地进行离线使用
 - 实时显示效果
-- 支持其他预处理语言，如 MarkDown、Sass 等
+- 支持其他预处理语言，现支持MarkDown, Sass, Scss, Less, Stylus, TypeScript 和 CoffeeScript 之后会考虑支持 LiveScript 和 JSX(React)
 - 通过 CDN 或其他路径，你可以使用别人的 HTML, CSS, 和 JS 来编写你的代码
+
+## 离线使用
+
+```dash
+github clone https://github.com/Longgererer/JS-Encoder.git
+```
+
+或者使用 [Github Desktop](https://desktop.github.com/) 工具
+
+```dash
+yarn install
+```
+
+并且
+
+```dash
+yarn dev
+```
 
 ## 以后会更新什么 ❓
 
