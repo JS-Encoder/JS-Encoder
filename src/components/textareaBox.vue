@@ -29,7 +29,7 @@
         ref="iframeBox"
         sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts"
         scrolling="yes"
-        src="../../static/html/runner.html"
+        src="static/html/runner.html"
         v-if="showIframe"
       ></iframe>
       <div class="screen-box" v-if="showScreen && title === 'Output'"></div>
@@ -119,8 +119,6 @@ export default {
       case 'JavaScript':
       case 'TypeScript':
       case 'CoffeeScript':
-      case 'LiveScript':
-      case 'JSX':
         this.initTitle = 'JavaScript'
         break
       case 'Console':
@@ -206,34 +204,60 @@ export default {
       if (HTMLPrep === 'HTML') {
         HTMLCode = content.HTML
       } else if (HTMLPrep === 'MarkDown') {
-        HTMLCode = compiler.compileMarkDown(content.HTML)
-      }
-
-      if (CSSPrep === 'CSS') {
-        CSSCode = content.CSS
-      } else if (CSSPrep === 'Sass') {
         await compiler
-          .compileSass(content.CSS)
+          .compileMarkDown(content.HTML)
           .then(code => {
-            CSSCode = code
-            console.log(CSSCode)
+            HTMLCode = code
           })
           .catch(err => {
             console.log(err)
           })
-      } else if (CSSPrep === 'Scss') {
+      }
+
+      if (CSSPrep === 'CSS') {
+        CSSCode = content.CSS
+      } else if (CSSPrep === 'Sass' || CSSPrep === 'Scss') {
+        await compiler
+          .compileSass(content.CSS)
+          .then(code => {
+            CSSCode = code
+          })
+          .catch(err => {
+            console.log(err)
+          })
       } else if (CSSPrep === 'Less') {
+        await compiler
+          .compileLess(content.CSS)
+          .then(code => {
+            CSSCode = code.css
+          })
+          .catch(err => {
+            console.log(err)
+          })
       } else if (CSSPrep === 'Stylus') {
+        await compiler
+          .compileStylus(content.CSS)
+          .then(code => {
+            CSSCode = code
+          })
+          .catch(err => {
+            console.log(err)
+          })
       }
 
       if (JSPrep === 'JavaScript') {
         JSCode = content.JavaScript
       } else if (JSPrep === 'TypeScript') {
         JSCode = compiler.compileTypeScript(content.JavaScript)
-        console.log(JSCode)
       } else if (JSPrep === 'CoffeeScript') {
-      } else if (JSPrep === 'LiveScript') {
-      } else if (JSPrep === 'JSX') {
+        await compiler
+          .compileCoffeeScript(content.JavaScript)
+          .then(code => {
+            JSCode = code
+          })
+          .catch(err => {
+            console.log(err)
+          })
       }
       return {
         HTMLCode,
@@ -273,7 +297,6 @@ export default {
         case 'TypeScript':
         case 'TypeScript':
         case 'CoffeeScript':
-        case 'LiveScript':
           nextBox = 'JavaScript'
           break
         case 'Console':
@@ -358,14 +381,6 @@ export default {
         case 'CoffeeScript':
           this.message = initText.JavaScript
           this.cmOptions.mode = 'text/coffeescript'
-          break
-        case 'LiveScript':
-          this.message = initText.JavaScript
-          this.cmOptions.mode = 'text/x-livescript'
-          break
-        case 'JSX':
-          this.message = initText.JavaScript
-          this.cmOptions.mode = 'text/jsx'
           break
         default:
           this.showCode = false
