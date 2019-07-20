@@ -16,8 +16,6 @@ require('codemirror/mode/css/css.js')
 require('codemirror/mode/sass/sass.js')
 require('codemirror/mode/stylus/stylus')
 require('codemirror/mode/coffeescript/coffeescript')
-require('codemirror/mode/livescript/livescript')
-require('codemirror/mode/jsx/jsx')
 require('codemirror/keymap/vim.js')
 require('codemirror/addon/fold/foldcode.js')
 require('codemirror/addon/fold/foldgutter.js')
@@ -96,8 +94,6 @@ const store = new VueX.Store({
         case 'JavaScript':
         case 'TypeScript':
         case 'CoffeeScript':
-        case 'LiveScript':
-        case 'JSX':
           attr = 'JavaScript'
           break
         case 'Console':
