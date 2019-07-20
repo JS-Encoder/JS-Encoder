@@ -40,8 +40,6 @@ export default {
         JavaScript: 3,
         TypeScript: 3,
         CoffeeScript: 3,
-        LiveScript: 3,
-        JSX: 3,
         Console: 4,
         Output: 5
       },
@@ -57,6 +55,13 @@ export default {
     })
   },
   created() {
+    // loading animation
+    try {
+      document.body.removeChild(document.getElementById('appLoading'))
+      setTimeout(function() {
+        document.getElementById('app').style.opacity = '1'
+      }, 300)
+    } catch (e) {}
     this.types = [this.HTMLPrep, this.CSSPrep, this.JSPrep, 'Console', 'Output']
   },
   mounted() {
@@ -87,8 +92,6 @@ export default {
           case 'JavaScript':
           case 'TypeScript':
           case 'CoffeeScript':
-          case 'LiveScript':
-          case 'JSX':
             attr = 'JavaScript'
             break
           case 'Console':
