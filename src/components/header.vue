@@ -152,7 +152,7 @@ export default {
         JSPrep: {
           title: 'JavaScript',
           value: 'JavaScript',
-          options: ['JavaScript', 'TypeScript', 'CoffeeScript', 'LiveScript', 'JSX']
+          options: ['JavaScript', 'TypeScript', 'CoffeeScript']
         }
       },
       cdnJs: [],
