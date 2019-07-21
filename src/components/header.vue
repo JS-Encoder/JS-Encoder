@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-ai" id="header">
-    <span class="header-title noselect flex">
+    <span @click="showSlider" class="header-title noselect flex">
       <img alt class="logo" src="../assets/logo.svg" />
     </span>
     <ul class="header-menu flex">
@@ -19,6 +19,8 @@
         <i class="icon iconfont icon-help"></i>
       </li>
     </ul>
+    <slider :sliderConf="sliderConf" @triggerOpt="triggerOpt" class="noselect"></slider>
+    <!-- menu -->
     <popUp :pop="download" class="noselect download-pop">
       <div class="download-box flex flex-ai flex-jcc">
         <div class="file-download flex flex-clo flex-ai">
@@ -120,15 +122,87 @@
         </el-collapse-item>
       </el-collapse>
     </popUp>
+    <!-- slider -->
+    <popUp :pop="colorTable" class="noselect color-table">
+      <div class="color flex flex-clo">
+        <h4 class="title">Color format switch</h4>
+        <span class="describe">RGB and HEX convert to each other</span>
+        <div class="color-info">
+          <div class="rgb-info flex flex-ai">
+            R:
+            <el-input class="rgb-input" size="mini" type="text" v-model="rgbInfo.r" />G:
+            <el-input class="rgb-input" size="mini" type="text" v-model="rgbInfo.g" />B:
+            <el-input class="rgb-input" size="mini" type="text" v-model="rgbInfo.b" />
+            <div @click="switchHEX" class="color-switch flex flex-ai">
+              <i class="icon iconfont icon-zhuanhua_huaban"></i>
+            </div>
+          </div>
+          <div class="hex-info flex flex-ai">
+            HEX:
+            <el-input class="hex-input" size="mini" type="text" v-model="hexInfo" />
+            <div @click="switchRGB" class="color-switch flex flex-ai">
+              <i class="icon iconfont icon-zhuanhua_huaban"></i>
+            </div>
+          </div>
+        </div>
+        <div class="line"></div>
+        <h4 class="title">Color table</h4>
+        <span class="describe">Click to copy the HEX color to the clipboard</span>
+        <div class="color-table-content flex flex-ai">
+          <ul class="table">
+            <li :key="index" class="row flex" v-for="(item, index) in colorInfo">
+              <span
+                :key="i"
+                :style="{backgroundColor: it}"
+                @click="copyHex(it)"
+                class="clo flex-1"
+                v-for="(it, i) in item"
+              ></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </popUp>
+    <popUp :pop="icons" class="noselect"></popUp>
+    <popUp :pop="fonts" class="noselect"></popUp>
   </div>
 </template>
 <script>
 import popUp from './popUp'
+import slider from './slider'
 import { saveAs } from 'file-saver'
+import colorInfo from '../utils/colorInfo'
 const JSZip = require('jszip')
 export default {
   data() {
     return {
+      sliderConf: {
+        isShow: true,
+        event: 'triggerOpt',
+        options: [
+          {
+            title: 'color table',
+            icon: 'icon iconfont icon-tiaosepan_shixin'
+          },
+          {
+            title: 'icons',
+            icon: 'icon iconfont icon-Starlarge'
+          },
+          {
+            title: 'fonts',
+            icon: 'icon iconfont icon-font'
+          }
+        ]
+      },
+      colorTable: {
+        isShow: true
+      },
+      icons: {
+        isShow: false
+      },
+      fonts: {
+        isShow: false
+      },
       download: {
         isShow: false
       },
@@ -138,6 +212,12 @@ export default {
       config: {
         isShow: false
       },
+      rgbInfo: {
+        r: '',
+        g: '',
+        b: ''
+      },
+      hexInfo: '',
       prep: {
         HTMLPrep: {
           title: 'HTML',
@@ -166,11 +246,15 @@ export default {
     }
   },
   components: {
-    popUp
+    popUp,
+    slider
   },
   computed: {
     showConfig() {
       return this.config.isShow
+    },
+    colorInfo() {
+      return colorInfo
     }
   },
   watch: {
@@ -186,6 +270,12 @@ export default {
     }
   },
   methods: {
+    showSlider() {
+      this.sliderConf.isShow = true
+    },
+    triggerOpt(title) {
+      this[title].isShow = true
+    },
     openConfig() {
       this.config.isShow = true
     },
@@ -298,6 +388,50 @@ export default {
       // obj为prep中的属性名称
       const value = this.prep[obj].value
       this.$store.commit('updateStateAttr', { attr: obj, value })
+    },
+    switchRGB() {
+      if (!this.hexInfo) return
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(
+        this.hexInfo
+      )
+      if (result) {
+        this.rgbInfo = {
+          r: parseInt(result[1], 16) + '',
+          g: parseInt(result[2], 16) + '',
+          b: parseInt(result[3], 16) + ''
+        }
+      } else {
+        return null
+      }
+    },
+    switchHEX() {
+      const rgb = this.rgbInfo
+      if (!(rgb.r && rgb.g && rgb.b)) return
+      const r = parseInt(rgb.r)
+      const g = parseInt(rgb.g)
+      const b = parseInt(rgb.b)
+      const hex =
+        '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+      if (hex) {
+        this.hexInfo = hex
+      } else {
+        return null
+      }
+    },
+    copyHex(hex) {
+      const input = document.createElement('input')
+      input.value = hex
+      document.body.appendChild(input)
+      input.select()
+      document.execCommand('Copy')
+      document.body.removeChild(input)
+      this.$message({
+        message: 'Copy success!',
+        center: true,
+        duration: 1000,
+        iconClass: 'icon iconfont icon-success',
+        customClass: 'message'
+      })
     }
   }
 }
@@ -467,6 +601,77 @@ export default {
       }
       .files-download {
         border-left: 1px dashed #999999;
+      }
+    }
+  }
+  .color-table {
+    width: 100%;
+    .color {
+      width: 100%;
+      margin: 15px 0;
+      max-height: 500px;
+      overflow: auto;
+      .line {
+        width: 100%;
+        height: 0;
+        border-top: 1px dashed #999;
+      }
+      .title {
+        margin: 5px 0;
+      }
+      .color-info {
+        max-width: 280px;
+        .rgb-info {
+          width: 100%;
+          margin: 10px 0;
+          .rgb-input {
+            margin: 0 10px;
+          }
+        }
+        .hex-info {
+          width: 100%;
+          margin: 10px 0;
+          .hex-input {
+            margin: 0 10px;
+          }
+        }
+      }
+      .color-switch {
+        cursor: pointer;
+        transition: all 0.5s ease;
+        i {
+          display: block;
+          font-size: 20px;
+          font-weight: 600;
+        }
+      }
+      .color-switch:hover {
+        transform: rotate(360deg);
+      }
+      .color-table-content {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px;
+        .table {
+          width: 100%;
+          padding: 0;
+          .row {
+            width: 100%;
+            height: 20px;
+            list-style: none;
+            margin: 1px 0;
+            .clo {
+              display: inline-block;
+              height: 100%;
+              margin: 0 0.5px;
+              transition: all 0.3s ease;
+            }
+            .clo:hover {
+              transform: scale(1.5);
+              box-shadow: 0px 0px 2px #f2f2f2;
+            }
+          }
+        }
       }
     }
   }
