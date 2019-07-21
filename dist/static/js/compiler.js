@@ -64,6 +64,7 @@ async function compileSass(code) {
 
   const defSass = loadFiles.get('sass')
   const sass = new defSass()
+  
   return new Promise((resolve, reject) => {
     sass.compile(code, result => {
       if (result.status === 0) resolve(result.text)
