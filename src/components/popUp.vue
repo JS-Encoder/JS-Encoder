@@ -62,9 +62,9 @@ export default {
   width: 80%;
   max-width: 500px;
   position: absolute;
-  top: 50%;
+  top: 100px;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   z-index: 1501;
 }
 .content-head {
