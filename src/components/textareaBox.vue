@@ -295,7 +295,6 @@ export default {
           break
         case 'JavaScript':
         case 'TypeScript':
-        case 'TypeScript':
         case 'CoffeeScript':
           nextBox = 'JavaScript'
           break
