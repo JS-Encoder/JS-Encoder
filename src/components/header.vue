@@ -163,8 +163,14 @@
         </div>
       </div>
     </popUp>
-    <popUp :pop="icons" class="noselect"></popUp>
-    <popUp :pop="fonts" class="noselect"></popUp>
+    <popUp :pop="icons" class="noselect">
+      <h4 class="title">Icons</h4>
+      <a href="https://www.iconfont.cn/" target="black">more icons👉</a>
+    </popUp>
+    <popUp :pop="fonts" class="noselect">
+      <h4 class="title">Fonts</h4>
+      <a href="http://www.googlefonts.net/english" target="black">more fonts👉</a>
+    </popUp>
   </div>
 </template>
 <script>
@@ -172,12 +178,13 @@ import popUp from './popUp'
 import slider from './slider'
 import { saveAs } from 'file-saver'
 import colorInfo from '../utils/colorInfo'
+import * as downloadFiles from '../utils/downloadFiles'
 const JSZip = require('jszip')
 export default {
   data() {
     return {
       sliderConf: {
-        isShow: true,
+        isShow: false,
         event: 'triggerOpt',
         options: [
           {
@@ -195,7 +202,7 @@ export default {
         ]
       },
       colorTable: {
-        isShow: true
+        isShow: false
       },
       icons: {
         isShow: false
@@ -290,84 +297,92 @@ export default {
       // requires writing all HTML,CSS and JavaScript to a single file
       // if user uses preprocessing language,so first compile the preprocessing language
 
+      // const state = this.$store.state
+
       // css link
-      const cssLinks = this.$store.state.cssLinks
-      let validCss = ''
+      // const cssLinks = state.cssLinks
+      // let validCss = ''
 
-      if (cssLinks.length) {
-        for (let item of cssLinks) {
-          if (!item) continue
-          if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
-            validCss += `<link rel="stylesheet" href="${item}">`
-        }
-      }
+      // if (cssLinks.length) {
+      //   for (let item of cssLinks) {
+      //     if (!item) continue
+      //     if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
+      //       validCss += `<link rel="stylesheet" href="${item}">`
+      //   }
+      // }
 
-      // js cdn
-      const cdnJs = this.$store.state.cdnJs
-      let validCDN = ''
-      if (cdnJs.length) {
-        for (let item of cdnJs) {
-          if (!item) continue
-          if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
-            validCDN += `<script src="${item}"><\/script>\n\t`
-        }
-      }
+      // // js cdn
+      // const cdnJs = state.cdnJs
+      // let validCDN = ''
+      // if (cdnJs.length) {
+      //   for (let item of cdnJs) {
+      //     if (!item) continue
+      //     if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
+      //       validCDN += `<script src="${item}"><\/script>\n\t`
+      //   }
+      // }
 
-      // create an a tag,splicing file content and trigger click event
-      const aTag = document.createElement('a')
-      const content = this.$store.state.textBoxContent
-      const htmlCode = `<!DOCTYPE html>\n<html lang="en">\n<head>\n\t<meta charset="UTF-8">\n\t<meta name="viewport" content="width=device-width, initial-scale=1.0">\n\t<meta http-equiv="X-UA-Compatible" content="ie=edge">\n\t<title>Document</title>\n\t<style>\n\t${
-        content.CSS
-      }\n\t</style>\n</head>\n<body>\n\t${content.HTML +
-        validCDN}\n\t<script>\n\t${
-        content.JavaScript
-      }\n\t<\/script>\n</body>\n</html>`
-      let blob = new Blob([htmlCode])
-      aTag.download = 'index.html'
-      aTag.href = URL.createObjectURL(blob)
-      aTag.click()
-      URL.revokeObjectURL(blob)
+      downloadFiles.singleDownLoad(this.$store.state)
+
+      // // create an a tag,splicing file content and trigger click event
+      // const aTag = document.createElement('a')
+      // const content = state.textBoxContent
+      // const htmlCode = `<!DOCTYPE html>\n<html lang="en">\n<head>\n\t<meta charset="UTF-8">\n\t<meta name="viewport" content="width=device-width, initial-scale=1.0">\n\t<meta http-equiv="X-UA-Compatible" content="ie=edge">\n\t<title>Document</title>\n\t<style>\n\t${
+      //   content.CSS
+      // }\n\t</style>\n</head>\n<body>\n\t${content.HTML +
+      //   validCDN}\n\t<script>\n\t${
+      //   content.JavaScript
+      // }\n\t<\/script>\n</body>\n</html>`
+      // let blob = new Blob([htmlCode])
+      // aTag.download = 'index.html'
+      // aTag.href = URL.createObjectURL(blob)
+      // aTag.click()
+      // URL.revokeObjectURL(blob)
       this.download.isShow = false
     },
     filesDownload() {
+      // const state = this.$store.state
+
+      downloadFiles.zipDownLoad(this.$store.state)
+
       // files download
-      const cssLinks = this.$store.state.cssLinks
-      let validCss = ''
+      // const cssLinks = state.cssLinks
+      // let validCss = ''
 
       // css link
-      if (cssLinks.length) {
-        for (let item of cssLinks) {
-          if (!item) continue
-          if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
-            validCss += `<link rel="stylesheet" href="${item}">`
-        }
-      }
+      // if (cssLinks.length) {
+      //   for (let item of cssLinks) {
+      //     if (!item) continue
+      //     if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
+      //       validCss += `<link rel="stylesheet" href="${item}">`
+      //   }
+      // }
 
       // js cdn
-      const cdnJs = this.$store.state.cdnJs
-      let validCDN = ''
-      if (cdnJs.length) {
-        for (let item of cdnJs) {
-          if (!item) continue
-          if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
-            validCDN += `<script src="${item}"><\/script>\n\t`
-        }
-      }
+      // const cdnJs = state.cdnJs
+      // let validCDN = ''
+      // if (cdnJs.length) {
+      //   for (let item of cdnJs) {
+      //     if (!item) continue
+      //     if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
+      //       validCDN += `<script src="${item}"><\/script>\n\t`
+      //   }
+      // }
 
       // put all files in one folder and converted to compressed file by jszip
-      const zip = new JSZip()
-      let code = zip.folder('code')
-      const content = this.$store.state.textBoxContent
-      const htmlCode = `<!DOCTYPE html>\n<html lang="en">\n<head>\n\t<meta charset="UTF-8">\n\t<meta name="viewport" content="width=device-width, initial-scale=1.0">\n\t<meta http-equiv="X-UA-Compatible" content="ie=edge">\n\t<title>Document</title>\n\t<link rel="stylesheet" href="./index.css">\n</head>\n<body>\n\t${content.HTML +
-        validCDN}\n\t<script src="./index.js"><\/script>\n</body>\n</html>`
-      const cssCode = content.CSS
-      const jsCode = content.JavaScript
-      code.file('index.html', htmlCode)
-      code.file('index.css', cssCode)
-      code.file('index.js', jsCode)
-      zip.generateAsync({ type: 'blob' }).then(function(content) {
-        saveAs(content, 'code.zip')
-      })
+      // const zip = new JSZip()
+      // let code = zip.folder('code')
+      // const content = state.textBoxContent
+      // const htmlCode = `<!DOCTYPE html>\n<html lang="en">\n<head>\n\t<meta charset="UTF-8">\n\t<meta name="viewport" content="width=device-width, initial-scale=1.0">\n\t<meta http-equiv="X-UA-Compatible" content="ie=edge">\n\t<title>Document</title>\n\t<link rel="stylesheet" href="./index.css">\n</head>\n<body>\n\t${content.HTML +
+      //   validCDN}\n\t<script src="./index.js"><\/script>\n</body>\n</html>`
+      // const cssCode = content.CSS
+      // const jsCode = content.JavaScript
+      // code.file('index.html', htmlCode)
+      // code.file('index.css', cssCode)
+      // code.file('index.js', jsCode)
+      // zip.generateAsync({ type: 'blob' }).then(function(content) {
+      //   saveAs(content, 'code.zip')
+      // })
       this.download.isShow = false
     },
     addCDN() {
