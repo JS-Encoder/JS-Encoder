@@ -146,6 +146,21 @@ export default {
     })
   },
   watch: {
+    'content.HTML': function(newVal) {
+      if (this.initTitle === 'HTML') {
+        this.message = newVal
+      }
+    },
+    'content.CSS': function(newVal) {
+      if (this.initTitle === 'CSS') {
+        this.message = newVal
+      }
+    },
+    'content.JavaScript': function(newVal) {
+      if (this.initTitle === 'JavaScript') {
+        this.message = newVal
+      }
+    },
     space() {
       // watch tab-space value changes and resetting tab-space config
       if (this.$refs.editor) {
