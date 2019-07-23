@@ -4,6 +4,9 @@
       <img alt class="logo" src="../assets/logo.svg" />
     </span>
     <ul class="header-menu flex">
+      <li @click="openUpload">
+        <i class="icon iconfont icon-feiji" style="font-size:20px"></i>
+      </li>
       <li @click="openDownload">
         <i class="icon iconfont icon-baocun" style="font-size:23px"></i>
       </li>
@@ -21,6 +24,34 @@
     </ul>
     <slider :sliderConf="sliderConf" @triggerOpt="triggerOpt" class="noselect"></slider>
     <!-- menu -->
+    <popUp :pop="upload" class="noselect upload-pop">
+      <div class="upload">
+        <div class="upload-content">
+          <h4 class="title">Upload</h4>
+          <span
+            class="describe"
+          >Upload Local File, the format contains html, css, js, md, sass, scss, less, styl, ts and coffee. The file content overwrites the editor content.</span>
+          <div class="flex flex-ai upload-box">
+            <a @change="chooseFile" class="upload-input" href="javascript:;">
+              <input id multiple="multiple" name ref="fileInput" type="file" />choose
+            </a>
+            <button @click="uploadFile" class="upload-btn">
+              <i class="icon iconfont icon-shangchuan"></i> upload
+            </button>
+          </div>
+          <div class="choose" v-if="chooseFiles.length > 0">
+            <span class="describe">The file you selected</span>
+            <span class="describe" style="color: orange">Show only files that format is right</span>
+            <ul>
+              <li :key="index" v-for="(item, index) in chooseFiles">
+                {{item.name}}
+                <i @click="delFile(index)" class="icon iconfont icon-error"></i>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </popUp>
     <popUp :pop="download" class="noselect download-pop">
       <div class="download-box flex flex-ai flex-jcc">
         <div class="file-download flex flex-clo flex-ai">
@@ -213,6 +244,9 @@ export default {
       download: {
         isShow: false
       },
+      upload: {
+        isShow: true
+      },
       help: {
         isShow: false
       },
@@ -225,6 +259,7 @@ export default {
         b: ''
       },
       hexInfo: '',
+      chooseFiles: [],
       prep: {
         HTMLPrep: {
           title: 'HTML',
@@ -292,97 +327,93 @@ export default {
     openDownload() {
       this.download.isShow = true
     },
+    openUpload() {
+      this.upload.isShow = true
+    },
+    chooseFile() {
+      const input = this.$refs.fileInput
+      const files = input.files
+      const limiteType = [
+        'html',
+        'css',
+        'js',
+        'md',
+        'sass',
+        'scss',
+        'less',
+        'styl',
+        'ts',
+        'coffee'
+      ]
+      for (let i = 0; i < files.length; i++) {
+        const name = this.getMimeType(files[i].name)
+        if (limiteType.includes(name)) {
+          this.chooseFiles.push(files[i])
+        }
+      }
+    },
+    uploadFile() {
+      const files = this.chooseFiles
+      if (!files.length) return
+      const limiteType = [
+        'html',
+        'css',
+        'js',
+        'md',
+        'sass',
+        'scss',
+        'less',
+        'styl',
+        'ts',
+        'coffee'
+      ]
+
+      for (let i = 0; i < files.length; i++) {
+        const reader = new FileReader()
+        reader.readAsText(files[i], 'UTF-8')
+        reader.onload = e => {
+          const fileString = e.target.result
+          this.updateEditorContent(fileString, this.getMimeType(files[i].name))
+        }
+      }
+    },
+    getMimeType(fileName) {
+      const pos = fileName.lastIndexOf('.')
+      return fileName.substring(pos + 1)
+    },
+    delFile(index) {
+      this.chooseFiles.splice(index, 1)
+    },
+    updateEditorContent(content, type) {
+      switch (type) {
+        case 'html':
+        case 'md':
+          type = 'HTML'
+          break
+        case 'css':
+        case 'sass':
+        case 'scss':
+        case 'less':
+        case 'styl':
+          type = 'CSS'
+          break
+        case 'js':
+        case 'ts':
+        case 'coffee':
+          type = 'JavaScript'
+          break
+      }
+      this.$store.commit('change', {
+        title: type,
+        newVal: content
+      })
+    },
     singleDownload() {
-      // Single file download
-      // requires writing all HTML,CSS and JavaScript to a single file
-      // if user uses preprocessing language,so first compile the preprocessing language
-
-      // const state = this.$store.state
-
-      // css link
-      // const cssLinks = state.cssLinks
-      // let validCss = ''
-
-      // if (cssLinks.length) {
-      //   for (let item of cssLinks) {
-      //     if (!item) continue
-      //     if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
-      //       validCss += `<link rel="stylesheet" href="${item}">`
-      //   }
-      // }
-
-      // // js cdn
-      // const cdnJs = state.cdnJs
-      // let validCDN = ''
-      // if (cdnJs.length) {
-      //   for (let item of cdnJs) {
-      //     if (!item) continue
-      //     if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
-      //       validCDN += `<script src="${item}"><\/script>\n\t`
-      //   }
-      // }
-
       downloadFiles.singleDownLoad(this.$store.state)
-
-      // // create an a tag,splicing file content and trigger click event
-      // const aTag = document.createElement('a')
-      // const content = state.textBoxContent
-      // const htmlCode = `<!DOCTYPE html>\n<html lang="en">\n<head>\n\t<meta charset="UTF-8">\n\t<meta name="viewport" content="width=device-width, initial-scale=1.0">\n\t<meta http-equiv="X-UA-Compatible" content="ie=edge">\n\t<title>Document</title>\n\t<style>\n\t${
-      //   content.CSS
-      // }\n\t</style>\n</head>\n<body>\n\t${content.HTML +
-      //   validCDN}\n\t<script>\n\t${
-      //   content.JavaScript
-      // }\n\t<\/script>\n</body>\n</html>`
-      // let blob = new Blob([htmlCode])
-      // aTag.download = 'index.html'
-      // aTag.href = URL.createObjectURL(blob)
-      // aTag.click()
-      // URL.revokeObjectURL(blob)
       this.download.isShow = false
     },
     filesDownload() {
-      // const state = this.$store.state
-
       downloadFiles.zipDownLoad(this.$store.state)
-
-      // files download
-      // const cssLinks = state.cssLinks
-      // let validCss = ''
-
-      // css link
-      // if (cssLinks.length) {
-      //   for (let item of cssLinks) {
-      //     if (!item) continue
-      //     if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
-      //       validCss += `<link rel="stylesheet" href="${item}">`
-      //   }
-      // }
-
-      // js cdn
-      // const cdnJs = state.cdnJs
-      // let validCDN = ''
-      // if (cdnJs.length) {
-      //   for (let item of cdnJs) {
-      //     if (!item) continue
-      //     if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
-      //       validCDN += `<script src="${item}"><\/script>\n\t`
-      //   }
-      // }
-
-      // put all files in one folder and converted to compressed file by jszip
-      // const zip = new JSZip()
-      // let code = zip.folder('code')
-      // const content = state.textBoxContent
-      // const htmlCode = `<!DOCTYPE html>\n<html lang="en">\n<head>\n\t<meta charset="UTF-8">\n\t<meta name="viewport" content="width=device-width, initial-scale=1.0">\n\t<meta http-equiv="X-UA-Compatible" content="ie=edge">\n\t<title>Document</title>\n\t<link rel="stylesheet" href="./index.css">\n</head>\n<body>\n\t${content.HTML +
-      //   validCDN}\n\t<script src="./index.js"><\/script>\n</body>\n</html>`
-      // const cssCode = content.CSS
-      // const jsCode = content.JavaScript
-      // code.file('index.html', htmlCode)
-      // code.file('index.css', cssCode)
-      // code.file('index.js', jsCode)
-      // zip.generateAsync({ type: 'blob' }).then(function(content) {
-      //   saveAs(content, 'code.zip')
-      // })
       this.download.isShow = false
     },
     addCDN() {
@@ -400,7 +431,6 @@ export default {
       this.cssLinks.splice(index, 1)
     },
     prepChange(obj) {
-      // obj为prep中的属性名称
       const value = this.prep[obj].value
       this.$store.commit('updateStateAttr', { attr: obj, value })
     },
@@ -583,6 +613,67 @@ export default {
         .prep-title {
           display: inline-block;
           width: 100px;
+        }
+      }
+    }
+  }
+  .upload-pop {
+    .upload {
+      margin: 10px 0;
+      width: 100%;
+      .upload-content {
+        .upload-box {
+          margin: 5px 0;
+          .upload-input {
+            padding: 4px 20px;
+            height: 20px;
+            line-height: 20px;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid #1a1a1a;
+            border-radius: 4px;
+            color: #f2f2f2;
+            background-color: #1a1a1a;
+            overflow: hidden;
+            display: inline-block;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            input {
+              position: absolute;
+              font-size: 100px;
+              right: 0;
+              top: 0;
+              opacity: 0;
+              filter: alpha(opacity=0);
+              cursor: pointer;
+            }
+          }
+          .upload-input:hover {
+            color: #1a1a1a;
+            background-color: #f2f2f2;
+          }
+          .upload-btn {
+            margin: 0 5px;
+            padding: 4px;
+            border: 1px solid #1a1a1a;
+            border-radius: 4px;
+            color: #f2f2f2;
+            background-color: #1a1a1a;
+            transition: all 0.3s ease;
+          }
+          .upload-btn:hover {
+            color: #1a1a1a;
+            background-color: #f2f2f2;
+          }
+        }
+      }
+      .choose {
+        ul {
+          padding: 0;
+          li {
+            list-style: none;
+            margin: 4px 0;
+          }
         }
       }
     }
