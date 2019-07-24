@@ -1,6 +1,6 @@
 # JS-Encoder
 
-![](https://img.shields.io/badge/StyleCI-passed-green.svg) ![](https://img.shields.io/badge/LICENSE-MIT-blue.svg)
+![](https://img.shields.io/badge/StyleCI-passed-green.svg) ![](https://img.shields.io/badge/LICENSE-MIT-blue.svg) ![](https://img.shields.io/badge/npm-v3.0.0-yellow.svg)
 
 [点击链接体验编译器](https://longgererer.github.io/JS-Encoder/dist)
 
