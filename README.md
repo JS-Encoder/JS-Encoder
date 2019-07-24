@@ -1,6 +1,6 @@
 # JS-Encoder
 
-![](https://img.shields.io/badge/StyleCI-passed-green.svg) ![](https://img.shields.io/badge/LICENSE-MIT-blue.svg) ![](https://img.shields.io/badge/npm-v3.0.0-yellow.svg)
+[![Travis (.org)](https://img.shields.io/travis/Longgererer/JS-Encoder.svg)](https://travis-ci.org/Longgererer/JS-Encoder) [![](https://img.shields.io/badge/StyleCI-passed-green.svg)](https://github.styleci.io/repos/190842308) [![](https://img.shields.io/badge/LICENSE-MIT-blue.svg)](https://github.com/Longgererer/JS-Encoder/blob/master/LICENSE)
 
 [点击链接体验编译器](https://longgererer.github.io/JS-Encoder/dist)
 
