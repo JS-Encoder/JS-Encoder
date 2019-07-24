@@ -10,11 +10,11 @@
       <li @click="openDownload">
         <i class="icon iconfont icon-baocun" style="font-size:23px"></i>
       </li>
-      <li>
+      <!-- <li>
         <a class="github-link" href="https://github.com/Longgererer/Compiler-ol" target="black">
           <i class="icon iconfont icon-git" style="font-size:22px"></i>
         </a>
-      </li>
+      </li>-->
       <li @click="openConfig">
         <i class="icon iconfont icon-config"></i>
       </li>
@@ -229,6 +229,10 @@ export default {
           {
             title: 'fonts',
             icon: 'icon iconfont icon-font'
+          },
+          {
+            title: 'github',
+            icon: 'icon iconfont icon-git'
           }
         ]
       },
@@ -245,7 +249,7 @@ export default {
         isShow: false
       },
       upload: {
-        isShow: true
+        isShow: false
       },
       help: {
         isShow: false
@@ -316,6 +320,10 @@ export default {
       this.sliderConf.isShow = true
     },
     triggerOpt(title) {
+      if (title === 'github') {
+        window.open('https://github.com/Longgererer/JS-Encoder', '_blank')
+        return
+      }
       this[title].isShow = true
     },
     openConfig() {
