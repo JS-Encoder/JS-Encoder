@@ -94,6 +94,7 @@ export default {
           list-style: none;
           border-bottom: 2px solid #2c2c2c;
           transition: all .3s ease;
+          cursor: pointer;
           span{
             margin: 0 5px;
           }
