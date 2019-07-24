@@ -8,7 +8,7 @@
 
 👉**JS-Encoder**是一个完全开源的 HTML + CSS + JS 编译调试器 👈
 
-本编译器从 [JS Bin](https://jsbin.com/?html, output) 和 [CODEPEN](https://codepen.io/pen/) 这两个优秀的在线编译器中获得灵感, 采用 Vue.js 和 Webpack 构建
+本编译器从 [JS Bin](https://jsbin.com) 和 [CODEPEN](https://codepen.io/pen/) 这两个优秀的在线编译器中获得灵感, 采用 Vue.js 和 Webpack 构建
 
 虽然一些主要功能已经完成, 但 JS-Encoder 目前还只是一个半成品
 
