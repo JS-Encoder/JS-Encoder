@@ -138,7 +138,6 @@ const store = new VueX.Store({
   }
 })
 
-// const html = '<!DOCTYPE html>\n<html>\n<head>\n\t<meta charset="utf-8">\n\t<meta name="viewport" content="width=device-width">\n\t<title>Compiler ol</title>\n</head>\n<body>\n\n</body>\n</html>'
 new Vue({
   el: '#app',
   store,
@@ -148,6 +147,14 @@ new Vue({
   },
   template: '<App />'
 })
+
+console.log(
+  ' _____  ___    ___           ___   ____   ___    ___   ___' + '\n' +
+  '   |   /   \\  |     |\\   |  |   \\ /    \\ |   \\  |     |   \\' + '\n' +
+  '   |   \\___   |___  | \\  | |      |    | |    | |___  |___|' + '\n' +
+  '   |       \\  |     |  \\ | |      |    | |    | |     | \\' + '\n' +
+  '|__/   \\___/  |___  |   \\|  |___/ \\____/ |___/  |___  |   \\' + '\n'
+)
 
 // 监测刷新和关闭
 // window.onbeforeunload = function (e) {
