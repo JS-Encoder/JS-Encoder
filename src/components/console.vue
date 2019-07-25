@@ -4,9 +4,9 @@
       <div class="error-box" v-if="item.type === 'error'">
         <i class="icon iconfont icon-error"></i>
         <span>{{item.data.msg}}</span>
-        <br>
+        <br />
         <span>{{item.data.url}}</span>
-        <br>
+        <br />
         <div>
           <span>row: {{item.data.row}}</span>
           <span>col: {{item.data.col}}</span>
@@ -27,45 +27,56 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.console {
-  color: #ffffff;
-  width: 100%;
-  height: 100%;
-  font-size: 14px;
+$BKColor: #f2f2f2;
+
+@mixin setWAndH($width: auto, $height: auto) {
+  width: $width;
+  height: $height;
+}
+
+.font-warp {
+  word-break: break-all;
+  white-space: normal;
+}
+
+.bdBox {
   box-sizing: border-box;
+}
+
+.info-public-style {
+  @include setWAndH(100%, 100%);
+  @extend .font-warp;
+  @extend .bdBox;
+  margin: 4px 0;
+  padding: 0 4px;
+}
+
+.console {
+  color: $BKColor;
+  @include setWAndH(100%, 100%);
+  @extend .bdBox;
+  font-size: 14px;
   overflow: auto;
-  .msg,
-  .error-box {
-    width: 100%;
-    word-break: break-all;
-    white-space: normal;
-    margin: 4px 0;
-    padding: 0 4px;
-    box-sizing: border-box;
-  }
   .msg {
+    @extend .info-public-style;
     display: inline-block;
   }
-  .line {
-    width: 100%;
-    height: 1px;
-    border-top: 1px dashed #999;
-  }
   .error-box {
-    i{
-      width: 16px;
-      height: 16px;
+    @extend .info-public-style;
+    i {
+      @include setWAndH(16px, 16px);
     }
-    div{
+    div {
       text-align: right;
-      color: gray;
+      color: #999;
     }
+  }
+  .line {
+    @include setWAndH(100%, 1px);
+    border-top: 1px dashed #999;
   }
 }
 .error {
-  color: red;
-}
-.log {
-  color: #f2f2f2;
+  color: #ff0000;
 }
 </style>

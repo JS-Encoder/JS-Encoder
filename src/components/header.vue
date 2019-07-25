@@ -10,11 +10,6 @@
       <li @click="openDownload">
         <i class="icon iconfont icon-baocun" style="font-size:23px"></i>
       </li>
-      <!-- <li>
-        <a class="github-link" href="https://github.com/Longgererer/Compiler-ol" target="black">
-          <i class="icon iconfont icon-git" style="font-size:22px"></i>
-        </a>
-      </li>-->
       <li @click="openConfig">
         <i class="icon iconfont icon-config"></i>
       </li>
@@ -512,7 +507,7 @@ export default {
 .describe {
   display: block;
   font-size: 12px;
-  color: #909399;
+  color: #999999;
   margin-bottom: 5px;
 }
 .title {
@@ -521,14 +516,14 @@ export default {
 #header {
   width: 100%;
   height: 50px;
-  background-color: #1e1e1e;
+  background-color: $dominantHue;
   padding: 10px 20px;
   border-bottom: 2px solid #999999;
   box-sizing: border-box;
   position: relative;
-  font-family: 'Josefin Sans', sans-serif !important;
+  font-family: $josefinSans !important;
   .header-title {
-    color: #f2f2f2;
+    color: $primaryHued;
     cursor: pointer;
     font-size: 22px;
     .logo {
@@ -543,21 +538,22 @@ export default {
     li {
       list-style: none;
       margin: 0 15px;
-      transition: all 0.3s ease;
+      @include setTransition(all, 0.3s, ease);
       color: #ccc;
       cursor: pointer;
+      &:hover {
+        color: $primaryHued;
+      }
       i {
         font-size: 20px;
       }
       .github-link {
         color: #ccc;
-        text-decoration: none;
-        transition: all 0.3s ease;
+        @include setTransition(all, 0.3s, ease);
+        &:hover {
+          color: $primaryHued;
+        }
       }
-    }
-    li:hover,
-    .github-link:hover {
-      color: #f2f2f2;
     }
   }
   .config-box {
@@ -568,9 +564,8 @@ export default {
       margin: 10px 0;
     }
     .line {
-      width: 100%;
-      height: 0;
       border-top: 1px dashed #999;
+      @include setWAndH(100%, 0);
     }
     .another-cfg {
       margin: 10px 0;
@@ -580,19 +575,19 @@ export default {
         margin-bottom: 5px;
         i {
           margin-left: 5px;
-          color: #1e1e1e;
+          color: $dominantHue;
         }
       }
       .add-link {
         width: 100px;
-        background-color: #1e1e1e;
-        color: #fff;
         font-size: 12px;
         padding: 5px;
         margin-bottom: 5px;
-      }
-      .add-link:hover {
-        background-color: #999999;
+        background-color: $dominantHue;
+        color: $primaryHued;
+        &:hover {
+          background-color: #ccc;
+        }
       }
     }
     .add-css {
@@ -600,12 +595,12 @@ export default {
         margin-bottom: 5px;
         i {
           margin-left: 5px;
-          color: #1e1e1e;
+          color: $dominantHue;
         }
       }
       .add-link {
         width: 100px;
-        background-color: #1e1e1e;
+        background-color: $dominantHue;
         color: #fff;
         font-size: 12px;
         padding: 5px;
@@ -638,14 +633,14 @@ export default {
             line-height: 20px;
             position: relative;
             cursor: pointer;
-            border: 1px solid #1a1a1a;
-            border-radius: 4px;
-            color: #f2f2f2;
-            background-color: #1a1a1a;
             overflow: hidden;
             display: inline-block;
-            text-decoration: none;
-            transition: all 0.3s ease;
+            @include setButton(4px, 1px solid $dominantHue);
+            @include setTransition(all, 0.3s, ease);
+            &:hover {
+              color: $dominantHue;
+              background-color: $primaryHued;
+            }
             input {
               position: absolute;
               font-size: 100px;
@@ -656,22 +651,15 @@ export default {
               cursor: pointer;
             }
           }
-          .upload-input:hover {
-            color: #1a1a1a;
-            background-color: #f2f2f2;
-          }
           .upload-btn {
             margin: 0 5px;
             padding: 4px;
-            border: 1px solid #1a1a1a;
-            border-radius: 4px;
-            color: #f2f2f2;
-            background-color: #1a1a1a;
-            transition: all 0.3s ease;
+            @include setButton(4px, 1px solid $dominantHue);
+            @include setTransition(all, 0.3s, ease);
           }
           .upload-btn:hover {
-            color: #1a1a1a;
-            background-color: #f2f2f2;
+            color: $dominantHue;
+            background-color: $primaryHued;
           }
         }
       }
@@ -679,7 +667,6 @@ export default {
         ul {
           padding: 0;
           li {
-            list-style: none;
             margin: 4px 0;
           }
         }
@@ -688,16 +675,14 @@ export default {
   }
   .download-pop {
     .download-box {
-      width: 100%;
-      height: 200px;
+      @include setWAndH(100%, 200px);
       .file-download,
       .files-download {
         font-size: 15px;
-        width: 200px;
-        height: 150px;
+        @include setWAndH(200px, 150px);
         padding: 10px;
         .describe {
-          color: gray;
+          color: #999999;
           font-size: 12px;
           height: 50px;
           margin: 5px 0;
@@ -705,12 +690,12 @@ export default {
         button {
           padding: 5px 10px;
           border: none;
-          background-color: #1e1e1e;
-          color: #f2f2f2;
-          transition: 0.3s all ease;
-        }
-        button:hover {
-          background-color: #999999;
+          background-color: $dominantHue;
+          color: $primaryHued;
+          @include setTransition(all, 0.3s, ease);
+          &:hover {
+            background-color: #999999;
+          }
         }
       }
       .files-download {
@@ -726,8 +711,7 @@ export default {
       max-height: 500px;
       overflow: auto;
       .line {
-        width: 100%;
-        height: 0;
+        @include setWAndH(100%, 0);
         border-top: 1px dashed #999;
       }
       .title {
@@ -752,7 +736,7 @@ export default {
       }
       .color-switch {
         cursor: pointer;
-        transition: all 0.5s ease;
+        @include setTransition(all, 0.5s, ease);
         i {
           display: block;
           font-size: 20px;
@@ -760,7 +744,7 @@ export default {
         }
       }
       .color-switch:hover {
-        transform: rotate(360deg);
+        @include setTransform(rotate(360deg));
       }
       .color-table-content {
         width: 100%;
@@ -770,19 +754,18 @@ export default {
           width: 100%;
           padding: 0;
           .row {
-            width: 100%;
-            height: 20px;
+            @include setWAndH(100%, 20px);
             list-style: none;
             margin: 1px 0;
             .clo {
               display: inline-block;
               height: 100%;
               margin: 0 0.5px;
-              transition: all 0.3s ease;
-            }
-            .clo:hover {
-              transform: scale(1.5);
-              box-shadow: 0px 0px 2px #f2f2f2;
+              @include setTransition(all, 0.3s, ease);
+              &:hover {
+                @include setTransform(scale(1.5));
+                box-shadow: 0px 0px 2px $primaryHued;
+              }
             }
           }
         }
