@@ -167,8 +167,7 @@ export default {
 <style lang="scss" scoped>
 .code-box {
   display: flex;
-  width: 100%;
-  height: calc(100% - 100px);
+  @include setWAndH(100%, calc(100% - 100px));
 }
 </style>
 
