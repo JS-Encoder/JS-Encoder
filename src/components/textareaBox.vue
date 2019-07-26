@@ -1,9 +1,9 @@
 <template>
-  <div :ref="title" :style="{width:textBoxW[initTitle]}" id="textareaBox">
+  <div :ref="title" :style="{width:textBoxW[initTitle]}" class="flex flex-clo" id="textareaBox">
     <div class="title noselect flex flex-ali">
       <span>{{title}}</span>
     </div>
-    <div :class="title === 'Console'?'bgc':''" :ref="'textbox'+index" class="text-box">
+    <div :class="title === 'Console'?'bgc':''" :ref="'textbox'+index" class="text-box flex">
       <codemirror
         :options="cmOptions"
         :value="message"
@@ -37,7 +37,7 @@
         @mousedown="boxMouseDown"
         @mouseout="boxMouseOut"
         @mouseover="boxMouseOver"
-        class="resize"
+        class="resize flex flex-jcc"
         v-if="index!=len-1"
       >
         <div class="resize-line" ref="line"></div>
@@ -458,97 +458,85 @@ export default {
   }
 }
 .bgc {
-  background-color: #1e1e1e;
+  background-color: $dominantHue;
 }
 #textareaBox {
   height: 100%;
-  display: flex;
-  flex-direction: column;
   min-width: 72px;
   box-sizing: border-box;
   .title {
     position: relative;
     span {
-      color: #fff;
+      color: $primaryHued;
       font-size: 12px;
-      background-color: #1e1e1e;
+      line-height: 20px;
+      background-color: $dominantHue;
       padding: 1px 10px;
       display: inline-block;
-      line-height: 20px;
       height: 20px;
-      font-family: 'Josefin Sans', sans-serif !important;
+      font-family: $josefinSans !important;
     }
     .type-box {
-      width: 100px;
-      height: 100px;
-      background-color: #fff;
+      @include setWAndH(100px, 100px);
+      background-color: $primaryHued;
       position: absolute;
       z-index: 100;
       top: 100%;
     }
   }
   .text-box {
-    display: flex;
-    height: 100%;
-    width: 100%;
+    @include setWAndH(100%, 100%);
     position: relative;
     .code {
-      width: 100%;
-      height: 100%;
-      background-color: #1e1e1e;
+      @include setWAndH(100%, 100%);
+      background-color: $dominantHue;
       resize: none;
       outline: none;
       border: none;
-      color: #fff;
+      color: $primaryHued;
     }
-    textarea {
-      width: 100%;
-      height: 100%;
-      background-color: #1e1e1e;
-      resize: none;
-      outline: none;
-      border: none;
-      color: #fff;
-    }
+    // textarea {
+    //   width: 100%;
+    //   height: 100%;
+    //   background-color: $dominantHue;
+    //   resize: none;
+    //   outline: none;
+    //   border: none;
+    //   color: $primaryHued;
+    // }
     .clear {
       position: absolute;
       height: 20px;
       top: -21px;
       left: -68px;
-      background-color: #1e1e1e;
-      border: 1px solid #1e1e1e;
-      color: #f2f2f2;
+      background-color: $dominantHue;
+      border: 1px solid $dominantHue;
+      color: $primaryHued;
       outline: none;
-      font-family: 'Josefin Sans', sans-serif !important;
+      font-family: $josefinSans !important;
     }
     .clear:active {
       background-color: #eee;
     }
     iframe {
-      width: 100%;
-      height: 100%;
+      @include setWAndH(100%, 100%);
       background-color: #fff;
     }
     .screen-box {
-      width: 100%;
-      height: 100%;
+      @include setWAndH(100%, 100%);
       position: absolute;
       z-index: 10;
     }
     .resize {
-      height: 100%;
-      width: 5px;
+      @include setWAndH(5px, 100%);
       box-sizing: border-box;
-      display: flex;
-      justify-content: center;
       position: relative;
       cursor: e-resize;
       position: absolute;
       right: 0;
       z-index: 1000;
       .resize-line {
-        height: 100%;
-        width: 1px;
+        @include setWAndH(1px, 100%);
         border: 0.5px solid #999999;
         box-sizing: border-box;
         cursor: e-resize;

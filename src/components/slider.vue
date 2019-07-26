@@ -58,51 +58,45 @@ export default {
   top: 0;
   z-index: 1400;
   .slider-title {
-    width: 100%;
-    height: 50px;
+    @include setWAndH(100%, 50px);
     img {
-      width: 100%;
-      height: 40px;
+      @include setWAndH(100%, 40px);
     }
   }
   .bg {
-    width: 100%;
-    height: 100%;
+    @include setWAndH(100%, 100%);
   }
   .slider-content {
     position: absolute;
     z-index: 1401;
-    height: 100vh;
-    width: 200px;
-    background-color: #1a1a1a;
     top: 0;
     left: -200px;
     border-right: 0px solid #999999;
-    box-shadow: 0px 0px 0px #1a1a1a;
-    transition: all 0.3s ease;
+    @include setWAndH(200px, 100vh);
+    background-color: $dominantHue;
+    box-shadow: 0px 0px 0px $dominantHue;
+    @include setTransition(all, 0.3s, ease);
     .slider-menu {
       width: 100%;
       ul {
         width: 100%;
-        margin: 10px 0;
-        padding: 0;
+        @include setPAndM(10px 0, 0);
         .menu-item {
           width: 100%;
           padding: 10px 0;
           color: #ccc;
           font-size: 20px;
-          list-style: none;
           border-bottom: 2px solid #2c2c2c;
-          transition: all .3s ease;
+          @include setTransition(all, 0.3s, ease);
           cursor: pointer;
-          span{
+          span {
             margin: 0 5px;
           }
         }
         .menu-item:last-child {
           border-bottom: none;
         }
-        .menu-item:hover{
+        .menu-item:hover {
           color: #f2f2f2;
           background-color: #333333;
         }
@@ -115,7 +109,6 @@ export default {
   }
 }
 .slider-show {
-  width: 100%;
-  height: 100%;
+  @include setWAndH(100%, 100%);
 }
 </style>
