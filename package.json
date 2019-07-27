@@ -11,14 +11,15 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "codemirror-emmet": "^1.0.0",
     "element-ui": "^2.8.2",
     "file-saver": "^2.0.2",
     "jszip": "^3.2.1",
+    "less": "^3.9.0",
     "loadjs": "^3.6.1",
     "marked": "^0.6.2",
     "node-sass": "^4.12.0",
     "sass-loader": "^7.1.0",
-    "typescript-compiler": "^1.4.1-2",
     "vue": "^2.5.2",
     "vue-codemirror": "^4.0.6",
     "vue-router": "^3.0.1",
