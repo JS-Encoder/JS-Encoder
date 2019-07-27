@@ -1,6 +1,9 @@
 <template>
   <div class="flex flex-ai" id="header">
-    <span @click="showSlider" class="header-title noselect flex">
+    <div class="slider-menu" @click="showSlider">
+      <i class="icon iconfont icon-menu"></i>
+    </div>
+    <span class="header-title noselect flex">
       <img alt class="logo" src="../assets/logo.svg" />
     </span>
     <ul class="header-menu flex">
@@ -491,7 +494,7 @@ export default {
   }
   #header {
     height: 40px !important;
-    padding: 5px 10px !important;
+    padding: 5px 5px !important;
   }
   .header-menu {
     margin: 9px 0;
@@ -522,6 +525,13 @@ export default {
   box-sizing: border-box;
   position: relative;
   font-family: $josefinSans !important;
+  .slider-menu{
+    color: $primaryHued;
+    cursor: pointer;
+    i{
+      font-size: 20px;
+    }
+  }
   .header-title {
     color: $primaryHued;
     cursor: pointer;
