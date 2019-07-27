@@ -13,14 +13,6 @@
         v-model="message"
       ></codemirror>
       <Console v-if="title === 'Console'"></Console>
-      <button
-        @click="reSetConsole"
-        class="clear noselect"
-        v-if="showClear && this.title === 'Output'"
-      >
-        <i class="icon iconfont icon-lajitong"></i>
-        <span class="clear-txt">Clear</span>
-      </button>
       <iframe
         allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media"
         frameborder="0"
@@ -49,9 +41,12 @@
 <script>
 import Console from './console'
 import { codemirror } from 'vue-codemirror'
+import CodeMirror from 'codemirror'
 import { mapState } from 'vuex'
 import * as compiler from '../../static/js/compiler.js'
 import judgeMode from '../utils/judgeMode.js'
+import getEditor from '../utils/codeEditor.js'
+
 export default {
   props: {
     index: Number,
@@ -65,38 +60,11 @@ export default {
       src: 'hello world',
       showCode: true, // Whether to display the code window
       showIframe: false, // Whether to display the iframe
-      showClear: true, // Whether to display the clear button
       message: '', // original text
       initTitle: '',
-      cmOptions: {
-        // codemirror config
-        flattenSpans: false, // 默认情况下，CodeMirror会将使用相同class的两个span合并成一个。通过设置此项为false禁用此功能
-        tabSize: 2, // tab缩进空格数
-        mode: '', // 模式
-        theme: 'monokai', // 主题
-        smartIndent: true, // 是否智能缩进
-        lineNumbers: true, // 显示行号
-        matchBrackets: true, // 匹配符号
-        lineWiseCopyCut: true, // 如果在复制或剪切时没有选择文本，那么就会自动操作光标所在的整行
-        indentWithTabs: true, // 在缩进时，是否需要把 n*tab宽度个空格替换成n个tab字符
-        electricChars: true, // 在输入可能改变当前的缩进时，是否重新缩进
-        indentUnit: 2, // 缩进单位，默认2
-        autoCloseTags: true, // 自动关闭标签 addon/edit/
-        autoCloseBrackets: true, // 自动输入括弧  addon/edit/
-        foldGutter: true, // 允许在行号位置折叠
-        cursorHeight: 1, // 光标高度
-        keyMap: 'sublime', // 快捷键集合
-        extraKeys: {
-          'Ctrl-Alt': 'autocomplete',
-          'Ctrl-Q': cm => {
-            cm.foldCode(cm.getCursor())
-          }
-        }, //智能提示
-        gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'], // 用来添加额外的gutter
-        styleActiveLine: true // 激活当前行样式
-      },
       later: true,
-      timer: null
+      timer: null,
+      cmOptions: {}
     }
   },
   components: {
@@ -163,16 +131,11 @@ export default {
     },
     space() {
       // watch tab-space value changes and resetting tab-space config
-      if (this.$refs.editor) {
-        const options = this.$refs.editor.$options.parent.cmOptions
-        options.tabSize = this.space
-        options.indentUnit = this.space
+      const title = this.initTitle
+      if (title === 'Console' || title === 'Output') {
+        this.cmOptions.tabSize = this.space
+        this.cmOptions.indentUnit = this.space
       }
-    },
-    typeList(newVal) {
-      // clear button is only displayed when console is displayed
-      const index = newVal.indexOf('Console')
-      index === -1 ? (this.showClear = false) : (this.showClear = true)
     },
     message(newVal) {
       if (this.timer) {
@@ -195,7 +158,7 @@ export default {
     },
     replace(newVal) {
       if (this.$refs.editor) {
-        this.changeOptions('indentWithTabs', newVal)
+        this.cmOptions.indentWithTabs = newVal
       }
     },
     run(newVal) {
@@ -207,9 +170,6 @@ export default {
     }
   },
   methods: {
-    changeOptions(key, val) {
-      this.$refs.editor.$options.parent.cmOptions[key] = val
-    },
     boxMouseOver(e) {
       this.$refs.line.style.border = '.5px dashed #65d3fd'
     },
@@ -279,6 +239,16 @@ export default {
       return false
     },
     init() {
+      if (this.initTitle === 'Console' || this.initTitle === 'Output') {
+        this.showCode = false
+        if (this.initTitle === 'Output') {
+          this.showIframe = true
+        }
+        return
+      }
+
+      this.cmOptions = getEditor()
+
       //Page initializes the execution function
       const initText = this.$store.state.textBoxContent
       const title = this.title
@@ -325,7 +295,6 @@ export default {
           break
         default:
           this.showCode = false
-          this.cmOptions = ''
           if (title === 'Output') {
             this.showIframe = true
           }
@@ -369,6 +338,7 @@ export default {
 
       // splice html, css and js
       setTimeout(() => {
+        this.reSetConsole()
         const content = this.$store.state.textBoxContent
         const iframe = this.$refs.iframeBox
         let linkArr = iframe.contentWindow.document.getElementsByTagName('link')
@@ -397,13 +367,9 @@ export default {
           this.createCDN('script', item)
         }
         this.createScript('script', 'src', code)
-
         const info = iframe.contentWindow.consoleInfo
         this.$store.commit('updateConsole', info)
       }, waitTime)
-    },
-    clearConsole() {
-      this.$refs.iframeBox.contentWindow.consoleInfo = []
     },
     createScript(element, id, code) {
       let iframe = this.$refs.iframeBox
@@ -447,12 +413,6 @@ export default {
       font-size: 10px !important;
     }
   }
-  .clear {
-    left: -31px !important;
-    .clear-txt {
-      display: none;
-    }
-  }
   #textareaBox {
     width: 100% !important;
   }
@@ -494,29 +454,6 @@ export default {
       outline: none;
       border: none;
       color: $primaryHued;
-    }
-    // textarea {
-    //   width: 100%;
-    //   height: 100%;
-    //   background-color: $dominantHue;
-    //   resize: none;
-    //   outline: none;
-    //   border: none;
-    //   color: $primaryHued;
-    // }
-    .clear {
-      position: absolute;
-      height: 20px;
-      top: -21px;
-      left: -68px;
-      background-color: $dominantHue;
-      border: 1px solid $dominantHue;
-      color: $primaryHued;
-      outline: none;
-      font-family: $josefinSans !important;
-    }
-    .clear:active {
-      background-color: #eee;
     }
     iframe {
       @include setWAndH(100%, 100%);
