@@ -4,7 +4,6 @@ import router from './router'
 import ElementUI from 'element-ui'
 import VueX from 'vuex'
 import { codemirror } from 'vue-codemirror'
-import marked from 'marked'
 import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/addon/dialog/dialog.css'
 import '../static/css/codemirror.css'
@@ -17,6 +16,7 @@ require('codemirror/mode/sass/sass.js')
 require('codemirror/mode/stylus/stylus')
 require('codemirror/mode/coffeescript/coffeescript')
 require('codemirror/keymap/vim.js')
+require('codemirror/mode/htmlmixed/htmlmixed')
 require('codemirror/addon/fold/foldcode.js')
 require('codemirror/addon/fold/foldgutter.js')
 require('codemirror/addon/fold/brace-fold.js')
@@ -39,11 +39,12 @@ require('codemirror/keymap/sublime.js')
 require('codemirror/addon/display/fullscreen.js')
 require('codemirror/mode/markdown/markdown.js')
 require('codemirror/addon/edit/continuelist')
+
 Vue.use(codemirror)
 Vue.config.productionTip = false
-
 Vue.use(ElementUI)
 Vue.use(VueX)
+
 /* eslint-disable no-new */
 const store = new VueX.Store({
   state: {
