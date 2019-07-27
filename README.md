@@ -30,7 +30,7 @@
 ## 离线使用
 
 ```dash
-git clone https://github.com/Longgererer/JS-Encoder.git
+github clone https://github.com/Longgererer/JS-Encoder.git
 ```
 
 或者使用 [Github Desktop](https://desktop.github.com/) 工具
