@@ -517,8 +517,7 @@ export default {
   margin: 5px 0;
 }
 #header {
-  width: 100%;
-  height: 50px;
+  @include setWAndH(100%, 50px);
   background-color: $dominantHue;
   padding: 10px 20px;
   border-bottom: 2px solid #999999;
@@ -537,8 +536,7 @@ export default {
     cursor: pointer;
     font-size: 22px;
     .logo {
-      width: 200px;
-      height: 100%;
+      @include setWAndH(200px, 100%);
     }
   }
   .header-menu {
