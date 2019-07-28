@@ -4,41 +4,8 @@ import router from './router'
 import ElementUI from 'element-ui'
 import VueX from 'vuex'
 import { codemirror } from 'vue-codemirror'
-import 'codemirror/addon/hint/show-hint.css'
-import 'codemirror/addon/dialog/dialog.css'
 import '../static/css/codemirror.css'
 import '../static/css/monokai.css'
-import 'codemirror/addon/fold/foldgutter.css'
-require('codemirror/mode/javascript/javascript.js')
-require('codemirror/mode/xml/xml.js')
-require('codemirror/mode/css/css.js')
-require('codemirror/mode/sass/sass.js')
-require('codemirror/mode/stylus/stylus')
-require('codemirror/mode/coffeescript/coffeescript')
-require('codemirror/keymap/vim.js')
-require('codemirror/mode/htmlmixed/htmlmixed')
-require('codemirror/addon/fold/foldcode.js')
-require('codemirror/addon/fold/foldgutter.js')
-require('codemirror/addon/fold/brace-fold.js')
-require('codemirror/addon/display/fullscreen.js')
-require('codemirror/addon/hint/javascript-hint.js')
-require('codemirror/addon/hint/html-hint.js')
-require('codemirror/addon/hint/css-hint.js')
-require('codemirror/addon/hint/show-hint.js')
-require('codemirror/addon/hint/anyword-hint.js')
-require('codemirror/addon/search/searchcursor.js')
-require('codemirror/addon/dialog/dialog.js')
-require('codemirror/addon/fold/xml-fold.js')
-require('codemirror/addon/edit/closetag.js')
-require('codemirror/addon/edit/closebrackets.js')
-require('codemirror/addon/selection/active-line.js')
-require('codemirror/addon/edit/matchtags')
-require('codemirror/addon/edit/matchbrackets')
-require('codemirror/addon/comment/comment.js')
-require('codemirror/keymap/sublime.js')
-require('codemirror/addon/display/fullscreen.js')
-require('codemirror/mode/markdown/markdown.js')
-require('codemirror/addon/edit/continuelist')
 
 Vue.use(codemirror)
 Vue.config.productionTip = false
