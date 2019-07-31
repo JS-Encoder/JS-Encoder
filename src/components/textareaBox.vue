@@ -143,8 +143,7 @@ export default {
       }
       this.timer = setTimeout(() => {
         this.$store.commit('change', {
-          title: this.initTitle,
-          newVal
+          [this.initTitle]: newVal
         })
       }, this.waitTime)
     },
