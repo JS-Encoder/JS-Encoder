@@ -20,6 +20,14 @@
           </span>
         </el-button>
       </div>
+      <div class="reset">
+        <el-button @click="resetEdit" size="mini" type="primary">
+          <span class="btn-txt">
+            Reset
+            <i class="icon iconfont icon-chongzhi"></i>
+          </span>
+        </el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -93,6 +101,13 @@ export default {
       if (this.checkType.indexOf(oldVal) !== -1) {
         this.checkType.splice(ctIndex, 1, newVal)
       }
+    },
+    resetEdit() {
+      this.$store.commit('change', {
+        HTML: '',
+        CSS: '',
+        JavaScript: ''
+      })
     }
   }
 }
@@ -104,7 +119,8 @@ export default {
   }
   .type-setting,
   .tab-space,
-  .run {
+  .run,
+  .reset {
     margin-top: 5px !important;
   }
 }
@@ -125,7 +141,8 @@ export default {
         margin-right: 10px;
       }
     }
-    .run {
+    .run,
+    .reset {
       margin-top: 10px;
       .btn-txt {
         font-family: $josefinSans !important;
