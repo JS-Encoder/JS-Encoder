@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-ai" id="header">
-    <div class="slider-menu" @click="showSlider">
+    <div @click="showSlider" class="slider-menu">
       <i class="icon iconfont icon-menu"></i>
     </div>
     <span class="header-title noselect flex">
@@ -200,6 +200,7 @@
       <h4 class="title">Fonts</h4>
       <a href="http://www.googlefonts.net/english" target="black">more fonts👉</a>
     </popUp>
+    <popUp :pop="newFeature" class="noselect"></popUp>
   </div>
 </template>
 <script>
@@ -229,6 +230,10 @@ export default {
             icon: 'icon iconfont icon-font'
           },
           {
+            title: 'new feature',
+            icon: 'icon iconfont icon-yanjing'
+          },
+          {
             title: 'github',
             icon: 'icon iconfont icon-git'
           }
@@ -244,6 +249,9 @@ export default {
         isShow: false
       },
       download: {
+        isShow: false
+      },
+      newFeature: {
         isShow: false
       },
       upload: {
@@ -410,8 +418,7 @@ export default {
           break
       }
       this.$store.commit('change', {
-        title: type,
-        newVal: content
+        [type]: content
       })
     },
     singleDownload() {
@@ -524,10 +531,10 @@ export default {
   box-sizing: border-box;
   position: relative;
   font-family: $josefinSans !important;
-  .slider-menu{
+  .slider-menu {
     color: $primaryHued;
     cursor: pointer;
-    i{
+    i {
       font-size: 20px;
     }
   }
