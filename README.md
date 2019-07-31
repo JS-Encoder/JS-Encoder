@@ -31,7 +31,6 @@ JS-Encoder 目前处于完善阶段！
   - 颜色转换: 你可以在 HEX 格式和 RGB 格式之间相互转换 🔄
 - [x] 个性化设置
 - [x] 多快捷键支持，比如最常用的 Tab：
-
   [![GIF.gif](https://i.loli.net/2019/07/27/5d3c17c61b95532245.gif)](https://i.loli.net/2019/07/27/5d3c17c61b95532245.gif)
 
 ## 离线使用
