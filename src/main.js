@@ -42,8 +42,10 @@ const store = new VueX.Store({
     cssLinks: []
   },
   mutations: {
-    change: (state, info) => {
-      state.textBoxContent[info.title] = info.newVal
+    change: (state, obj) => {
+      for (let key in obj) {
+        state.textBoxContent[key] = obj[key]
+      }
     },
     updateTextBoxW: (state, info) => {
       let attr = info.attr
