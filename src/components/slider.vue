@@ -8,6 +8,7 @@
       <div class="slider-menu flex">
         <ul>
           <li
+            :class="item.title === 'new feature' ? 'glint' : ''"
             :key="index"
             @click="triggerEvent(item.title)"
             class="menu-item flex flex-jcc"
@@ -99,6 +100,20 @@ export default {
         .menu-item:hover {
           color: #f2f2f2;
           background-color: #333333;
+        }
+        .glint {
+          animation: shine 2s ease infinite;
+        }
+        @keyframes shine {
+          0% {
+            color: #999999;
+          }
+          50% {
+            color: #ffffff;
+          }
+          100% {
+            color: #999999;
+          }
         }
       }
     }
