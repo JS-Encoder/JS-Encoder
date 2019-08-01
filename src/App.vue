@@ -4,12 +4,14 @@
     <SettingBar @changeTab="changeTabSpace" @hasChanged="changeTypeList"></SettingBar>
     <div class="code-box" ref="codeBox">
       <textareaBox
+        :extraConsole="extraConsole"
         :index="index"
         :key="item"
         :len="types.length"
         :space="tabSpace"
         :title="item"
         :typeList="types"
+        @updateConsole="updateConsole"
         class="textareaBox"
         v-for="(item,index) in types"
       ></textareaBox>
@@ -44,7 +46,8 @@ export default {
         Output: 5
       },
       boxW: '',
-      tabSpace: 2
+      tabSpace: 2,
+      extraConsole: ''
     }
   },
   computed: {
@@ -115,6 +118,9 @@ export default {
     textareaBox
   },
   methods: {
+    updateConsole(exeCode) {
+      this.extraConsole = exeCode
+    },
     changeTypeList(checkType) {
       // The five Windows are arranged in sequence, so set it to 1~5 in data.typeListQueue, judge the window position according to the value size
       // checkType is an array,it is used to store the window currently displayed on the page
