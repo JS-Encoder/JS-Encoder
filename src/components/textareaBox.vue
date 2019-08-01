@@ -12,7 +12,7 @@
         v-if="showCode"
         v-model="message"
       ></codemirror>
-      <Console v-if="title === 'Console'"></Console>
+      <Console @updateConsole="updateConsole" v-if="title === 'Console'"></Console>
       <iframe
         allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media"
         frameborder="0"
@@ -53,7 +53,8 @@ export default {
     title: String,
     len: Number,
     typeList: Array,
-    space: Number
+    space: Number,
+    extraConsole: String
   },
   data() {
     return {
@@ -129,10 +130,13 @@ export default {
         this.message = newVal
       }
     },
+    extraConsole(newVal){
+      this.sendCodeToIframe(newVal)
+    },
     space() {
       // watch tab-space value changes and resetting tab-space config
       const title = this.initTitle
-      if (title === 'Console' || title === 'Output') {
+      if (!(title === 'Console' || title === 'Output')) {
         this.cmOptions.tabSize = this.space
         this.cmOptions.indentUnit = this.space
       }
@@ -151,6 +155,7 @@ export default {
       deep: true,
       handler: function() {
         if (this.$store.state.autoUp && this.showIframe) {
+          this.reSetConsole()
           this.spliceHtml()
         }
       }
@@ -163,6 +168,7 @@ export default {
     run(newVal) {
       if (this.title === 'Output') {
         if (newVal) {
+          this.reSetConsole()
           this.spliceHtml(100)
         }
       }
@@ -300,7 +306,15 @@ export default {
           break
       }
     },
-    async spliceHtml(time) {
+    sendCodeToIframe(exeCode) {
+      if (this.initTitle === 'Output') {
+        this.spliceHtml(0, exeCode)
+      }
+    },
+    updateConsole(exeCode) {
+      this.$emit('updateConsole', exeCode)
+    },
+    async spliceHtml(time, exeCode = '') {
       // get code
       let codeObj
       await judgeMode(this.$store.state).then(obj => {
@@ -337,7 +351,6 @@ export default {
 
       // splice html, css and js
       setTimeout(() => {
-        this.reSetConsole()
         const content = this.$store.state.textBoxContent
         const iframe = this.$refs.iframeBox
         let linkArr = iframe.contentWindow.document.getElementsByTagName('link')
@@ -357,7 +370,7 @@ export default {
         let script = iframe.contentWindow.document.getElementById('src')
         const code = `
         (function(){
-          ${codeObj.JSCode}
+          ${codeObj.JSCode}\n${exeCode}
         })()
 `
         if (script) script.parentNode.removeChild(script)
