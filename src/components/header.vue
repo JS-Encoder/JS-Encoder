@@ -132,6 +132,7 @@
     <popUp :pop="help" class="noselect">
       <el-collapse accordion v-model="activeName">
         <el-collapse-item name="1" title="Shortcut Key">
+          <div>TAB ------------------------------- Indent code</div>
           <div>CTRL + ALT ---------------------------- Trun on smart tips</div>
           <div>CTRL + Q ---------------------------- Fold the code</div>
           <div>CTRL + / ---------------- Toggle comment on selected lines</div>
@@ -200,7 +201,9 @@
       <h4 class="title">Fonts</h4>
       <a href="http://www.googlefonts.net/english" target="black">more fonts👉</a>
     </popUp>
-    <popUp :pop="newFeature" class="noselect"></popUp>
+    <popUp :pop="newFeature" class="noselect">
+      <h4 class="title">New feature</h4>
+    </popUp>
   </div>
 </template>
 <script>
@@ -294,7 +297,19 @@ export default {
       activeName: '',
       waitTime: 500,
       replace: true,
-      autoUp: true
+      autoUp: true,
+      limiteType: [
+        'html',
+        'css',
+        'js',
+        'md',
+        'sass',
+        'scss',
+        'less',
+        'styl',
+        'ts',
+        'coffee'
+      ]
     }
   },
   components: {
@@ -347,18 +362,7 @@ export default {
     chooseFile() {
       const input = this.$refs.fileInput
       const files = input.files
-      const limiteType = [
-        'html',
-        'css',
-        'js',
-        'md',
-        'sass',
-        'scss',
-        'less',
-        'styl',
-        'ts',
-        'coffee'
-      ]
+      const limiteType = this.limiteType
       for (let i = 0; i < files.length; i++) {
         const name = this.getMimeType(files[i].name)
         if (limiteType.includes(name)) {
@@ -369,19 +373,7 @@ export default {
     uploadFile() {
       const files = this.chooseFiles
       if (!files.length) return
-      const limiteType = [
-        'html',
-        'css',
-        'js',
-        'md',
-        'sass',
-        'scss',
-        'less',
-        'styl',
-        'ts',
-        'coffee'
-      ]
-
+      const limiteType = this.limiteType
       for (let i = 0; i < files.length; i++) {
         const reader = new FileReader()
         reader.readAsText(files[i], 'UTF-8')
