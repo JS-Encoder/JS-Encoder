@@ -30,8 +30,14 @@ JS-Encoder 目前处于完善阶段！
   - 颜色选择: 在颜色版中选择你想要的颜色, 点击之后会自动将 HEX 格式的颜色添加到剪切板
   - 颜色转换: 你可以在 HEX 格式和 RGB 格式之间相互转换 🔄
 - [x] 个性化设置
-- [x] 多快捷键支持，比如最常用的 Tab：
+- [x] 多快捷键支持，比如:
+  - Tab:
+
   [![GIF.gif](https://i.loli.net/2019/07/27/5d3c17c61b95532245.gif)](https://i.loli.net/2019/07/27/5d3c17c61b95532245.gif)
+
+  - Ctrl + Space:
+
+  [![GIF.gif](https://i.loli.net/2019/08/02/5d440f953cdbb32371.gif)](https://i.loli.net/2019/08/02/5d440f953cdbb32371.gif)
 
 ## 离线使用
 
