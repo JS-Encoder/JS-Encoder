@@ -10,6 +10,7 @@ import 'codemirror/mode/coffeescript/coffeescript'
 
 import 'codemirror/addon/fold/foldcode'
 import 'codemirror/addon/fold/foldgutter'
+import 'codemirror/addon/fold/foldgutter.css'
 import 'codemirror/addon/fold/brace-fold'
 import 'codemirror/addon/fold/xml-fold'
 
@@ -17,6 +18,7 @@ import 'codemirror/addon/hint/javascript-hint'
 import 'codemirror/addon/hint/html-hint'
 import 'codemirror/addon/hint/css-hint'
 import 'codemirror/addon/hint/show-hint'
+import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/addon/hint/anyword-hint'
 
 import 'codemirror/addon/edit/closetag'
@@ -32,7 +34,9 @@ import 'codemirror/addon/dialog/dialog'
 import 'codemirror/addon/display/fullscreen'
 import 'codemirror/keymap/sublime'
 
-export default function () {
+import * as format from '../utils/prettyFormat'
+
+export default function (mode = '') {
   const cmOptions = {
     tabSize: 2,
     mode: '',
@@ -51,6 +55,28 @@ export default function () {
       'Ctrl-Alt': 'autocomplete',
       'Ctrl-Q': cm => {
         cm.foldCode(cm.getCursor())
+      },
+      'Ctrl-Space': async cm => {
+        const code = cm.getValue()
+        let finCode = ''
+        switch (mode) {
+          case 'HTML':
+            await format.formatHtml(code).then(res => {
+              finCode = res
+            })
+            break
+          case 'CSS':
+            await format.formatCss(code).then(res => {
+              finCode = res
+            })
+            break
+          case 'JavaScript':
+            await format.formatJavaScript(code).then(res => {
+              finCode = res
+            })
+            break
+        }
+        cm.setValue(finCode)
       }
     },
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
