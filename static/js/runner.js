@@ -3,7 +3,7 @@ var consoleInfo = []
 // 重写window.error
 window.onerror = function (msg, url, row, col) {
   consoleInfo.push({ data: { msg, url, row, col }, type: 'error' })
-  return false
+  return true
 }
 // 重写console
 if (console) {
