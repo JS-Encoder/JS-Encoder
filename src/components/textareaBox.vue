@@ -43,9 +43,9 @@ import Console from './console'
 import { codemirror } from 'vue-codemirror'
 import CodeMirror from 'codemirror'
 import { mapState } from 'vuex'
-import * as compiler from '../../static/js/compiler.js'
-import judgeMode from '../utils/judgeMode.js'
-import getEditor from '../utils/codeEditor.js'
+import * as compiler from '../../static/js/compiler'
+import judgeMode from '../utils/judgeMode'
+import getEditor from '../utils/codeEditor'
 
 export default {
   props: {
@@ -130,7 +130,7 @@ export default {
         this.message = newVal
       }
     },
-    extraConsole(newVal){
+    extraConsole(newVal) {
       this.sendCodeToIframe(newVal)
     },
     space() {
@@ -252,7 +252,7 @@ export default {
         return
       }
 
-      this.cmOptions = getEditor()
+      this.cmOptions = getEditor(this.initTitle)
 
       //Page initializes the execution function
       const initText = this.$store.state.textBoxContent
