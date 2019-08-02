@@ -133,6 +133,7 @@
       <el-collapse accordion v-model="activeName">
         <el-collapse-item name="1" title="Shortcut Key">
           <div>TAB ------------------------------- Indent code</div>
+          <div>Ctrl + Space -------------------------- Format code</div>
           <div>CTRL + ALT ---------------------------- Trun on smart tips</div>
           <div>CTRL + Q ---------------------------- Fold the code</div>
           <div>CTRL + / ---------------- Toggle comment on selected lines</div>
@@ -203,6 +204,7 @@
     </popUp>
     <popUp :pop="newFeature" class="noselect">
       <h4 class="title">New feature</h4>
+      <span>new shortcut: press "Ctrl + Space" to format code</span>
     </popUp>
   </div>
 </template>
