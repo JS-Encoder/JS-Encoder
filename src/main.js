@@ -1,15 +1,19 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import ElementUI from 'element-ui'
 import VueX from 'vuex'
+import element from './utils/getElementUi'
 import { codemirror } from 'vue-codemirror'
+import * as judge from './utils/judgeMode'
+import './utils/changeWindowEvent'
 import '../static/css/codemirror.css'
 import '../static/css/monokai.css'
+import '../static/css/style.css'
+
+Vue.config.productionTip = false
 
 Vue.use(codemirror)
-Vue.config.productionTip = false
-Vue.use(ElementUI)
+Vue.use(element)
 Vue.use(VueX)
 
 /* eslint-disable no-new */
@@ -48,31 +52,7 @@ const store = new VueX.Store({
       }
     },
     updateTextBoxW: (state, info) => {
-      let attr = info.attr
-      switch (attr) {
-        case 'HTML':
-        case 'MarkDown':
-          attr = 'HTML'
-          break
-        case 'CSS':
-        case 'Sass':
-        case 'Scss':
-        case 'Less':
-        case 'Stylus':
-          attr = 'CSS'
-          break
-        case 'JavaScript':
-        case 'TypeScript':
-        case 'CoffeeScript':
-          attr = 'JavaScript'
-          break
-        case 'Console':
-          attr = 'Console'
-          break
-        case 'Output':
-          attr = 'Output'
-          break
-      }
+      const attr = judge.judgeMode(info.attr)
       state.textBoxW[attr] = info.value
     },
     updateStateAttr: (state, info) => {
@@ -125,19 +105,3 @@ console.log(
   '   |       \\  |     |  \\ | |      |    | |    | |     | \\' + '\n' +
   '|__/   \\___/  |___  |   \\|  |___/ \\____/ |___/  |___  |   \\' + '\n'
 )
-
-// 监测刷新和关闭
-// window.onbeforeunload = function (e) {
-//   let dialogText = 'Dialog text here'
-//   e.returnValue = dialogText
-//   return dialogText
-// }
-// window.isCloseHint = true
-// 初始化关闭
-// window.addEventListener('beforeunload', function (e) {
-//   if (window.isCloseHint) {
-//     let confirmationMessage = '要记得保存！你确定要离开我吗？';
-//     (e || window.event).returnValue = confirmationMessage // 兼容 Gecko + IE
-//     return confirmationMessage // 兼容 Gecko + Webkit, Safari, Chrome
-//   }
-// })
