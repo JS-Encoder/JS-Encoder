@@ -1,6 +1,6 @@
 /* eslint-disable */
 import JSZip from 'jszip'
-import judgeMode from './judgeMode.js'
+import getCompiledCode from './getCompiledCode.js'
 
 async function singleDownLoad(state) {
   // css link
@@ -16,7 +16,7 @@ async function singleDownLoad(state) {
   })
 
   let codeObj
-  await judgeMode(state).then(obj => {
+  await getCompiledCode(state).then(obj => {
     codeObj = obj
   })
 
@@ -65,7 +65,7 @@ async function zipDownLoad(state) {
 
   let codeObj
 
-  await judgeMode(state).then(obj => {
+  await getCompiledCode(state).then(obj => {
     codeObj = obj
   })
 
