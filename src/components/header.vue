@@ -214,6 +214,7 @@ import slider from './slider'
 import { saveAs } from 'file-saver'
 import colorInfo from '../utils/colorInfo'
 import * as downloadFiles from '../utils/downloadFiles'
+import * as judge from '../utils/judgeMode'
 const JSZip = require('jszip')
 export default {
   data() {
@@ -393,24 +394,7 @@ export default {
       this.chooseFiles.splice(index, 1)
     },
     updateEditorContent(content, type) {
-      switch (type) {
-        case 'html':
-        case 'md':
-          type = 'HTML'
-          break
-        case 'css':
-        case 'sass':
-        case 'scss':
-        case 'less':
-        case 'styl':
-          type = 'CSS'
-          break
-        case 'js':
-        case 'ts':
-        case 'coffee':
-          type = 'JavaScript'
-          break
-      }
+      type = judge.judgeExtension(type)
       this.$store.commit('change', {
         [type]: content
       })

@@ -43,8 +43,10 @@ import Console from './console'
 import { codemirror } from 'vue-codemirror'
 import CodeMirror from 'codemirror'
 import { mapState } from 'vuex'
-import * as compiler from '../../static/js/compiler'
-import judgeMode from '../utils/judgeMode'
+import * as compiler from '../utils/compiler'
+import * as createTag from '../utils/createTags'
+import * as judge from '../utils/judgeMode'
+import getCompiledCode from '../utils/getCompiledCode'
 import getEditor from '../utils/codeEditor'
 
 export default {
@@ -73,31 +75,7 @@ export default {
     Console
   },
   mounted() {
-    let initTitle
-    switch (this.title) {
-      case 'HTML':
-      case 'MarkDown':
-        this.initTitle = 'HTML'
-        break
-      case 'CSS':
-      case 'Sass':
-      case 'Scss':
-      case 'Less':
-      case 'Stylus':
-        this.initTitle = 'CSS'
-        break
-      case 'JavaScript':
-      case 'TypeScript':
-      case 'CoffeeScript':
-        this.initTitle = 'JavaScript'
-        break
-      case 'Console':
-        this.initTitle = 'Console'
-        break
-      case 'Output':
-        this.initTitle = 'Output'
-        break
-    }
+    this.initTitle = judge.judgeMode(this.title)
     this.init()
   },
   computed: {
@@ -186,32 +164,7 @@ export default {
       const elInfo = this.$refs[this.title]
       const title = this.initTitle
       const starW = elInfo.offsetWidth
-      let nextBox = this.typeList[this.index + 1]
-
-      switch (nextBox) {
-        case 'HTML':
-        case 'MarkDown':
-          nextBox = 'HTML'
-          break
-        case 'CSS':
-        case 'Sass':
-        case 'Scss':
-        case 'Less':
-        case 'Stylus':
-          nextBox = 'CSS'
-          break
-        case 'JavaScript':
-        case 'TypeScript':
-        case 'CoffeeScript':
-          nextBox = 'JavaScript'
-          break
-        case 'Console':
-          nextBox = 'Console'
-          break
-        case 'Output':
-          nextBox = 'Output'
-          break
-      }
+      let nextBox = judge.judgeMode(this.typeList[this.index + 1])
 
       // The event binding for this page does not affect the iframe, events are disabled when the mouse is moved over iframe,
       // screen will appears when the mouseDown event is triggers
@@ -257,53 +210,15 @@ export default {
       //Page initializes the execution function
       const initText = this.$store.state.textBoxContent
       const title = this.title
-      switch (this.title) {
-        case 'HTML':
-          this.message = initText.HTML
-          this.cmOptions.mode = 'text/html'
-          break
-        case 'MarkDown':
-          this.message = initText.HTML
-          this.cmOptions.mode = 'text/x-markdown'
-          break
-        case 'CSS':
-          this.message = initText.CSS
-          this.cmOptions.mode = 'css'
-          break
-        case 'Sass':
-          this.message = initText.CSS
-          this.cmOptions.mode = 'text/x-sass'
-          break
-        case 'Scss':
-          this.message = initText.CSS
-          this.cmOptions.mode = 'text/x-scss'
-          break
-        case 'Less':
-          this.message = initText.CSS
-          this.cmOptions.mode = 'text/x-less'
-          break
-        case 'Stylus':
-          this.message = initText.CSS
-          this.cmOptions.mode = 'text/x-styl'
-          break
-        case 'JavaScript':
-          this.message = initText.JavaScript
-          this.cmOptions.mode = 'text/javascript'
-          break
-        case 'TypeScript':
-          this.message = initText.JavaScript
-          this.cmOptions.mode = 'text/typescript'
-          break
-        case 'CoffeeScript':
-          this.message = initText.JavaScript
-          this.cmOptions.mode = 'text/coffeescript'
-          break
-        default:
-          this.showCode = false
-          if (title === 'Output') {
-            this.showIframe = true
-          }
-          break
+
+      this.message = initText[judge.judgeMode(title)]
+      this.cmOptions.mode = judge.getStyleMode(title)
+
+      if (title === 'Console' || title === 'Output') {
+        this.showCode = false
+        if (title === 'Output') {
+          this.showIframe = true
+        }
       }
     },
     sendCodeToIframe(exeCode) {
@@ -315,27 +230,30 @@ export default {
       this.$emit('updateConsole', exeCode)
     },
     async spliceHtml(time, exeCode = '') {
+      const state = this.$store.state
       // get code
       let codeObj
-      await judgeMode(this.$store.state).then(obj => {
+      await getCompiledCode(state).then(obj => {
         codeObj = obj
       })
 
       // css link
       // url format check
-      const cssLinks = this.$store.state.cssLinks
       let validCss = []
-      if (cssLinks.length) {
-        for (let item of cssLinks) {
-          if (!item) continue
-          if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
-            validCss.push(item)
+      if (this.HTMLPrep !== 'MarkDown') {
+        const cssLinks = state.cssLinks
+        if (cssLinks.length) {
+          for (let item of cssLinks) {
+            if (!item) continue
+            if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
+              validCss.push(item)
+          }
         }
       }
 
       // js cdn
       // url format check
-      const cdnJs = this.$store.state.cdnJs
+      const cdnJs = state.cdnJs
       let validCDN = []
       if (cdnJs.length) {
         for (let item of cdnJs) {
@@ -351,64 +269,54 @@ export default {
 
       // splice html, css and js
       setTimeout(() => {
-        const content = this.$store.state.textBoxContent
+        const content = state.textBoxContent
         const iframe = this.$refs.iframeBox
-        let linkArr = iframe.contentWindow.document.getElementsByTagName('link')
-        if (linkArr.length) {
-          for (let i = linkArr.length - 1; i >= 0; i--) {
-            linkArr[i].parentNode.removeChild(linkArr[i])
+        const document = iframe.contentWindow.document
+
+        if (this.HTMLPrep !== 'MarkDown') {
+          let linkArr = document.getElementsByTagName('link')
+          if (linkArr.length) {
+            for (let i = linkArr.length - 1; i >= 0; i--) {
+              linkArr[i].parentNode.removeChild(linkArr[i])
+            }
           }
-        }
-        for (let item of validCss) {
-          this.createLink('link', item)
+          for (let item of validCss) {
+            createTag.createLinkOrCDN(iframe, 'link', item)
+          }
+        } else {
+          createTag.createLinkOrCDN(
+            iframe,
+            'link',
+            '../css/github-markdown.css'
+          )
         }
 
-        let style = iframe.contentWindow.document.getElementById('compOlCss')
+        createTag.createLinkOrCDN(iframe, 'link', '../css/runner.css')
+
+        let style = document.getElementById('compOlCss')
         if (style) style.parentNode.removeChild(style)
-        this.createStyle('style', 'compOlCss', codeObj.CSSCode)
+        createTag.createStyleOrScript(
+          iframe,
+          'style',
+          'compOlCss',
+          codeObj.CSSCode
+        )
 
-        let script = iframe.contentWindow.document.getElementById('src')
+        let script = document.getElementById('src')
         const code = `
         (function(){
           ${codeObj.JSCode}\n${exeCode}
         })()
 `
         if (script) script.parentNode.removeChild(script)
-        iframe.contentWindow.document.body.innerHTML = codeObj.HTMLCode
+        document.body.innerHTML = codeObj.HTMLCode
         for (let item of validCDN) {
-          this.createCDN('script', item)
+          createTag.createLinkOrCDN(iframe, 'script', item)
         }
-        this.createScript('script', 'src', code)
+        createTag.createStyleOrScript(iframe, 'script', 'src', code)
         const info = iframe.contentWindow.consoleInfo
         this.$store.commit('updateConsole', info)
       }, waitTime)
-    },
-    createScript(element, id, code) {
-      let iframe = this.$refs.iframeBox
-      let ele = iframe.contentWindow.document.createElement(element)
-      ele.id = id
-      ele.text = code
-      iframe.contentWindow.document.body.appendChild(ele)
-    },
-    createStyle(element, id, code) {
-      let iframe = this.$refs.iframeBox
-      let ele = iframe.contentWindow.document.createElement(element)
-      ele.id = id
-      ele.innerText = code
-      iframe.contentWindow.document.head.appendChild(ele)
-    },
-    createCDN(element, url) {
-      let iframe = this.$refs.iframeBox
-      let ele = iframe.contentWindow.document.createElement(element)
-      ele.src = url
-      iframe.contentWindow.document.body.appendChild(ele)
-    },
-    createLink(element, url) {
-      let iframe = this.$refs.iframeBox
-      let ele = iframe.contentWindow.document.createElement(element)
-      ele.href = url
-      ele.rel = 'stylesheet'
-      iframe.contentWindow.document.head.appendChild(ele)
     },
     reSetConsole() {
       this.$refs.iframeBox.contentWindow.consoleInfo = []
