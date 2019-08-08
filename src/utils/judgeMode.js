@@ -1,78 +1,63 @@
 /* eslint-disable */
-import * as compiler from '../../static/js/compiler'
+const modeList = {
+  HTML: 'text/html',
+  MarkDown: 'text/x-markdown',
+  CSS: 'css',
+  Sass: 'text/x-sass',
+  Scss: 'text/x-scss',
+  Less: 'text/x-less',
+  Stylus: 'text/x-styl',
+  JavaScript: 'text/javascript',
+  TypeScript: 'text/typescript',
+  CoffeeScript: 'text/coffeescript'
+}
 
-async function judge(state) {
-  const content = state.textBoxContent
-  const HTMLPrep = state.HTMLPrep
-  const CSSPrep = state.CSSPrep
-  const JSPrep = state.JSPrep
-  let HTMLCode = '',
-    CSSCode = '',
-    JSCode = ''
-
-  if (HTMLPrep === 'HTML') {
-    HTMLCode = content.HTML
-  } else if (HTMLPrep === 'MarkDown') {
-    await compiler
-      .compileMarkDown(content.HTML)
-      .then(code => {
-        HTMLCode = code
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
-
-  if (CSSPrep === 'CSS') {
-    CSSCode = content.CSS
-  } else if (CSSPrep === 'Sass' || CSSPrep === 'Scss') {
-    await compiler
-      .compileSass(content.CSS)
-      .then(code => {
-        CSSCode = code
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  } else if (CSSPrep === 'Less') {
-    await compiler
-      .compileLess(content.CSS)
-      .then(code => {
-        CSSCode = code.css
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  } else if (CSSPrep === 'Stylus') {
-    await compiler
-      .compileStylus(content.CSS)
-      .then(code => {
-        CSSCode = code
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
-
-  if (JSPrep === 'JavaScript') {
-    JSCode = content.JavaScript
-  } else if (JSPrep === 'TypeScript') {
-    JSCode = compiler.compileTypeScript(content.JavaScript)
-  } else if (JSPrep === 'CoffeeScript') {
-    await compiler
-      .compileCoffeeScript(content.JavaScript)
-      .then(code => {
-        JSCode = code
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
-  return {
-    HTMLCode,
-    CSSCode,
-    JSCode
+function judgeMode(edit) {
+  switch (edit) {
+    case 'HTML':
+    case 'MarkDown':
+      return 'HTML'
+    case 'CSS':
+    case 'Sass':
+    case 'Scss':
+    case 'Less':
+    case 'Stylus':
+      return 'CSS'
+    case 'JavaScript':
+    case 'TypeScript':
+    case 'CoffeeScript':
+      return 'JavaScript'
+    case 'Console':
+      return 'Console'
+    case 'Output':
+      return 'Output'
   }
 }
 
-export default judge
+function judgeExtension(edit) {
+  switch (edit) {
+    case 'html':
+    case 'md':
+      return 'HTML'
+    case 'css':
+    case 'sass':
+    case 'scss':
+    case 'less':
+    case 'styl':
+      return 'CSS'
+    case 'js':
+    case 'ts':
+    case 'coffee':
+      return 'JavaScript'
+  }
+}
+
+function getStyleMode(edit) {
+  return modeList[edit]
+}
+
+export {
+  judgeMode,
+  judgeExtension,
+  getStyleMode
+}
