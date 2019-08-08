@@ -1,5 +1,6 @@
 /* eslint-disable */
 import CodeMirror from 'codemirror'
+
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/xml/xml'
 import 'codemirror/mode/css/css'
