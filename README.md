@@ -1,6 +1,6 @@
 # JS-Encoder
 
-[![Travis (.org)](https://img.shields.io/travis/Longgererer/JS-Encoder.svg)](https://travis-ci.org/Longgererer/JS-Encoder) [![](https://img.shields.io/badge/StyleCI-passed-green.svg)](https://github.styleci.io/repos/190842308) [![](https://img.shields.io/badge/LICENSE-MIT-blue.svg)](https://github.com/Longgererer/JS-Encoder/blob/master/LICENSE)
+[![Travis (.org)](https://img.shields.io/travis/Longgererer/JS-Encoder.svg?style=flat-square)](https://travis-ci.org/Longgererer/JS-Encoder) [![](https://img.shields.io/badge/StyleCI-passed-green.svg?style=flat-square)](https://github.styleci.io/repos/190842308) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![](https://img.shields.io/badge/LICENSE-MIT-blue.svg?style=flat-square)](https://github.com/Longgererer/JS-Encoder/blob/master/LICENSE)
 
 👉 **JS-Encoder**是一个完全开源的 WEB 在线编译器 👈
 
@@ -31,11 +31,12 @@ JS-Encoder 目前处于完善阶段！
   - 颜色转换: 你可以在 HEX 格式和 RGB 格式之间相互转换 🔄
 - [x] 个性化设置
 - [x] 多快捷键支持，比如:
-  - Tab:
+
+  - <kbd>Tab</kbd>:
 
   [![GIF.gif](https://i.loli.net/2019/07/27/5d3c17c61b95532245.gif)](https://i.loli.net/2019/07/27/5d3c17c61b95532245.gif)
 
-  - Ctrl + Space:
+  - <kbd>Ctrl</kbd> + <kbd>Space</kbd>:
 
   [![GIF.gif](https://i.loli.net/2019/08/02/5d440f953cdbb32371.gif)](https://i.loli.net/2019/08/02/5d440f953cdbb32371.gif)
 
