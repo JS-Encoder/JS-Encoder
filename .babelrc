@@ -1,12 +1,21 @@
 {
-  "presets": [
-    ["env", {
-      "modules": false,
-      "targets": {
-        "browsers": ["> 1%", "last 2 versions", "not ie <= 8"]
+    "presets": [
+      ["env", { "modules": false }],
+      "stage-2"
+    ],
+    "plugins": [
+       "transform-runtime",
+       ["component", {
+          "libraryName": "element-ui",
+          "styleLibraryName": "theme-chalk"
+       }
+      ]  
+    ],
+    "comments": false,
+    "env": {
+      "test": {
+        "presets": ["env", "stage-2"],
+        "plugins": [ "istanbul" ]
       }
-    }],
-    "stage-2"
-  ],
-  "plugins": ["transform-vue-jsx", "transform-runtime"]
-}
+    }
+  }
