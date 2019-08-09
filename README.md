@@ -2,7 +2,7 @@
 
 [![Travis (.org)](https://img.shields.io/travis/Longgererer/JS-Encoder.svg?style=flat-square)](https://travis-ci.org/Longgererer/JS-Encoder) [![](https://img.shields.io/badge/StyleCI-passed-green.svg?style=flat-square)](https://github.styleci.io/repos/190842308) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![](https://img.shields.io/badge/LICENSE-MIT-blue.svg?style=flat-square)](https://github.com/Longgererer/JS-Encoder/blob/master/LICENSE)
 
-[English version]('https://github.com/Longgererer/JS-Encoder/blob/master/README_EN.md')
+[English version](https://github.com/Longgererer/JS-Encoder/blob/master/README_EN.md)
 
 👉 **JS-Encoder**是一个完全开源的 WEB 在线编译器 👈
 
