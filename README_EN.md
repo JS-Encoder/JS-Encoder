@@ -2,7 +2,7 @@
 
 [![Travis (.org)](https://img.shields.io/travis/Longgererer/JS-Encoder.svg?style=flat-square)](https://travis-ci.org/Longgererer/JS-Encoder) [![](https://img.shields.io/badge/StyleCI-passed-green.svg?style=flat-square)](https://github.styleci.io/repos/190842308) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![](https://img.shields.io/badge/LICENSE-MIT-blue.svg?style=flat-square)](https://github.com/Longgererer/JS-Encoder/blob/master/LICENSE)
 
-[中文版]('https://github.com/Longgererer/JS-Encoder/blob/master/README_EN.md')
+[中文版]('https://github.com/Longgererer/JS-Encoder/blob/master/README.md')
 
 👉 **JS-Encoder** is a open-source online compiler for the WEB 👈
 
