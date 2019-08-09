@@ -2,6 +2,8 @@
 
 [![Travis (.org)](https://img.shields.io/travis/Longgererer/JS-Encoder.svg?style=flat-square)](https://travis-ci.org/Longgererer/JS-Encoder) [![](https://img.shields.io/badge/StyleCI-passed-green.svg?style=flat-square)](https://github.styleci.io/repos/190842308) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![](https://img.shields.io/badge/LICENSE-MIT-blue.svg?style=flat-square)](https://github.com/Longgererer/JS-Encoder/blob/master/LICENSE)
 
+[English version]('https://github.com/Longgererer/JS-Encoder/blob/master/README_EN.md')
+
 👉 **JS-Encoder**是一个完全开源的 WEB 在线编译器 👈
 
 [点击链接体验编译器](https://longgererer.github.io/JS-Encoder/dist)
@@ -48,27 +50,15 @@ git clone https://github.com/Longgererer/JS-Encoder.git
 
 或者使用 [Github Desktop](https://desktop.github.com/) 工具
 
-可以使用 npm 或 yarn 来初始化并运行这个项目
+使用 yarn 来初始化并运行这个项目
 
 初始化
-
-```dash
-npm i
-```
-
-or
 
 ```dash
 yarn
 ```
 
 运行项目
-
-```dash
-npm run dev
-```
-
-or
 
 ```dash
 yarn dev
@@ -81,6 +71,10 @@ yarn dev
 - 代码分享, 可以通过链接 🔗 的方式向别人展示你的代码
 - 添加更多个性化功能
 - 优化用户体验, JS-Encoder 在几个月前才正式开发, 现在有很多需要优化的地方, 这也是 JS-Encoder 需要解决的最重要的问题 🧐
+
+## 支持
+
+如果你想支持 JS-Encoder，点个 star 💗 支持我吧！
 
 ## LICENSE
 
