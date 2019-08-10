@@ -57,7 +57,7 @@ export default function (mode = '') {
       'Ctrl-Q': cm => {
         cm.foldCode(cm.getCursor())
       },
-      'Ctrl-Space': async cm => {
+      'Shift-Alt-F': async cm => {
         const code = cm.getValue()
         let finCode = ''
         switch (mode) {
