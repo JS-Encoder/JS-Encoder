@@ -38,7 +38,7 @@ At present JS-Encoder is in the stage of perfection!
 
   [![GIF.gif](https://i.loli.net/2019/07/27/5d3c17c61b95532245.gif)](https://i.loli.net/2019/07/27/5d3c17c61b95532245.gif)
 
-  - <kbd>Ctrl</kbd> + <kbd>Space</kbd>:
+  - <kbd>Shift</kbd> + <kbd>Alt</kbd> + <kbd>F</kbd>:
 
   [![GIF.gif](https://i.loli.net/2019/08/02/5d440f953cdbb32371.gif)](https://i.loli.net/2019/08/02/5d440f953cdbb32371.gif)
 
