@@ -1,22 +1,22 @@
 <template>
   <div class="flex flex-ai" id="header">
-    <div @click="showSlider" class="slider-menu">
+    <div @click="sliderConf.isShow = true" class="slider-menu">
       <i class="icon iconfont icon-menu"></i>
     </div>
     <span class="header-title noselect flex">
       <img alt class="logo" src="../assets/logo.svg" />
     </span>
     <ul class="header-menu flex">
-      <li @click="openUpload">
+      <li @click="upload.isShow = true">
         <i class="icon iconfont icon-feiji" style="font-size:20px"></i>
       </li>
-      <li @click="openDownload">
+      <li @click="download.isShow = true">
         <i class="icon iconfont icon-baocun" style="font-size:23px"></i>
       </li>
-      <li @click="openConfig">
+      <li @click="config.isShow = true">
         <i class="icon iconfont icon-config"></i>
       </li>
-      <li @click="openHelp">
+      <li @click="help.isShow = true">
         <i class="icon iconfont icon-help"></i>
       </li>
     </ul>
@@ -98,7 +98,7 @@
             <el-input placeholder="your CDN" size="small" v-model="cdnJs[index]"></el-input>
             <i @click="delCDN(index)" class="icon iconfont icon-Clear"></i>
           </div>
-          <div @click="addCDN" class="add-link flex flex-ai flex-jcc">+ Add more links</div>
+          <div @click="showCdnInput++" class="add-link flex flex-ai flex-jcc">+ Add more links</div>
         </div>
         <div class="line"></div>
         <div class="add-css">
@@ -110,7 +110,7 @@
             <el-input placeholder="your CSS link" size="small" v-model="cssLinks[index]"></el-input>
             <i @click="delCssLink(index)" class="icon iconfont icon-Clear"></i>
           </div>
-          <div @click="addCssLink" class="add-link flex flex-ai flex-jcc">+ Add more links</div>
+          <div @click="showCssInput++" class="add-link flex flex-ai flex-jcc">+ Add more links</div>
         </div>
         <div class="line"></div>
         <div class="preprocessor">
@@ -129,18 +129,16 @@
         </div>
       </div>
     </popUp>
-    <popUp :pop="help" class="noselect">
+    <popUp :pop="help" class="help noselect">
       <el-collapse accordion v-model="activeName">
         <el-collapse-item name="1" title="Shortcut Key">
-          <div>TAB ------------------------------- Indent code</div>
-          <div>Ctrl + Space -------------------------- Format code</div>
-          <div>CTRL + ALT ---------------------------- Trun on smart tips</div>
-          <div>CTRL + Q ---------------------------- Fold the code</div>
-          <div>CTRL + / ---------------- Toggle comment on selected lines</div>
-          <div>CTRL + SHIFT + D ---------------- Duplicate line</div>
-          <div>CTRL + D ---------------- Select the current row</div>
-          <div>Shift + Ctrl + Up ---------------- Swap line up</div>
-          <div>Shift + Ctrl+ Down ---------------- Swap line down</div>
+          <div :key="index" class="flex flex-ai key-box" v-for="(item, index) in shortcut">
+            <div :key="index" v-for="(key, index) in item.keyboard">
+              <kbd>{{key}}</kbd>
+              <span v-if="index < item.keyboard.length - 1">+</span>
+            </div>
+            <span class="explain">{{item.explain}}</span>
+          </div>
         </el-collapse-item>
         <el-collapse-item name="2" title="Feedback">
           <div>
@@ -213,9 +211,12 @@ import popUp from './popUp'
 import slider from './slider'
 import { saveAs } from 'file-saver'
 import colorInfo from '../utils/colorInfo'
+import keyboardList from '../utils/shortcut'
+import JSZip from 'jszip'
 import * as downloadFiles from '../utils/downloadFiles'
 import * as judge from '../utils/judgeMode'
-const JSZip = require('jszip')
+import * as switcher from '../utils/switchColorFormat'
+import * as uploader from '../utils/uploadFile'
 export default {
   data() {
     return {
@@ -323,6 +324,9 @@ export default {
     showConfig() {
       return this.config.isShow
     },
+    shortcut() {
+      return keyboardList
+    },
     colorInfo() {
       return colorInfo
     }
@@ -340,27 +344,12 @@ export default {
     }
   },
   methods: {
-    showSlider() {
-      this.sliderConf.isShow = true
-    },
     triggerOpt(title) {
       if (title === 'github') {
         window.open('https://github.com/Longgererer/JS-Encoder', '_blank')
         return
       }
       this[title].isShow = true
-    },
-    openConfig() {
-      this.config.isShow = true
-    },
-    openHelp() {
-      this.help.isShow = true
-    },
-    openDownload() {
-      this.download.isShow = true
-    },
-    openUpload() {
-      this.upload.isShow = true
     },
     chooseFile() {
       const input = this.$refs.fileInput
@@ -373,17 +362,35 @@ export default {
         }
       }
     },
-    uploadFile() {
+    async uploadFile() {
       const files = this.chooseFiles
       if (!files.length) return
-      const limiteType = this.limiteType
       for (let i = 0; i < files.length; i++) {
-        const reader = new FileReader()
-        reader.readAsText(files[i], 'UTF-8')
-        reader.onload = e => {
-          const fileString = e.target.result
-          this.updateEditorContent(fileString, this.getMimeType(files[i].name))
-        }
+        let fileString, mimeType
+        await uploader.readFile(files[i]).then(res => {
+          if (this.getMimeType(files[i].name) === 'html') {
+            for (let item in res) {
+              let content = res[item].content
+              const type = res[item].type
+              if (type === 'css') {
+                this.$store.commit('updateCssLinks', content.link)
+                this.cssLinks = content.link
+                if (content.link.length) this.showCssInput = content.link.length
+                content = content.finCode
+              } else if (type === 'js') {
+                this.$store.commit('updateCDN', content.CDN)
+                this.cdnJs = content.CDN
+                if (content.CDN.length) this.showCdnInput = content.CDN.length
+                content = content.finCode
+              }
+              this.updateEditorContent(content, type)
+            }
+            return
+          }
+          fileString = res.content
+          mimeType = res.type
+        })
+        this.updateEditorContent(fileString, mimeType)
       }
     },
     getMimeType(fileName) {
@@ -407,15 +414,9 @@ export default {
       downloadFiles.zipDownLoad(this.$store.state)
       this.download.isShow = false
     },
-    addCDN() {
-      this.showCdnInput++
-    },
     delCDN(index) {
       if (this.showCdnInput > 1) this.showCdnInput--
       this.cdnJs.splice(index, 1)
-    },
-    addCssLink() {
-      this.showCssInput++
     },
     delCssLink(index) {
       if (this.showCssInput > 1) this.showCssInput--
@@ -426,32 +427,15 @@ export default {
       this.$store.commit('updateStateAttr', { attr: obj, value })
     },
     switchRGB() {
-      if (!this.hexInfo) return
-      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(
-        this.hexInfo
-      )
+      const result = switcher.switchRGB(this.hexInfo)
       if (result) {
-        this.rgbInfo = {
-          r: parseInt(result[1], 16) + '',
-          g: parseInt(result[2], 16) + '',
-          b: parseInt(result[3], 16) + ''
-        }
-      } else {
-        return null
+        this.rgbInfo = result
       }
     },
     switchHEX() {
-      const rgb = this.rgbInfo
-      if (!(rgb.r && rgb.g && rgb.b)) return
-      const r = parseInt(rgb.r)
-      const g = parseInt(rgb.g)
-      const b = parseInt(rgb.b)
-      const hex =
-        '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
+      const hex = switcher.switchHEX(this.rgbInfo)
       if (hex) {
         this.hexInfo = hex
-      } else {
-        return null
       }
     },
     copyHex(hex) {
@@ -696,6 +680,15 @@ export default {
       }
     }
   }
+  .help {
+    .key-box {
+      position: relative;
+      .explain {
+        position: absolute;
+        right: 0;
+      }
+    }
+  }
   .color-table {
     width: 100%;
     .color {
@@ -711,7 +704,7 @@ export default {
         margin: 5px 0;
       }
       .color-info {
-        max-width: 280px;
+        max-width: 300px;
         .rgb-info {
           width: 100%;
           margin: 10px 0;
