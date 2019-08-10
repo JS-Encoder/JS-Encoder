@@ -71,9 +71,9 @@ export default {
     position: absolute;
     z-index: 1401;
     top: 0;
-    left: -200px;
+    left: -240px;
     border-right: 0px solid #999999;
-    @include setWAndH(200px, 100vh);
+    @include setWAndH(240px, 100vh);
     background-color: $dominantHue;
     box-shadow: 0px 0px 0px $dominantHue;
     @include setTransition(all, 0.3s, ease);
