@@ -1,6 +1,7 @@
 /* eslint-disable */
 import JSZip from 'jszip'
-import getCompiledCode from './getCompiledCode.js'
+import getCompiledCode from './getCompiledCode'
+import judgeFormat from './judgeUrlFormat'
 
 async function singleDownLoad(state) {
   // css link
@@ -97,17 +98,18 @@ async function zipDownLoad(state) {
   })
 }
 
-function judgeFormat(arr, fn) {
-  if (arr.length) {
-    for (let item of arr) {
-      if (!item) continue
-      if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
-        fn(item)
-    }
-  }
-}
+// function judgeFormat(arr, fn) {
+//   if (arr.length) {
+//     for (let item of arr) {
+//       if (!item) continue
+//       if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
+//         fn(item)
+//     }
+//   }
+// }
 
 export {
   singleDownLoad,
-  zipDownLoad
+  zipDownLoad,
+  judgeFormat
 }
