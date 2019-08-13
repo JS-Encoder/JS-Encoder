@@ -1,5 +1,5 @@
 /* eslint-disable */
-const limiteType = [
+const limitType = [
   'html',
   'css',
   'js',
@@ -123,5 +123,6 @@ function getMimeType(fileName) {
 }
 
 export {
+  limitType,
   readFile
 }
