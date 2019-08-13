@@ -24,6 +24,7 @@
 import Header from './components/header'
 import SettingBar from './components/settingBar'
 import textareaBox from './components/textareaBox'
+import { judgeMode } from '@/utils/judgeMode'
 import { mapState } from 'vuex'
 export default {
   name: 'App',
@@ -79,31 +80,7 @@ export default {
     screenWidth(newVal, oldVal) {
       const changeW = (newVal - oldVal) / this.types.length
       for (let item of this.types) {
-        let attr
-        switch (item) {
-          case 'HTML':
-          case 'MarkDown':
-            attr = 'HTML'
-            break
-          case 'CSS':
-          case 'Sass':
-          case 'Scss':
-          case 'Less':
-          case 'Stylus':
-            attr = 'CSS'
-            break
-          case 'JavaScript':
-          case 'TypeScript':
-          case 'CoffeeScript':
-            attr = 'JavaScript'
-            break
-          case 'Console':
-            attr = 'Console'
-            break
-          case 'Output':
-            attr = 'Output'
-            break
-        }
+        const attr = judgeMode(item)
         const changeNum = parseFloat(this.$store.state.textBoxW[attr])
         this.$store.commit('updateTextBoxW', {
           attr: item,
@@ -137,11 +114,23 @@ export default {
         arr.forEach(item => {
           // Replaces the value of the arr elements with the window,and push result into finalArr
           let str = ''
-          if (item === 1) str = this.HTMLPrep
-          else if (item === 2) str = this.CSSPrep
-          else if (item === 3) str = this.JSPrep
-          else if (item === 4) str = 'Console'
-          else if (item === 5) str = 'Output'
+          switch (item) {
+            case 1:
+              str = this.HTMLPrep
+              break
+            case 2:
+              str = this.CSSPrep
+              break
+            case 3:
+              str = this.JSPrep
+              break
+            case 4:
+              str = 'Console'
+              break
+            case 5:
+              str = 'Output'
+              break
+          }
           finalArr.push(str)
         })
         this.types = finalArr
