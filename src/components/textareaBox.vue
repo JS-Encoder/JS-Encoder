@@ -1,7 +1,8 @@
 <template>
   <div :ref="title" :style="{width:textBoxW[initTitle]}" class="flex flex-clo" id="textareaBox">
-    <div class="title noselect flex flex-ali">
+    <div class="title noselect flex flex-ai">
       <span>{{title}}</span>
+      <div class="iframe-width" v-if="initTitle === 'Output'">{{ iframeWidth}}</div>
     </div>
     <div :class="title === 'Console'?'bgc':''" :ref="'textbox'+index" class="text-box flex">
       <codemirror
@@ -25,13 +26,7 @@
         v-if="showIframe"
       ></iframe>
       <div class="screen-box" v-if="showScreen && title === 'Output'"></div>
-      <div
-        @mousedown="boxMouseDown"
-        @mouseout="boxMouseOut"
-        @mouseover="boxMouseOver"
-        class="resize flex flex-jcc"
-        v-if="index!=len-1"
-      >
+      <div @mousedown="boxMouseDown" class="resize flex flex-jcc" v-if="index!=len-1">
         <div class="resize-line" ref="line"></div>
       </div>
     </div>
@@ -40,14 +35,15 @@
 
 <script>
 import Console from './console'
-import { codemirror } from 'vue-codemirror'
 import CodeMirror from 'codemirror'
+import { codemirror } from 'vue-codemirror'
 import { mapState } from 'vuex'
-import * as compiler from '../utils/compiler'
-import * as createTag from '../utils/createTags'
-import * as judge from '../utils/judgeMode'
-import getCompiledCode from '../utils/getCompiledCode'
-import getEditor from '../utils/codeEditor'
+import getCompiledCode from '@/utils/getCompiledCode'
+import getEditor from '@/utils/codeEditor'
+import judgeFormat from '@/utils/judgeUrlFormat'
+import * as compiler from '@/utils/compiler'
+import * as createTag from '@/utils/createTags'
+import * as judge from '@/utils/judgeMode'
 
 export default {
   props: {
@@ -90,7 +86,10 @@ export default {
       replace: 'replace',
       autoUp: 'autoUp',
       run: 'isRun'
-    })
+    }),
+    iframeWidth() {
+      return `${parseInt(this.textBoxW[this.initTitle])}px`
+    }
   },
   watch: {
     'content.HTML': function(newVal) {
@@ -109,7 +108,9 @@ export default {
       }
     },
     extraConsole(newVal) {
-      this.sendCodeToIframe(newVal)
+      if (this.initTitle === 'Output') {
+        this.sendCodeToIframe(newVal)
+      }
     },
     space() {
       // watch tab-space value changes and resetting tab-space config
@@ -153,36 +154,30 @@ export default {
     }
   },
   methods: {
-    boxMouseOver(e) {
-      this.$refs.line.style.border = '.5px dashed #65d3fd'
-    },
-    boxMouseOut(e) {
-      this.$refs.line.style.border = '.5px solid #999999'
-    },
     boxMouseDown(e) {
       const starX = e.clientX
       const elInfo = this.$refs[this.title]
       const title = this.initTitle
       const starW = elInfo.offsetWidth
-      let nextBox = judge.judgeMode(this.typeList[this.index + 1])
+      const nextBox = judge.judgeMode(this.typeList[this.index + 1])
+      const commit = this.$store.commit
 
       // The event binding for this page does not affect the iframe, events are disabled when the mouse is moved over iframe,
       // screen will appears when the mouseDown event is triggers
-      if (nextBox === 'Output') this.$store.commit('updateScreen', true)
+      if (nextBox === 'Output') commit('updateScreen', true)
 
       // Calculate the total width of two divs
       const wholeW =
         parseFloat(this.textBoxW[nextBox]) + parseFloat(this.textBoxW[title])
       document.onmousemove = ev => {
-        let iEvent = ev || event
+        const iEvent = ev || event
         const finW = starW + (iEvent.clientX - starX)
         if (finW > 100 && wholeW - finW > 100) {
-          const store = this.$store
-          store.commit('updateTextBoxW', {
+          commit('updateTextBoxW', {
             attr: title,
             value: finW + 'px'
           })
-          store.commit('updateTextBoxW', {
+          commit('updateTextBoxW', {
             attr: nextBox,
             value: wholeW - finW + 'px'
           })
@@ -192,9 +187,8 @@ export default {
       // screen will hides when mouseUp event is triggers
       document.onmouseup = () => {
         document.onmousemove = null
-        this.$store.commit('updateScreen', false)
+        commit('updateScreen', false)
       }
-      return false
     },
     init() {
       if (this.initTitle === 'Console' || this.initTitle === 'Output') {
@@ -222,9 +216,7 @@ export default {
       }
     },
     sendCodeToIframe(exeCode) {
-      if (this.initTitle === 'Output') {
-        this.spliceHtml(0, exeCode)
-      }
+      this.spliceHtml(0, exeCode)
     },
     updateConsole(exeCode) {
       this.$emit('updateConsole', exeCode)
@@ -237,31 +229,17 @@ export default {
         codeObj = obj
       })
 
-      // css link
       // url format check
       let validCss = []
-      if (this.HTMLPrep !== 'MarkDown') {
-        const cssLinks = state.cssLinks
-        if (cssLinks.length) {
-          for (let item of cssLinks) {
-            if (!item) continue
-            if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
-              validCss.push(item)
-          }
-        }
-      }
-
-      // js cdn
-      // url format check
-      const cdnJs = state.cdnJs
+      const cssLinks = state.cssLinks
+      judgeFormat(cssLinks, function(item) {
+        validCss.push(item)
+      })
       let validCDN = []
-      if (cdnJs.length) {
-        for (let item of cdnJs) {
-          if (!item) continue
-          if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
-            validCDN.push(item)
-        }
-      }
+      const cdnJs = state.cdnJs
+      judgeFormat(cdnJs, function(item) {
+        validCDN.push(item)
+      })
 
       // waitTime
       let waitTime = null
@@ -291,9 +269,10 @@ export default {
           )
         }
 
+        // init style
         createTag.createLinkOrCDN(iframe, 'link', '../css/runner.css')
 
-        let style = document.getElementById('compOlCss')
+        const style = document.getElementById('compOlCss')
         if (style) style.parentNode.removeChild(style)
         createTag.createStyleOrScript(
           iframe,
@@ -302,14 +281,12 @@ export default {
           codeObj.CSSCode
         )
 
-        let script = document.getElementById('src')
-        const code = `
-        (function(){
-          ${codeObj.JSCode}\n${exeCode}
-        })()
-`
+        const script = document.getElementById('src')
         if (script) script.parentNode.removeChild(script)
+        const code = `\n(()=>{\n${codeObj.JSCode}\n${exeCode}\n})()\n`
+
         document.body.innerHTML = codeObj.HTMLCode
+
         for (let item of validCDN) {
           createTag.createLinkOrCDN(iframe, 'script', item)
         }
@@ -326,81 +303,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-@media screen and (max-width: 600px) {
-  .title {
-    span {
-      font-size: 10px !important;
-    }
-  }
-  #textareaBox {
-    width: 100% !important;
-  }
-}
-.bgc {
-  background-color: $dominantHue;
-}
-#textareaBox {
-  height: 100%;
-  min-width: 72px;
-  box-sizing: border-box;
-  .title {
-    position: relative;
-    span {
-      color: $primaryHued;
-      font-size: 12px;
-      line-height: 20px;
-      background-color: $dominantHue;
-      padding: 1px 10px;
-      display: inline-block;
-      height: 20px;
-      font-family: $josefinSans !important;
-    }
-    .type-box {
-      @include setWAndH(100px, 100px);
-      background-color: $primaryHued;
-      position: absolute;
-      z-index: 100;
-      top: 100%;
-    }
-  }
-  .text-box {
-    @include setWAndH(100%, 100%);
-    position: relative;
-    .code {
-      @include setWAndH(100%, 100%);
-      background-color: $dominantHue;
-      resize: none;
-      outline: none;
-      border: none;
-      color: $primaryHued;
-    }
-    iframe {
-      @include setWAndH(100%, 100%);
-      background-color: #fff;
-    }
-    .screen-box {
-      @include setWAndH(100%, 100%);
-      position: absolute;
-      z-index: 10;
-    }
-    .resize {
-      @include setWAndH(5px, 100%);
-      box-sizing: border-box;
-      position: relative;
-      cursor: e-resize;
-      position: absolute;
-      right: 0;
-      z-index: 1000;
-      .resize-line {
-        @include setWAndH(1px, 100%);
-        border: 0.5px solid #999999;
-        box-sizing: border-box;
-        cursor: e-resize;
-        position: absolute;
-        right: 0;
-      }
-    }
-  }
-}
-</style>
+<style lang="scss" src="./componentStyle/textareaBox.scss" scoped></style>

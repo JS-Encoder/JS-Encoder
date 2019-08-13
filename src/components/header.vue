@@ -94,6 +94,25 @@
           <div
             class="describe"
           >The links added here are all run in order before running JavaScript, links that support the HTTP or HTTPS protocols</div>
+          <el-select
+            :loading="loading"
+            :remote-method="remoteCDN"
+            @change="addSearchCDN"
+            class="search-url"
+            filterable
+            loading-text="loading"
+            placeholder="search CDNs"
+            remote
+            size="small"
+            v-model="chooseCDN"
+          >
+            <el-option
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+              v-for="item in jsOptions"
+            ></el-option>
+          </el-select>
           <div :key="index" class="cdn-in flex flex-ai" v-for="(item, index) in showCdnInput">
             <el-input placeholder="your CDN" size="small" v-model="cdnJs[index]"></el-input>
             <i @click="delCDN(index)" class="icon iconfont icon-Clear"></i>
@@ -106,6 +125,25 @@
           <div
             class="describe"
           >The links added here are all run in order before running CSS, links that support the HTTP or HTTPS protocols</div>
+          <el-select
+            :loading="loading"
+            :remote-method="remoteLink"
+            @change="addSearchLink"
+            class="search-url"
+            filterable
+            loading-text="loading"
+            placeholder="search links"
+            remote
+            size="small"
+            v-model="chooseLink"
+          >
+            <el-option
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+              v-for="item in cssOptions"
+            ></el-option>
+          </el-select>
           <div :key="index" class="css-in flex flex-ai" v-for="(item, index) in showCssInput">
             <el-input placeholder="your CSS link" size="small" v-model="cssLinks[index]"></el-input>
             <i @click="delCssLink(index)" class="icon iconfont icon-Clear"></i>
@@ -207,16 +245,17 @@
   </div>
 </template>
 <script>
+import JSZip from 'jszip'
 import popUp from './popUp'
 import slider from './slider'
 import { saveAs } from 'file-saver'
-import colorInfo from '../utils/colorInfo'
-import keyboardList from '../utils/shortcut'
-import JSZip from 'jszip'
-import * as downloadFiles from '../utils/downloadFiles'
-import * as judge from '../utils/judgeMode'
-import * as switcher from '../utils/switchColorFormat'
-import * as uploader from '../utils/uploadFile'
+import colorInfo from '@/utils/colorInfo'
+import keyboardList from '@/utils/shortcut'
+import { CDN, Link } from '@/utils/selectableUrl'
+import * as downloadFiles from '@/utils/downloadFiles'
+import * as judge from '@/utils/judgeMode'
+import * as switcher from '@/utils/switchColorFormat'
+import * as uploader from '@/utils/uploadFile'
 export default {
   data() {
     return {
@@ -302,18 +341,13 @@ export default {
       waitTime: 500,
       replace: true,
       autoUp: true,
-      limiteType: [
-        'html',
-        'css',
-        'js',
-        'md',
-        'sass',
-        'scss',
-        'less',
-        'styl',
-        'ts',
-        'coffee'
-      ]
+      loading: false,
+      cssOptions: [],
+      jsOptions: [],
+      cssUrlList: [],
+      jsUrlList: [],
+      chooseCDN: '',
+      chooseLink: ''
     }
   },
   components: {
@@ -321,8 +355,25 @@ export default {
     slider
   },
   computed: {
+    cdn() {
+      const arr = []
+      for (let i in CDN) {
+        arr.push(i.replace('_', '-'))
+      }
+      return arr
+    },
+    link() {
+      const arr = []
+      for (let i in Link) {
+        arr.push(i.replace('_', '-'))
+      }
+      return arr
+    },
     showConfig() {
       return this.config.isShow
+    },
+    limitType() {
+      return uploader.limitType
     },
     shortcut() {
       return keyboardList
@@ -343,7 +394,62 @@ export default {
       }
     }
   },
+  mounted() {
+    this.cssUrlList = this.link.map(item => {
+      return { value: item, label: item }
+    })
+    this.jsUrlList = this.cdn.map(item => {
+      return { value: item, label: item }
+    })
+  },
   methods: {
+    remoteCDN(query) {
+      this.remoteMethod(query, 'jsOptions', this.jsUrlList)
+    },
+    remoteLink(query) {
+      this.remoteMethod(query, 'cssOptions', this.cssUrlList)
+    },
+    remoteMethod(query, options, list) {
+      if (query !== '') {
+        this.loading = true
+        setTimeout(() => {
+          this.loading = false
+          this[options] = list.filter(item => {
+            return item.label.toLowerCase().indexOf(query.toLowerCase()) > -1
+          })
+        }, 200)
+      } else {
+        this[options] = []
+      }
+    },
+    addSearchLink() {
+      const link = Link[this.chooseLink.replace('-', '_')]
+      const cssLinks = this.cssLinks
+      const index = this.checkInputContent(cssLinks)
+      if (index !== null) {
+        cssLinks[index] = link
+      } else {
+        cssLinks.push(link)
+        this.showCssInput++
+      }
+    },
+    addSearchCDN() {
+      const cdn = CDN[this.chooseCDN.replace('-', '_')]
+      const cdnJs = this.cdnJs
+      const index = this.checkInputContent(cdnJs)
+      if (index !== null) {
+        cdnJs[index] = cdn
+      } else {
+        cdnJs.push(cdn)
+        this.showCdnInput++
+      }
+    },
+    checkInputContent(arr) {
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i] === '') return i
+      }
+      return null
+    },
     triggerOpt(title) {
       if (title === 'github') {
         window.open('https://github.com/Longgererer/JS-Encoder', '_blank')
@@ -354,10 +460,10 @@ export default {
     chooseFile() {
       const input = this.$refs.fileInput
       const files = input.files
-      const limiteType = this.limiteType
+      const limitType = this.limitType
       for (let i = 0; i < files.length; i++) {
         const name = this.getMimeType(files[i].name)
-        if (limiteType.includes(name)) {
+        if (limitType.includes(name)) {
           this.chooseFiles.push(files[i])
         }
       }
@@ -456,307 +562,4 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-@media screen and (max-width: 500px) {
-  .logo {
-    width: 150px !important;
-  }
-  #header {
-    height: 40px !important;
-    padding: 5px 5px !important;
-  }
-  .header-menu {
-    margin: 9px 0;
-    li {
-      margin: 0 10px !important;
-    }
-  }
-}
-.el-collapse {
-  margin: 20px 0;
-  border: none;
-}
-.describe {
-  display: block;
-  font-size: 12px;
-  color: #999999;
-  margin-bottom: 5px;
-}
-.title {
-  margin: 5px 0;
-}
-#header {
-  @include setWAndH(100%, 50px);
-  background-color: $dominantHue;
-  padding: 10px 20px;
-  border-bottom: 2px solid #999999;
-  box-sizing: border-box;
-  position: relative;
-  font-family: $josefinSans !important;
-  .slider-menu {
-    color: $primaryHued;
-    cursor: pointer;
-    i {
-      font-size: 20px;
-    }
-  }
-  .header-title {
-    color: $primaryHued;
-    cursor: pointer;
-    font-size: 22px;
-    .logo {
-      @include setWAndH(200px, 100%);
-    }
-  }
-  .header-menu {
-    position: absolute;
-    right: 20px;
-    top: 0px;
-    li {
-      list-style: none;
-      margin: 0 15px;
-      @include setTransition(all, 0.3s, ease);
-      color: #ccc;
-      cursor: pointer;
-      &:hover {
-        color: $primaryHued;
-      }
-      i {
-        font-size: 20px;
-      }
-      .github-link {
-        color: #ccc;
-        @include setTransition(all, 0.3s, ease);
-        &:hover {
-          color: $primaryHued;
-        }
-      }
-    }
-  }
-  .config-box {
-    width: 100%;
-    max-height: 500px;
-    overflow: auto;
-    .run-time {
-      margin: 10px 0;
-    }
-    .line {
-      border-top: 1px dashed #999;
-      @include setWAndH(100%, 0);
-    }
-    .another-cfg {
-      margin: 10px 0;
-    }
-    .add-cdn {
-      .cdn-in {
-        margin-bottom: 5px;
-        i {
-          margin-left: 5px;
-          color: $dominantHue;
-        }
-      }
-      .add-link {
-        width: 100px;
-        font-size: 12px;
-        padding: 5px;
-        margin-bottom: 5px;
-        background-color: $dominantHue;
-        color: $primaryHued;
-        &:hover {
-          background-color: #ccc;
-        }
-      }
-    }
-    .add-css {
-      .css-in {
-        margin-bottom: 5px;
-        i {
-          margin-left: 5px;
-          color: $dominantHue;
-        }
-      }
-      .add-link {
-        width: 100px;
-        background-color: $dominantHue;
-        color: #fff;
-        font-size: 12px;
-        padding: 5px;
-        margin-bottom: 5px;
-      }
-      .add-link:hover {
-        background-color: #999999;
-      }
-    }
-    .preprocessor {
-      .prep-box {
-        margin: 5px 0;
-        .prep-title {
-          display: inline-block;
-          width: 100px;
-        }
-      }
-    }
-  }
-  .upload-pop {
-    .upload {
-      margin: 10px 0;
-      width: 100%;
-      .upload-content {
-        .upload-box {
-          margin: 5px 0;
-          .upload-input {
-            padding: 4px 20px;
-            height: 20px;
-            line-height: 20px;
-            position: relative;
-            cursor: pointer;
-            overflow: hidden;
-            display: inline-block;
-            @include setButton(4px, 1px solid $dominantHue);
-            @include setTransition(all, 0.3s, ease);
-            &:hover {
-              color: $dominantHue;
-              background-color: $primaryHued;
-            }
-            input {
-              position: absolute;
-              font-size: 100px;
-              right: 0;
-              top: 0;
-              opacity: 0;
-              filter: alpha(opacity=0);
-              cursor: pointer;
-            }
-          }
-          .upload-btn {
-            margin: 0 5px;
-            padding: 4px;
-            @include setButton(4px, 1px solid $dominantHue);
-            @include setTransition(all, 0.3s, ease);
-          }
-          .upload-btn:hover {
-            color: $dominantHue;
-            background-color: $primaryHued;
-          }
-        }
-      }
-      .choose {
-        ul {
-          padding: 0;
-          li {
-            margin: 4px 0;
-          }
-        }
-      }
-    }
-  }
-  .download-pop {
-    .download-box {
-      @include setWAndH(100%, 200px);
-      .file-download,
-      .files-download {
-        font-size: 15px;
-        @include setWAndH(200px, 150px);
-        padding: 10px;
-        .describe {
-          color: #999999;
-          font-size: 12px;
-          height: 50px;
-          margin: 5px 0;
-        }
-        button {
-          padding: 5px 10px;
-          border: none;
-          background-color: $dominantHue;
-          color: $primaryHued;
-          @include setTransition(all, 0.3s, ease);
-          &:hover {
-            background-color: #999999;
-          }
-        }
-      }
-      .files-download {
-        border-left: 1px dashed #999999;
-      }
-    }
-  }
-  .help {
-    .key-box {
-      position: relative;
-      .explain {
-        position: absolute;
-        right: 0;
-      }
-    }
-  }
-  .color-table {
-    width: 100%;
-    .color {
-      width: 100%;
-      margin: 15px 0;
-      max-height: 500px;
-      overflow: auto;
-      .line {
-        @include setWAndH(100%, 0);
-        border-top: 1px dashed #999;
-      }
-      .title {
-        margin: 5px 0;
-      }
-      .color-info {
-        max-width: 300px;
-        .rgb-info {
-          width: 100%;
-          margin: 10px 0;
-          .rgb-input {
-            margin: 0 10px;
-          }
-        }
-        .hex-info {
-          width: 100%;
-          margin: 10px 0;
-          .hex-input {
-            margin: 0 10px;
-          }
-        }
-      }
-      .color-switch {
-        cursor: pointer;
-        @include setTransition(all, 0.5s, ease);
-        i {
-          display: block;
-          font-size: 20px;
-          font-weight: 600;
-        }
-      }
-      .color-switch:hover {
-        @include setTransform(rotate(360deg));
-      }
-      .color-table-content {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 10px;
-        .table {
-          width: 100%;
-          padding: 0;
-          .row {
-            @include setWAndH(100%, 20px);
-            list-style: none;
-            margin: 1px 0;
-            .clo {
-              display: inline-block;
-              height: 100%;
-              margin: 0 0.5px;
-              @include setTransition(all, 0.3s, ease);
-              &:hover {
-                @include setTransform(scale(1.5));
-                box-shadow: 0px 0px 2px $primaryHued;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-</style>
+<style lang="scss" src="./componentStyle/header.scss" scoped></style>
