@@ -52,6 +52,25 @@ function judgeExtension(edit) {
   }
 }
 
+function judgeMimeType(edit) {
+  switch (edit) {
+    case 'MarkDown':
+      return 'md'
+    case 'Sass':
+      return 'sass'
+    case 'Scss':
+      return 'scss'
+    case 'Less':
+      return 'less'
+    case 'Stylus':
+      return 'styl'
+    case 'TypeScript':
+      return 'ts'
+    case 'CoffeeScript':
+      return 'coffee'
+  }
+}
+
 function getStyleMode(edit) {
   return modeList[edit]
 }
@@ -59,5 +78,6 @@ function getStyleMode(edit) {
 export {
   judgeMode,
   judgeExtension,
+  judgeMimeType,
   getStyleMode
 }
