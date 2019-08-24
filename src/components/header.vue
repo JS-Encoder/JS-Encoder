@@ -56,6 +56,7 @@
           <i class="icon iconfont icon-flie" style="font-size:40px;color:#333333"></i>
           <span>Single file download</span>
           <span class="describe">Combine HTML, CSS, JS into one file</span>
+          <el-checkbox v-model="download.single.uncompiled">Download uncompiled files</el-checkbox>
           <button @click="singleDownload">
             <i class="icon iconfont icon-xiazai"></i>download
           </button>
@@ -64,7 +65,8 @@
           <i class="icon iconfont icon-youxidefuben" style="font-size:40px;color:#333333"></i>
           <span>Multi-file download</span>
           <span class="describe">Separate HTML, CSS, JS into multiple files and put them in a folder</span>
-          <button @click="filesDownload">
+          <el-checkbox v-model="download.zip.uncompiled">Download uncompiled files</el-checkbox>
+          <button @click="zipDownLoad">
             <i class="icon iconfont icon-xiazai"></i>download
           </button>
         </div>
@@ -295,7 +297,13 @@ export default {
         isShow: false
       },
       download: {
-        isShow: false
+        isShow: false,
+        single: {
+          uncompiled: false
+        },
+        zip: {
+          uncompiled: false
+        }
       },
       newFeature: {
         isShow: false
@@ -513,11 +521,14 @@ export default {
       })
     },
     singleDownload() {
-      downloadFiles.singleDownLoad(this.$store.state)
+      downloadFiles.singleDownLoad(
+        this.$store.state,
+        this.download.single.uncompiled
+      )
       this.download.isShow = false
     },
-    filesDownload() {
-      downloadFiles.zipDownLoad(this.$store.state)
+    zipDownLoad() {
+      downloadFiles.zipDownLoad(this.$store.state, this.download.zip.uncompiled)
       this.download.isShow = false
     },
     delCDN(index) {
@@ -534,15 +545,11 @@ export default {
     },
     switchRGB() {
       const result = switcher.switchRGB(this.hexInfo)
-      if (result) {
-        this.rgbInfo = result
-      }
+      if (result) this.rgbInfo = result
     },
     switchHEX() {
       const hex = switcher.switchHEX(this.rgbInfo)
-      if (hex) {
-        this.hexInfo = hex
-      }
+      if (hex) this.hexInfo = hex
     },
     copyHex(hex) {
       const input = document.createElement('input')
