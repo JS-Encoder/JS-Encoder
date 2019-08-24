@@ -1,9 +1,10 @@
 /* eslint-disable */
 import JSZip from 'jszip'
 import getCompiledCode from './getCompiledCode'
+import { judgeMimeType } from './judgeMode'
 import judgeFormat from './judgeUrlFormat'
 
-async function singleDownLoad(state) {
+async function singleDownLoad(state, uncompiled) {
   // css link
   let validCss = ''
   judgeFormat(state.cssLinks, function (item) {
@@ -36,22 +37,28 @@ async function singleDownLoad(state) {
     '</head>\n' +
     '<body>\n' +
     `${codeObj.HTMLCode}\n` +
-    `${validCDN}\n`
-  '<script>\n' +
+    `${validCDN}\n` +
+    '<script>\n' +
     `${codeObj.JSCode}\n` +
     '<\/script>\n' +
     '</body>\n' +
     '</html>'
 
-  const aTag = document.createElement('a')
-  let blob = new Blob([htmlCode])
-  aTag.download = 'index.html'
-  aTag.href = URL.createObjectURL(blob)
-  aTag.click()
-  URL.revokeObjectURL(blob)
+  download(htmlCode, 'index.html')
+
+  if (uncompiled) {
+    const typeObj = judgePrep(state)
+    if (typeObj) {
+      const code = state.textBoxContent
+      typeObj.html && download(code.HTML, `index.${typeObj.html}`)
+      typeObj.css && download(code.CSS, `index.${typeObj.css}`)
+      typeObj.js && download(code.JavaScript, `index.${typeObj.js}`)
+    }
+  }
+
 }
 
-async function zipDownLoad(state) {
+async function zipDownLoad(state, uncompiled) {
   // css link
   let validCss = ''
   judgeFormat(state.cssLinks, function (item) {
@@ -88,6 +95,7 @@ async function zipDownLoad(state) {
     `${codeObj.HTMLCode}\n` +
     '</body>\n' +
     '</html>'
+
   const cssCode = codeObj.CSSCode
   const jsCode = codeObj.JSCode
   code.file('index.html', htmlCode)
@@ -98,18 +106,35 @@ async function zipDownLoad(state) {
   })
 }
 
-// function judgeFormat(arr, fn) {
-//   if (arr.length) {
-//     for (let item of arr) {
-//       if (!item) continue
-//       if (item.indexOf('https://') != -1 || item.indexOf('http://') != -1)
-//         fn(item)
-//     }
-//   }
-// }
+function download(code, name) {
+  const aTag = document.createElement('a')
+  let blob = new Blob([code])
+  aTag.download = name
+  aTag.href = URL.createObjectURL(blob)
+  aTag.click()
+  URL.revokeObjectURL(blob)
+}
+
+function judgePrep(state) {
+  const HTMLPrep = state.HTMLPrep
+  const CSSPrep = state.CSSPrep
+  const JSPrep = state.JSPrep
+  const typeObj = {}
+
+  if (HTMLPrep !== 'HTML') {
+    typeObj.html = judgeMimeType(HTMLPrep)
+  } else if (CSSPrep !== 'CSS') {
+    typeObj.css = judgeMimeType(CSSPrep)
+  } else if (JSPrep !== 'JavaScript') {
+    typeObj.js = judgeMimeType(JSPrep)
+  } else {
+    return
+  }
+
+  return typeObj
+}
 
 export {
   singleDownLoad,
-  zipDownLoad,
-  judgeFormat
+  zipDownLoad
 }
