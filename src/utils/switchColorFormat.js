@@ -1,6 +1,6 @@
 /* eslint-disable */
 function switchRGB(color) {
-  if (color) return
+  if (!color) return
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color)
   return {
     r: parseInt(result[1], 16) + '',
