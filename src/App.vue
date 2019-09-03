@@ -48,7 +48,7 @@ export default {
       },
       boxW: '',
       tabSpace: 2,
-      extraConsole: ''
+      extraConsole: []
     }
   },
   computed: {
@@ -95,8 +95,9 @@ export default {
     textareaBox
   },
   methods: {
-    updateConsole(exeCode) {
-      this.extraConsole = exeCode
+    updateConsole(code) {
+      const len = this.extraConsole.length
+      this.extraConsole.splice(len, 0, code)
     },
     changeTypeList(checkType) {
       // The five Windows are arranged in sequence, so set it to 1~5 in data.typeListQueue, judge the window position according to the value size
