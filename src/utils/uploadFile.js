@@ -15,7 +15,7 @@ const limitType = [
 async function readFile(file) {
   const reader = new FileReader()
   reader.readAsText(file, 'UTF-8')
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     reader.onload = e => {
       const fileString = e.target.result
       const mimeType = getMimeType(file.name)
