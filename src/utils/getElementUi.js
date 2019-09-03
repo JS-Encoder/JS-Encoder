@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { Button, Select, Option, Input, InputNumber, Checkbox, CheckboxGroup, CheckboxButton, RadioGroup, RadioButton, Collapse, CollapseItem } from 'element-ui'
+import { Button, Select, Option, Input, InputNumber, Checkbox, CheckboxGroup, CheckboxButton, RadioGroup, RadioButton, Collapse, CollapseItem, Message } from 'element-ui'
 const element = {
   install: function (Vue) {
     Vue.use(Button)
@@ -14,6 +14,7 @@ const element = {
     Vue.use(InputNumber)
     Vue.use(Checkbox)
     Vue.use(CollapseItem)
+    Vue.prototype.$message = Message
   }
 }
 
