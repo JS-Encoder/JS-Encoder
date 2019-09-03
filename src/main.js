@@ -28,7 +28,7 @@ const store = new VueX.Store({
     },
     textBoxContent: {
       HTML: '',
-      CSS: '',
+      CSS: 'body{\n\tmargin: 0;\n\tpadding: 0;\n}',
       JavaScript: '',
       Console: '',
       Output: ''
@@ -36,7 +36,7 @@ const store = new VueX.Store({
     HTMLPrep: 'HTML',
     CSSPrep: 'CSS',
     JSPrep: 'JavaScript',
-    consoleInfo: '',
+    consoleInfo: [],
     waitTime: 500,
     replace: true,
     showScreen: false,
