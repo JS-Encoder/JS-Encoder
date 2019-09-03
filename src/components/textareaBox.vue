@@ -41,6 +41,7 @@ import { mapState } from 'vuex'
 import getCompiledCode from '@/utils/getCompiledCode'
 import getEditor from '@/utils/codeEditor'
 import judgeFormat from '@/utils/judgeUrlFormat'
+import exeCode from '@/utils/console'
 import * as compiler from '@/utils/compiler'
 import * as createTag from '@/utils/createTags'
 import * as judge from '@/utils/judgeMode'
@@ -52,7 +53,7 @@ export default {
     len: Number,
     typeList: Array,
     space: Number,
-    extraConsole: String
+    extraConsole: Array
   },
   data() {
     return {
@@ -109,7 +110,8 @@ export default {
     },
     extraConsole(newVal) {
       if (this.initTitle === 'Output') {
-        this.sendCodeToIframe(newVal)
+        const len = newVal.length
+        this.sendCodeToIframe(newVal[len - 1])
       }
     },
     space() {
@@ -215,8 +217,8 @@ export default {
         }
       }
     },
-    sendCodeToIframe(exeCode) {
-      this.spliceHtml(0, exeCode)
+    sendCodeToIframe(code) {
+      this.spliceHtml(0, exeCode(code))
     },
     updateConsole(exeCode) {
       this.$emit('updateConsole', exeCode)
@@ -297,7 +299,7 @@ export default {
     },
     reSetConsole() {
       this.$refs.iframeBox.contentWindow.consoleInfo = []
-      this.$store.state.consoleInfo = ''
+      this.$store.state.consoleInfo = []
     }
   }
 }
