@@ -544,8 +544,8 @@ export default {
       this.$store.commit('updateStateAttr', { attr: obj, value })
     },
     switchRGB() {
-      const result = switcher.switchRGB(this.hexInfo)
-      if (result) this.rgbInfo = result
+      const rgb = switcher.switchRGB(this.hexInfo)
+      if (rgb) this.rgbInfo = rgb
     },
     switchHEX() {
       const hex = switcher.switchHEX(this.rgbInfo)
