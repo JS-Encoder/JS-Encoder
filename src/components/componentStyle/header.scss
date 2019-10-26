@@ -1,3 +1,13 @@
+@media screen and (max-width: 600px){
+  .download-box {
+    flex-direction: column;
+    height: 350px !important;
+  }
+  .files-download{
+    border-left: none !important;
+    border-top: 1px dashed #999999;
+  }
+}
 @media screen and (max-width: 500px) {
   .logo {
     width: 150px !important;
@@ -200,7 +210,7 @@
       .file-download,
       .files-download {
         font-size: 15px;
-        @include setWAndH(200px, 150px);
+        @include setWAndH(225px, 150px);
         padding: 10px;
         .describe {
           color: #999999;

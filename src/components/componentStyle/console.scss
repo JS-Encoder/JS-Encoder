@@ -35,6 +35,8 @@ pre{
   font-size: 14px;
   overflow: auto;
   margin-bottom: 50%;
+  padding-bottom: 100%;
+  box-sizing: border-box;
   .msg {
     @extend .info-public-style;
     display: inline-block;

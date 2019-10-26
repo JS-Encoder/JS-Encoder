@@ -4,7 +4,12 @@
       <span>{{title}}</span>
       <div class="iframe-width" v-if="initTitle === 'Output'">{{ iframeWidth}}</div>
     </div>
-    <div :class="title === 'Console'?'bgc':''" :ref="'textbox'+index" class="text-box flex">
+    <div
+      :class="title === 'Console'?'bgc':''"
+      :ref="'textbox'+index"
+      class="text-box flex"
+      id="textBox"
+    >
       <codemirror
         :options="cmOptions"
         :value="message"
@@ -72,8 +77,11 @@ export default {
     Console
   },
   mounted() {
+    const title = this.title
     this.initTitle = judge.judgeMode(this.title)
     this.init()
+
+    if (title !== 'Console' && title !== 'Output') this.changeCodeLineStyle()
   },
   computed: {
     ...mapState({
@@ -156,6 +164,15 @@ export default {
     }
   },
   methods: {
+    changeCodeLineStyle() {
+      // 给每一个代码窗的代码加上 padding-bottom 防止代码打到窗口底部才显示滚动条
+      const el = this.$el
+      const textBox = el.querySelector('#textBox')
+      const textBoxHeight = parseInt(window.getComputedStyle(textBox).height)
+      const codeLines = el.querySelectorAll('.CodeMirror-lines')[0]
+
+      codeLines.style.paddingBottom = `${textBoxHeight*4/5}px`
+    },
     boxMouseDown(e) {
       const starX = e.clientX
       const elInfo = this.$refs[this.title]

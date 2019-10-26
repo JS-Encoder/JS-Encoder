@@ -4,9 +4,9 @@
       <div class="error-box" v-if="item.type === 'error' && item.data.msg">
         <i class="icon iconfont icon-error"></i>
         <span>{{item.data.msg}}</span>
-        <br />
+        <br>
         <span class="error-url">{{item.data.url}}</span>
-        <br />
+        <br>
         <div>
           <span>row: {{item.data.row - 2}}</span>
           <span>col: {{item.data.col - 10}}</span>
@@ -72,9 +72,8 @@ export default {
       const inputType = e.inputType
 
       if (data === null) {
-        if (inputType === 'insertLineBreak' || inputType === 'insertText') {
+        if (inputType === 'insertLineBreak' || inputType === 'insertText')
           return
-        }
       }
 
       this.value = e.srcElement.innerText
