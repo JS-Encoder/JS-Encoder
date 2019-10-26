@@ -16,7 +16,7 @@
         v-for="(item,index) in types"
       ></textareaBox>
     </div>
-    <router-view />
+    <router-view/>
   </div>
 </template>
 
@@ -166,4 +166,3 @@ export default {
   @include setWAndH(100%, calc(100% - 100px));
 }
 </style>
-
