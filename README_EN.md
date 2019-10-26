@@ -64,6 +64,7 @@ yarn dev
 
 ## Future actions ❓
 
+- **rebuild**, the official version of Vue3.0 will be published early next year, enhance support for TypeScript. JS-Encoder will be rebuilt by Vue3.0 and TypeScript.
 - **Preprocessor support**, JS-Encoder will supports more preprocessor languages int the near future.
 - **Backend**, JS-Encoder is a single page app without backend. Later, backend will have made by Node.js.
 - **Code share**, share your code to another by url🔗.
