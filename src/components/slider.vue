@@ -76,7 +76,7 @@ export default {
     @include setWAndH(240px, 100vh);
     background-color: $dominantHue;
     box-shadow: 0px 0px 0px $dominantHue;
-    @include setTransition(all, 0.3s, ease);
+    @include setTransition(all, .3s, ease);
     .slider-menu {
       width: 100%;
       ul {
@@ -88,7 +88,7 @@ export default {
           color: #ccc;
           font-size: 20px;
           border-bottom: 2px solid #2c2c2c;
-          @include setTransition(all, 0.3s, ease);
+          @include setTransition(all, .3s, ease);
           cursor: pointer;
           span {
             margin: 0 5px;
