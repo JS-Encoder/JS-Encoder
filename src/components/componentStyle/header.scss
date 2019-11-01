@@ -1,9 +1,9 @@
-@media screen and (max-width: 600px){
+@media screen and (max-width: 600px) {
   .download-box {
     flex-direction: column;
     height: 350px !important;
   }
-  .files-download{
+  .files-download {
     border-left: none !important;
     border-top: 1px dashed #999999;
   }
@@ -98,7 +98,7 @@
     .another-cfg {
       margin: 10px 0;
     }
-    .search-url{
+    .search-url {
       margin: 5px 0;
     }
     .add-cdn {
@@ -308,6 +308,19 @@
               }
             }
           }
+        }
+      }
+    }
+  }
+  .login {
+    .login-content {
+      width: 100%;
+      margin: 10px 0;
+      .btn-txt {
+        font-family: $josefinSans;
+        font-size: 16px;
+        i{
+          margin-right: 15px;
         }
       }
     }

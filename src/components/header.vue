@@ -4,7 +4,7 @@
       <i class="icon iconfont icon-menu"></i>
     </div>
     <span class="header-title noselect flex">
-      <img alt class="logo" src="../assets/logo.svg" />
+      <img alt="" class="logo" src="../assets/logo.svg">
     </span>
     <ul class="header-menu flex">
       <li @click="upload.isShow = true">
@@ -19,8 +19,13 @@
       <li @click="help.isShow = true">
         <i class="icon iconfont icon-help"></i>
       </li>
+      <li @click.stop="showAccount">
+        <i class="icon iconfont icon-weidenglutouxiang" id="account" style="font-size:23px"></i>
+      </li>
     </ul>
     <slider :sliderConf="sliderConf" @triggerOpt="triggerOpt" class="noselect"></slider>
+    <!-- login -->
+    <accountMenu v-show="accountInfo.isShow" @openLogin="openLogin"></accountMenu>
     <!-- menu -->
     <popUp :pop="upload" class="noselect upload-pop">
       <div class="upload">
@@ -31,10 +36,10 @@
           >Upload Local File, the format contains html, css, js, md, sass, scss, less, styl, ts and coffee. The file content overwrites the editor content.</span>
           <div class="flex flex-ai upload-box">
             <a @change="chooseFile" class="upload-input" href="javascript:;">
-              <input id multiple="multiple" name ref="fileInput" type="file" />choose
+              <input id="" multiple="multiple" name="" ref="fileInput" type="file">choose
             </a>
             <button @click="uploadFile" class="upload-btn">
-              <i class="icon iconfont icon-shangchuan"></i> upload
+              <i class="icon iconfont icon-shangchuan"></i>upload
             </button>
           </div>
           <div class="choose" v-if="chooseFiles.length > 0">
@@ -197,18 +202,16 @@
         <h4 class="title">Color format switch</h4>
         <span class="describe">RGB and HEX convert to each other</span>
         <div class="color-info">
-          <div class="rgb-info flex flex-ai">
-            R:
-            <el-input class="rgb-input" size="mini" type="text" v-model="rgbInfo.r" />G:
-            <el-input class="rgb-input" size="mini" type="text" v-model="rgbInfo.g" />B:
-            <el-input class="rgb-input" size="mini" type="text" v-model="rgbInfo.b" />
+          <div class="rgb-info flex flex-ai">R:
+            <el-input class="rgb-input" size="mini" type="text" v-model="rgbInfo.r"/>G:
+            <el-input class="rgb-input" size="mini" type="text" v-model="rgbInfo.g"/>B:
+            <el-input class="rgb-input" size="mini" type="text" v-model="rgbInfo.b"/>
             <div @click="switchHEX" class="color-switch flex flex-ai">
               <i class="icon iconfont icon-zhuanhua_huaban"></i>
             </div>
           </div>
-          <div class="hex-info flex flex-ai">
-            HEX:
-            <el-input class="hex-input" size="mini" type="text" v-model="hexInfo" />
+          <div class="hex-info flex flex-ai">HEX:
+            <el-input class="hex-input" size="mini" type="text" v-model="hexInfo"/>
             <div @click="switchRGB" class="color-switch flex flex-ai">
               <i class="icon iconfont icon-zhuanhua_huaban"></i>
             </div>
@@ -244,12 +247,24 @@
       <h4 class="title">New feature</h4>
       <span>new shortcut: press "Ctrl + Space" to format code</span>
     </popUp>
+    <popUp :pop="login" class="noselect login flex">
+      <h2 class="title flex flex-jcc">Log in</h2>
+      <div class="login-content flex flex-ai flex-clo">
+        <el-button @click="loginWithGitHub" size="small" type="primary">
+          <span class="btn-txt">
+            <i class="icon iconfont icon-git"></i>
+            Log In With GitHub
+          </span>
+        </el-button>
+      </div>
+    </popUp>
   </div>
 </template>
 <script>
 import JSZip from 'jszip'
 import popUp from './popUp'
 import slider from './slider'
+import accountMenu from './accountMenu'
 import { saveAs } from 'file-saver'
 import colorInfo from '@/utils/colorInfo'
 import keyboardList from '@/utils/shortcut'
@@ -258,6 +273,7 @@ import * as downloadFiles from '@/utils/downloadFiles'
 import * as judge from '@/utils/judgeMode'
 import * as switcher from '@/utils/switchColorFormat'
 import * as uploader from '@/utils/uploadFile'
+import { post, get } from '@/utils/request'
 export default {
   data() {
     return {
@@ -317,6 +333,9 @@ export default {
       config: {
         isShow: false
       },
+      login: {
+        isShow: false
+      },
       rgbInfo: {
         r: '',
         g: '',
@@ -360,9 +379,13 @@ export default {
   },
   components: {
     popUp,
-    slider
+    slider,
+    accountMenu
   },
   computed: {
+    accountInfo() {
+      return this.$store.state.accountInfo
+    },
     cdn() {
       const arr = []
       for (let i in CDN) {
@@ -411,6 +434,35 @@ export default {
     })
   },
   methods: {
+    async loginWithGitHub() {
+      const clientInfo = await require('@/info/clientInfo.json')
+      get('https://github.com/login/oauth/authorize', {
+        client_id: clientInfo.clientID,
+        scope: 'user,public_repo'
+      })
+        .then(res => {
+          this.login.isShow = false
+          console.log(res)
+        })
+        .catch(err => {
+          this.$message({
+            message: 'Connect Github Failed',
+            type: 'error',
+            center: true
+          })
+        })
+    },
+    openLogin() {
+      this.login.isShow = true
+    },
+    showAccount() {
+      const commit = this.$store.commit
+      commit('updateAccountInfo', {
+        attr: 'isShow',
+        value: true
+      })
+      commit('updateScreen', true)
+    },
     remoteCDN(query) {
       this.remoteMethod(query, 'jsOptions', this.jsUrlList)
     },

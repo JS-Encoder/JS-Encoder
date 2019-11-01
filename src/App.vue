@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" @click="hideAccount">
     <Header></Header>
     <SettingBar @changeTab="changeTabSpace" @hasChanged="changeTypeList"></SettingBar>
     <div class="code-box" ref="codeBox">
@@ -55,7 +55,8 @@ export default {
     ...mapState({
       HTMLPrep: 'HTMLPrep',
       CSSPrep: 'CSSPrep',
-      JSPrep: 'JSPrep'
+      JSPrep: 'JSPrep',
+      accountInfo: 'accountInfo'
     })
   },
   created() {
@@ -95,6 +96,14 @@ export default {
     textareaBox
   },
   methods: {
+    hideAccount() {
+      const commit = this.$store.commit
+      commit('updateAccountInfo', {
+        attr: 'isShow',
+        value: false
+      })
+      commit('updateScreen', false)
+    },
     updateConsole(code) {
       const len = this.extraConsole.length
       this.extraConsole.splice(len, 0, code)
