@@ -40,6 +40,9 @@ const store = new VueX.Store({
     waitTime: 500,
     replace: true,
     showScreen: false,
+    accountInfo: {
+      isShow: false
+    },
     autoUp: true,
     isRun: false,
     cdnJs: [],
@@ -84,6 +87,9 @@ const store = new VueX.Store({
     },
     updateCssLinks: (state, newVal) => {
       state.cssLinks = newVal
+    },
+    updateAccountInfo: (state, info) => {
+      state.accountInfo[info.attr] = info.value
     }
   }
 })
