@@ -1,177 +1,50 @@
 <template>
-  <div id="app" @click="hideAccount">
-    <Header></Header>
-    <SettingBar @changeTab="changeTabSpace" @hasChanged="changeTypeList"></SettingBar>
-    <div class="code-box" ref="codeBox">
-      <textareaBox
-        :extraConsole="extraConsole"
-        :index="index"
-        :key="item"
-        :len="types.length"
-        :space="tabSpace"
-        :title="item"
-        :typeList="types"
-        @updateConsole="updateConsole"
-        class="textareaBox"
-        v-for="(item,index) in types"
-      ></textareaBox>
-    </div>
-    <router-view/>
+  <div @click="hideAccount" id="home">
+    <router-view />
   </div>
 </template>
 
 <script>
-import Header from './components/header'
-import SettingBar from './components/settingBar'
-import textareaBox from './components/textareaBox'
-import { judgeMode } from '@/utils/judgeMode'
 import { mapState } from 'vuex'
 export default {
-  name: 'App',
-  data() {
-    return {
-      types: [],
-      screenWidth: document.body.clientWidth,
-      typeListQueue: {
-        HTML: 1,
-        MarkDown: 1,
-        CSS: 2,
-        Sass: 2,
-        Scss: 2,
-        Less: 2,
-        Stylus: 2,
-        JavaScript: 3,
-        TypeScript: 3,
-        CoffeeScript: 3,
-        Console: 4,
-        Output: 5
-      },
-      boxW: '',
-      tabSpace: 2,
-      extraConsole: []
-    }
-  },
+  name: 'Home',
   computed: {
     ...mapState({
-      HTMLPrep: 'HTMLPrep',
-      CSSPrep: 'CSSPrep',
-      JSPrep: 'JSPrep',
       accountInfo: 'accountInfo'
     })
   },
   created() {
-    // loading animation
+    // 初始加载动画
     try {
       document.body.removeChild(document.getElementById('appLoading'))
-      setTimeout(function() {
-        document.getElementById('app').style.opacity = '1'
+      setTimeout(function () {
+        document.getElementById('home').style.opacity = '1'
       }, 300)
-    } catch (e) {}
-    this.types = [this.HTMLPrep, this.CSSPrep, this.JSPrep, 'Console', 'Output']
-  },
-  mounted() {
-    this.changeAllWidth()
-    window.onresize = () => {
-      return (() => {
-        this.screenWidth = document.body.clientWidth
-      })()
-    }
-  },
-  watch: {
-    screenWidth(newVal, oldVal) {
-      const changeW = (newVal - oldVal) / this.types.length
-      for (let item of this.types) {
-        const attr = judgeMode(item)
-        const changeNum = parseFloat(this.$store.state.textBoxW[attr])
-        this.$store.commit('updateTextBoxW', {
-          attr: item,
-          value: changeNum + changeW + 'px'
-        })
-      }
-    }
-  },
-  components: {
-    Header,
-    SettingBar,
-    textareaBox
+    } catch (e) { }
+
+    this.findHistorySession()
   },
   methods: {
     hideAccount() {
       const commit = this.$store.commit
       commit('updateAccountInfo', {
-        attr: 'isShow',
-        value: false
+        isShow: false
       })
       commit('updateScreen', false)
     },
-    updateConsole(code) {
-      const len = this.extraConsole.length
-      this.extraConsole.splice(len, 0, code)
-    },
-    changeTypeList(checkType) {
-      // The five Windows are arranged in sequence, so set it to 1~5 in data.typeListQueue, judge the window position according to the value size
-      // checkType is an array,it is used to store the window currently displayed on the page
-      if (checkType.length) {
-        const arr = [],
-          finalArr = []
-        checkType.forEach(item => {
-          arr.push(this.typeListQueue[item])
-        })
-        arr.sort((a, b) => {
-          // Sort the elements in the arr from smallest to largest
-          return a - b
-        })
-        arr.forEach(item => {
-          // Replaces the value of the arr elements with the window,and push result into finalArr
-          let str = ''
-          switch (item) {
-            case 1:
-              str = this.HTMLPrep
-              break
-            case 2:
-              str = this.CSSPrep
-              break
-            case 3:
-              str = this.JSPrep
-              break
-            case 4:
-              str = 'Console'
-              break
-            case 5:
-              str = 'Output'
-              break
-          }
-          finalArr.push(str)
-        })
-        this.types = finalArr
-        this.changeAllWidth()
-        return null
-      }
-      this.types = checkType
-    },
-    changeAllWidth() {
-      // Change all window widths to : browser visible width / this.types.length
-      // this.$store.state.textBoxW is used to store the width of each window
-      const len = this.types.length
-      const store = this.$store
-      this.boxW = `${this.screenWidth / len}px`
-      for (let item of this.types) {
-        store.commit('updateTextBoxW', {
-          attr: item,
-          value: this.boxW
-        })
-      }
-    },
-    changeTabSpace(newVal) {
-      this.tabSpace = newVal
+    findHistorySession() {
+      // 判断sessionStorage是否为空，否则将state重置为session
+      const jsEcdStore = sessionStorage.getItem('jsEcdStore')
+      if (jsEcdStore === null) return
+      this.$store.replaceState(JSON.parse(jsEcdStore))
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.code-box {
-  display: flex;
-  @include setWAndH(100%, calc(100% - 100px));
+#home {
+  width: 100%;
+  height: 100%;
 }
 </style>

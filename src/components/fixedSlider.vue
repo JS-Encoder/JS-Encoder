@@ -1,6 +1,5 @@
 <template>
   <div :class="sliderConf.isShow?'slider-show':''" class="slider flex flex-clo">
-    <div @click="close" class="bg" v-show="sliderConf.isShow"></div>
     <div :class="sliderConf.isShow?'out':''" class="slider-content flex flex-clo">
       <span class="slider-title noselect flex flex-ai">
         <img alt class="logo" src="../assets/logo.svg" />
@@ -44,9 +43,6 @@ export default {
         title = newArr.join('')
       }
       this.$emit(this.sliderConf.event, title)
-    },
-    close() {
-      this.sliderConf.isShow = false
     }
   }
 }
@@ -120,7 +116,6 @@ export default {
   }
   .out {
     left: 0px;
-    box-shadow: 3px 0px 10px $dominantHue;
   }
 }
 .slider-show {

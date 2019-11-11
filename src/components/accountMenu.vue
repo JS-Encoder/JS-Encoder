@@ -2,31 +2,60 @@
   <transition name="account">
     <div class="account-menu">
       <ul class="account-options-list">
-        <li
-          class="account-option"
-          v-for="(item, index) in menuOptions"
-          :key="index"
-          @click="item.method"
-        >{{item.name}}</li>
+        <li :key="index" @click="item.method" class="account-option" v-for="(item, index) in menuOptions">{{item.name}}</li>
       </ul>
     </div>
   </transition>
 </template>
 <script>
 export default {
+  props: {
+    loginStatus: Boolean,
+    accountInfo: Object
+  },
   data() {
-    return {
-      menuOptions: [
+    return {}
+  },
+  computed: {
+    menuOptions() {
+      const accountInfo = this.accountInfo
+      const unLoginOptions = [
         {
           name: 'Log In',
           method: this.openLogin
         }
       ]
+      const loggedInOptions = [
+        {
+          name: accountInfo.name,
+          method: this.profile
+        },
+        {
+          name: 'Log Out',
+          method: this.logOut
+        }
+      ]
+
+      return this.loginStatus ? loggedInOptions : unLoginOptions
     }
   },
   methods: {
     openLogin() {
       this.$emit('openLogin')
+    },
+    logOut() {
+      // 登出账户
+      if (confirm('Are you sure to log out?')){
+        console.log('sure')
+      }
+    },
+    profile() {
+      // 进入个人信息界面
+      sessionStorage.setItem('jsEcdStore', JSON.stringify(this.$store.state))
+
+      this.$router.push({
+        path: '/profile'
+      })
     }
   }
 }

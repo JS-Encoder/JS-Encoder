@@ -83,6 +83,18 @@
         }
       }
     }
+    .account {
+      div {
+        width: 23px;
+        height: 23px;
+        border-radius: 50%;
+        overflow: hidden;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
   }
   .config-box {
     width: 100%;
@@ -319,7 +331,7 @@
       .btn-txt {
         font-family: $josefinSans;
         font-size: 16px;
-        i{
+        i {
           margin-right: 15px;
         }
       }

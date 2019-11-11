@@ -82,7 +82,7 @@ export default {
   },
   methods: {
     run() {
-      // Prevent the user from pressing the Run button several times in a row
+      // 防抖
       if (this.isRun) return null
       this.isRun = true
       setTimeout(() => {

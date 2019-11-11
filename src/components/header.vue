@@ -4,7 +4,7 @@
       <i class="icon iconfont icon-menu"></i>
     </div>
     <span class="header-title noselect flex">
-      <img alt="" class="logo" src="../assets/logo.svg">
+      <img alt class="logo" src="../assets/logo.svg" />
     </span>
     <ul class="header-menu flex">
       <li @click="upload.isShow = true">
@@ -19,13 +19,21 @@
       <li @click="help.isShow = true">
         <i class="icon iconfont icon-help"></i>
       </li>
-      <li @click.stop="showAccount">
-        <i class="icon iconfont icon-weidenglutouxiang" id="account" style="font-size:23px"></i>
+      <li @click.stop="showAccount" class="account flex">
+        <div v-if="loginStatus">
+          <img :src="accountInfo.avatarUrl" alt />
+        </div>
+        <i class="icon iconfont icon-weidenglutouxiang" id="account" style="font-size:23px" v-else></i>
       </li>
     </ul>
     <slider :sliderConf="sliderConf" @triggerOpt="triggerOpt" class="noselect"></slider>
     <!-- login -->
-    <accountMenu v-show="accountInfo.isShow" @openLogin="openLogin"></accountMenu>
+    <accountMenu
+      :accountInfo="accountInfo"
+      :loginStatus="loginStatus"
+      @openLogin="openLogin"
+      v-show="accountInfo.isShow"
+    ></accountMenu>
     <!-- menu -->
     <popUp :pop="upload" class="noselect upload-pop">
       <div class="upload">
@@ -36,7 +44,7 @@
           >Upload Local File, the format contains html, css, js, md, sass, scss, less, styl, ts and coffee. The file content overwrites the editor content.</span>
           <div class="flex flex-ai upload-box">
             <a @change="chooseFile" class="upload-input" href="javascript:;">
-              <input id="" multiple="multiple" name="" ref="fileInput" type="file">choose
+              <input id multiple="multiple" name ref="fileInput" type="file" />choose
             </a>
             <button @click="uploadFile" class="upload-btn">
               <i class="icon iconfont icon-shangchuan"></i>upload
@@ -113,12 +121,7 @@
             size="small"
             v-model="chooseCDN"
           >
-            <el-option
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-              v-for="item in jsOptions"
-            ></el-option>
+            <el-option :key="item.value" :label="item.label" :value="item.value" v-for="item in jsOptions"></el-option>
           </el-select>
           <div :key="index" class="cdn-in flex flex-ai" v-for="(item, index) in showCdnInput">
             <el-input placeholder="your CDN" size="small" v-model="cdnJs[index]"></el-input>
@@ -144,12 +147,7 @@
             size="small"
             v-model="chooseLink"
           >
-            <el-option
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-              v-for="item in cssOptions"
-            ></el-option>
+            <el-option :key="item.value" :label="item.label" :value="item.value" v-for="item in cssOptions"></el-option>
           </el-select>
           <div :key="index" class="css-in flex flex-ai" v-for="(item, index) in showCssInput">
             <el-input placeholder="your CSS link" size="small" v-model="cssLinks[index]"></el-input>
@@ -162,12 +160,7 @@
           <h4 class="title">Preprocessor setup</h4>
           <div :key="index" class="prep-box" v-for="(item, index) in prep">
             <span class="prep-title">{{item.title}}：</span>
-            <el-select
-              @change="prepChange(index)"
-              placeholder="none"
-              size="mini"
-              v-model="item.value"
-            >
+            <el-select @change="prepChange(index)" placeholder="none" size="mini" v-model="item.value">
               <el-option :key="index" :label="i" :value="i" v-for="(i, index) in item.options"></el-option>
             </el-select>
           </div>
@@ -202,16 +195,18 @@
         <h4 class="title">Color format switch</h4>
         <span class="describe">RGB and HEX convert to each other</span>
         <div class="color-info">
-          <div class="rgb-info flex flex-ai">R:
-            <el-input class="rgb-input" size="mini" type="text" v-model="rgbInfo.r"/>G:
-            <el-input class="rgb-input" size="mini" type="text" v-model="rgbInfo.g"/>B:
-            <el-input class="rgb-input" size="mini" type="text" v-model="rgbInfo.b"/>
+          <div class="rgb-info flex flex-ai">
+            R:
+            <el-input class="rgb-input" size="mini" type="text" v-model="rgbInfo.r" />G:
+            <el-input class="rgb-input" size="mini" type="text" v-model="rgbInfo.g" />B:
+            <el-input class="rgb-input" size="mini" type="text" v-model="rgbInfo.b" />
             <div @click="switchHEX" class="color-switch flex flex-ai">
               <i class="icon iconfont icon-zhuanhua_huaban"></i>
             </div>
           </div>
-          <div class="hex-info flex flex-ai">HEX:
-            <el-input class="hex-input" size="mini" type="text" v-model="hexInfo"/>
+          <div class="hex-info flex flex-ai">
+            HEX:
+            <el-input class="hex-input" size="mini" type="text" v-model="hexInfo" />
             <div @click="switchRGB" class="color-switch flex flex-ai">
               <i class="icon iconfont icon-zhuanhua_huaban"></i>
             </div>
@@ -274,6 +269,9 @@ import * as judge from '@/utils/judgeMode'
 import * as switcher from '@/utils/switchColorFormat'
 import * as uploader from '@/utils/uploadFile'
 import { post, get } from '@/utils/request'
+import { spliceUrl } from '@/utils/handleUrl'
+import { mapState } from 'vuex'
+
 export default {
   data() {
     return {
@@ -411,19 +409,23 @@ export default {
     },
     colorInfo() {
       return colorInfo
-    }
+    },
+    ...mapState({
+      loginStatus: 'loginStatus',
+      accountInfo: 'accountInfo'
+    })
   },
   watch: {
     showConfig(newVal) {
-      if (!newVal) {
-        const store = this.$store
-        store.commit('updateTime', this.waitTime)
-        store.commit('updateReplace', this.replace)
-        store.commit('updateAutoUp', this.autoUp)
-        store.commit('updateCDN', this.cdnJs)
-        store.commit('updateCssLinks', this.cssLinks)
-      }
-    }
+      if (newVal) return
+      const store = this.$store
+      store.commit('updateTime', this.waitTime)
+      store.commit('updateReplace', this.replace)
+      store.commit('updateAutoUp', this.autoUp)
+      store.commit('updateCDN', this.cdnJs)
+      store.commit('updateCssLinks', this.cssLinks)
+    },
+    loginStatus(newval) { }
   },
   mounted() {
     this.cssUrlList = this.link.map(item => {
@@ -436,21 +438,17 @@ export default {
   methods: {
     async loginWithGitHub() {
       const clientInfo = await require('@/info/clientInfo.json')
-      get('https://github.com/login/oauth/authorize', {
+      this.$store.commit('updateClientInfo', {
+        clientID: clientInfo.clientID,
+        clientSecret: clientInfo.clientSecret
+      })
+      // 跳转到github授权
+      const url = spliceUrl('https://github.com/login/oauth/authorize', {
         client_id: clientInfo.clientID,
         scope: 'user,public_repo'
       })
-        .then(res => {
-          this.login.isShow = false
-          console.log(res)
-        })
-        .catch(err => {
-          this.$message({
-            message: 'Connect Github Failed',
-            type: 'error',
-            center: true
-          })
-        })
+
+      window.location.href = url
     },
     openLogin() {
       this.login.isShow = true
@@ -458,8 +456,7 @@ export default {
     showAccount() {
       const commit = this.$store.commit
       commit('updateAccountInfo', {
-        attr: 'isShow',
-        value: true
+        isShow: true
       })
       commit('updateScreen', true)
     },

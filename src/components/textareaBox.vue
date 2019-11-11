@@ -4,20 +4,8 @@
       <span>{{title}}</span>
       <div class="iframe-width" v-if="initTitle === 'Output'">{{ iframeWidth}}</div>
     </div>
-    <div
-      :class="title === 'Console'?'bgc':''"
-      :ref="'textbox'+index"
-      class="text-box flex"
-      id="textBox"
-    >
-      <codemirror
-        :options="cmOptions"
-        :value="message"
-        class="code"
-        ref="editor"
-        v-if="showCode"
-        v-model="message"
-      ></codemirror>
+    <div :class="title === 'Console'?'bgc':''" :ref="'textbox'+index" class="text-box flex" id="textBox">
+      <codemirror :options="cmOptions" :value="message" class="code" ref="editor" v-if="showCode" v-model="message"></codemirror>
       <Console @updateConsole="updateConsole" v-if="title === 'Console'"></Console>
       <iframe
         allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media"
@@ -101,17 +89,17 @@ export default {
     }
   },
   watch: {
-    'content.HTML': function(newVal) {
+    'content.HTML': function (newVal) {
       if (this.initTitle === 'HTML') {
         this.message = newVal
       }
     },
-    'content.CSS': function(newVal) {
+    'content.CSS': function (newVal) {
       if (this.initTitle === 'CSS') {
         this.message = newVal
       }
     },
-    'content.JavaScript': function(newVal) {
+    'content.JavaScript': function (newVal) {
       if (this.initTitle === 'JavaScript') {
         this.message = newVal
       }
@@ -125,15 +113,13 @@ export default {
     space() {
       // watch tab-space value changes and resetting tab-space config
       const title = this.initTitle
-      if (!(title === 'Console' || title === 'Output')) {
-        this.cmOptions.tabSize = this.space
-        this.cmOptions.indentUnit = this.space
-      }
+      if (title === 'Console' || title === 'Output') return
+      const space = this.space
+      this.cmOptions.tabSize = space
+      this.cmOptions.indentUnit = space
     },
     message(newVal) {
-      if (this.timer) {
-        clearTimeout(this.timer)
-      }
+      if (this.timer) clearTimeout(this.timer)
       this.timer = setTimeout(() => {
         this.$store.commit('change', {
           [this.initTitle]: newVal
@@ -142,25 +128,20 @@ export default {
     },
     content: {
       deep: true,
-      handler: function() {
-        if (this.$store.state.autoUp && this.showIframe) {
-          this.reSetConsole()
-          this.spliceHtml()
-        }
+      handler() {
+        if (!(this.$store.state.autoUp && this.showIframe)) return
+        this.reSetConsole()
+        this.spliceHtml()
       }
     },
     replace(newVal) {
-      if (this.$refs.editor) {
-        this.cmOptions.indentWithTabs = newVal
-      }
+      if (!this.$refs.editor) return
+      this.cmOptions.indentWithTabs = newVal
     },
-    run(newVal) {
-      if (this.title === 'Output') {
-        if (newVal) {
-          this.reSetConsole()
-          this.spliceHtml(100)
-        }
-      }
+    async run(newVal) {
+      if (!(this.title === 'Output' && newVal)) return
+      this.reSetConsole()
+      await this.spliceHtml()
     }
   },
   methods: {
@@ -171,7 +152,7 @@ export default {
       const textBoxHeight = parseInt(window.getComputedStyle(textBox).height)
       const codeLines = el.querySelectorAll('.CodeMirror-lines')[0]
 
-      codeLines.style.paddingBottom = `${textBoxHeight*4/5}px`
+      codeLines.style.paddingBottom = `${(textBoxHeight * 4) / 5}px`
     },
     boxMouseDown(e) {
       const starX = e.clientX
@@ -241,35 +222,44 @@ export default {
       this.$emit('updateConsole', exeCode)
     },
     async spliceHtml(time, exeCode = '') {
+      const iframe = this.$refs.iframeBox
       const state = this.$store.state
-      // get code
+
+      // 重新引入iframe
+      // 原因在于：之前js代码对iframe产生的改变不会因为删除了原本的js代码而消失，必须重新引入
+
+      iframe.contentWindow.location.reload(true)
+      console.log(1)
+
+
+      // 获取已经编译成为html、css、js的代码
       let codeObj
       await getCompiledCode(state).then(obj => {
         codeObj = obj
       })
 
-      // url format check
+      // 外部引入路径的格式检查，只允许http和https
       let validCss = []
       const cssLinks = state.cssLinks
-      judgeFormat(cssLinks, function(item) {
+      judgeFormat(cssLinks, function (item) {
         validCss.push(item)
       })
       let validCDN = []
       const cdnJs = state.cdnJs
-      judgeFormat(cdnJs, function(item) {
+      judgeFormat(cdnJs, function (item) {
         validCDN.push(item)
       })
 
-      // waitTime
+      // 延迟执行时间
       let waitTime = null
       !time ? (waitTime = this.waitTime) : (waitTime = 0)
 
-      // splice html, css and js
+      // 拼接代码到iframe
       setTimeout(() => {
         const content = state.textBoxContent
-        const iframe = this.$refs.iframeBox
         const document = iframe.contentWindow.document
 
+        // 如果当前使用语言为MarkDown就不需要引入外部css和js，而是引入是用于md样式的css
         if (this.HTMLPrep !== 'MarkDown') {
           let linkArr = document.getElementsByTagName('link')
           if (linkArr.length) {
@@ -288,11 +278,11 @@ export default {
           )
         }
 
-        // init style
         createTag.createLinkOrCDN(iframe, 'link', '../css/runner.css')
 
         const style = document.getElementById('compOlCss')
         if (style) style.parentNode.removeChild(style)
+
         createTag.createStyleOrScript(
           iframe,
           'style',
@@ -302,19 +292,19 @@ export default {
 
         const script = document.getElementById('src')
         if (script) script.parentNode.removeChild(script)
-        const code = `\n(()=>{\n${codeObj.JSCode}\n${exeCode}\n})()\n`
-
+        const code = `\n${codeObj.JSCode}\n${exeCode}\n`
         document.body.innerHTML = codeObj.HTMLCode
-
         for (let item of validCDN) {
           createTag.createLinkOrCDN(iframe, 'script', item)
         }
         createTag.createStyleOrScript(iframe, 'script', 'src', code)
+        // 获取console输出值放入state
         const info = iframe.contentWindow.consoleInfo
         this.$store.commit('updateConsole', info)
       }, waitTime)
     },
     reSetConsole() {
+      // 重置console信息
       this.$refs.iframeBox.contentWindow.consoleInfo = []
       this.$store.state.consoleInfo = []
     }
@@ -322,4 +312,4 @@ export default {
 }
 </script>
 
-<style lang="scss" src="./componentStyle/textareaBox.scss" scoped></style>
+<style lang='scss' src='./componentStyle/textareaBox.scss' scoped></style>
