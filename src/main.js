@@ -5,7 +5,6 @@ import VueX from 'vuex'
 import element from './utils/getElementUi'
 import { codemirror } from 'vue-codemirror'
 import * as judge from './utils/judgeMode'
-import './utils/changeWindowEvent'
 import '../static/css/codemirror.css'
 import '../static/css/monokai.css'
 import '../static/css/style.css'
@@ -40,8 +39,17 @@ const store = new VueX.Store({
     waitTime: 500,
     replace: true,
     showScreen: false,
+    loginStatus: false,
     accountInfo: {
-      isShow: false
+      isShow: false,
+      avatarUrl: '',
+      name: '',
+      login: '',
+      email: ''
+    },
+    clientInfo: {
+      clientID: '',
+      clientSecret: ''
     },
     autoUp: true,
     isRun: false,
@@ -88,8 +96,16 @@ const store = new VueX.Store({
     updateCssLinks: (state, newVal) => {
       state.cssLinks = newVal
     },
-    updateAccountInfo: (state, info) => {
-      state.accountInfo[info.attr] = info.value
+    updateAccountInfo: (state, obj) => {
+      for (let attr in obj) {
+        state.accountInfo[attr] = obj[attr]
+      }
+    },
+    updateClientInfo: (state, info) => {
+      state.clientInfo = info
+    },
+    updateLoginStatus: (state, newVal) => {
+      state.loginStatus = newVal
     }
   }
 })
@@ -104,11 +120,16 @@ new Vue({
   template: '<App />'
 })
 
+// 页面刷新前将state存入sessionStorage
+window.onbeforeunload = () => {
+  sessionStorage.setItem('jsEcdStore', JSON.stringify(store.state))
+}
+
 console.log(
-  '                                                          ' + '\n' +
-  ' _____  ___    ___           ___   ____   ___    ___   ___' + '\n' +
-  '   |   /   \\  |     |\\   |  |   \\ /    \\ |   \\  |     |   \\' + '\n' +
-  '   |   \\___   |___  | \\  | |      |    | |    | |___  |___|' + '\n' +
-  '   |       \\  |     |  \\ | |      |    | |    | |     | \\' + '\n' +
-  '|__/   \\___/  |___  |   \\|  |___/ \\____/ |___/  |___  |   \\' + '\n'
+  '     ██╗███████╗      ███████╗███╗   ██╗ ██████╗ ██████╗ ██████╗ ███████╗██████╗ ' + '\n' +
+  '     ██║██╔════╝      ██╔════╝████╗  ██║██╔════╝██╔═══██╗██╔══██╗██╔════╝██╔══██╗' + '\n' +
+  '     ██║███████╗█████╗█████╗  ██╔██╗ ██║██║     ██║   ██║██║  ██║█████╗  ██████╔╝' + '\n' +
+  '██   ██║╚════██║╚════╝██╔══╝  ██║╚██╗██║██║     ██║   ██║██║  ██║██╔══╝  ██╔══██╗' + '\n' +
+  '╚█████╔╝███████║      ███████╗██║ ╚████║╚██████╗╚██████╔╝██████╔╝███████╗██║  ██║' + '\n' +
+  '╚════╝ ╚══════╝      ╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝ '
 )
