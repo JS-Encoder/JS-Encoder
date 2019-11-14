@@ -1,8 +1,13 @@
 /* eslint-disable */
-import { Button, Select, Option, Input, InputNumber, Checkbox, CheckboxGroup, CheckboxButton, RadioGroup, RadioButton, Collapse, CollapseItem, Message } from 'element-ui'
+import { Button, Select, Dropdown, DropdownMenu, DropdownItem, Tabs, TabPane, Option, Input, InputNumber, Checkbox, CheckboxGroup, CheckboxButton, RadioGroup, RadioButton, Collapse, CollapseItem, Message } from 'element-ui'
 const element = {
-  install: function (Vue) {
+  install(Vue) {
     Vue.use(Button)
+    Vue.use(Tabs)
+    Vue.use(TabPane)
+    Vue.use(Dropdown)
+    Vue.use(DropdownItem)
+    Vue.use(DropdownMenu)
     Vue.use(CheckboxGroup)
     Vue.use(CheckboxButton)
     Vue.use(RadioGroup)
