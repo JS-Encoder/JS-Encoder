@@ -1,5 +1,5 @@
 <template>
-  <div :class="sliderConf.isShow?'slider-show':''" class="slider flex flex-clo">
+  <div class="slider flex flex-clo">
     <div :class="sliderConf.isShow?'out':''" class="slider-content flex flex-clo">
       <span class="slider-title noselect flex flex-ai">
         <img alt class="logo" src="../assets/logo.svg" />
@@ -7,7 +7,6 @@
       <div class="slider-menu flex">
         <ul>
           <li
-            :class="item.title === 'new feature' ? 'glint' : ''"
             :key="index"
             @click="triggerEvent(item.title)"
             class="menu-item flex flex-jcc"
@@ -51,9 +50,9 @@ export default {
 <style lang="scss" scoped>
 .slider {
   position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1400;
+  z-index: 10;
+  width: 240px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
   .slider-title {
     @include setWAndH(100%, 50px);
     img {
@@ -64,15 +63,11 @@ export default {
     @include setWAndH(100%, 100%);
   }
   .slider-content {
-    position: absolute;
-    z-index: 1401;
-    top: 0;
-    left: -240px;
     border-right: 0px solid #999999;
     @include setWAndH(240px, 100vh);
     background-color: $dominantHue;
     box-shadow: 0px 0px 0px $dominantHue;
-    @include setTransition(all, .3s, ease);
+    @include setTransition(all, 0.3s, ease);
     .slider-menu {
       width: 100%;
       ul {
@@ -84,7 +79,7 @@ export default {
           color: #ccc;
           font-size: 20px;
           border-bottom: 2px solid #2c2c2c;
-          @include setTransition(all, .3s, ease);
+          @include setTransition(all, 0.3s, ease);
           cursor: pointer;
           span {
             margin: 0 5px;
@@ -97,28 +92,11 @@ export default {
           color: #f2f2f2;
           background-color: #333333;
         }
-        .glint {
-          animation: shine 2s ease infinite;
-        }
-        @keyframes shine {
-          0% {
-            color: #999999;
-          }
-          50% {
-            color: #ffffff;
-          }
-          100% {
-            color: #999999;
-          }
-        }
       }
     }
   }
   .out {
     left: 0px;
   }
-}
-.slider-show {
-  @include setWAndH(100%, 100%);
 }
 </style>

@@ -21,8 +21,6 @@ export default {
         document.getElementById('home').style.opacity = '1'
       }, 300)
     } catch (e) { }
-
-    this.findHistorySession()
   },
   methods: {
     hideAccount() {
@@ -31,12 +29,6 @@ export default {
         isShow: false
       })
       commit('updateScreen', false)
-    },
-    findHistorySession() {
-      // 判断sessionStorage是否为空，否则将state重置为session
-      const jsEcdStore = sessionStorage.getItem('jsEcdStore')
-      if (jsEcdStore === null) return
-      this.$store.replaceState(JSON.parse(jsEcdStore))
     }
   }
 }

@@ -2,7 +2,10 @@
   <transition name="account">
     <div class="account-menu">
       <ul class="account-options-list">
-        <li :key="index" @click="item.method" class="account-option" v-for="(item, index) in menuOptions">{{item.name}}</li>
+        <li :key="index"
+            @click="item.method"
+            class="account-option"
+            v-for="(item, index) in menuOptions">{{item.name}}</li>
       </ul>
     </div>
   </transition>
@@ -45,16 +48,15 @@ export default {
     },
     logOut() {
       // 登出账户
-      if (confirm('Are you sure to log out?')){
+      if (confirm('Are you sure to log out?')) {
         console.log('sure')
       }
     },
     profile() {
       // 进入个人信息界面
       sessionStorage.setItem('jsEcdStore', JSON.stringify(this.$store.state))
-
       this.$router.push({
-        path: '/profile'
+        path: 'profile'
       })
     }
   }

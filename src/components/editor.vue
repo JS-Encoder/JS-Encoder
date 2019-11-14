@@ -99,9 +99,8 @@ export default {
       // 如果有code（用户登陆），获取code值
       // 去除尾部的#/
       const href = window.location.href
-      const url = href.substr(0, href.length - 2)
+      const url = href.substr(0, href.indexOf('#/'))
       const paramObj = getUrlParams(url)
-
       if (!paramObj) return
 
       const clientInfo = await require('@/info/clientInfo.json')
