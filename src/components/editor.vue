@@ -147,8 +147,8 @@ export default {
       // The five Windows are arranged in sequence, so set it to 1~5 in data.typeListQueue, judge the window position according to the value size
       // checkType is an array,it is used to store the window currently displayed on the page
       if (checkType.length) {
-        const arr = [],
-          finalArr = []
+        const arr = []
+        const finalArr = []
         checkType.forEach(item => {
           arr.push(this.typeListQueue[item])
         })

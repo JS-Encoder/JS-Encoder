@@ -2,13 +2,13 @@
   <div class="work flex flex-clo">
     <img alt src="../../static/images/1.jpg" />
     <div class="project-info flex flex-ai">
-      <div v-if="showInput">
+      <div class="project-title" v-if="showInput">
         <input @blur="updateName" class="name-input" type="text" v-focus="isFocus" v-model="info.name" />
         <div class="input-box"></div>
       </div>
       <span class="project-name" v-if="!showInput">{{info.name}}</span>
       <i @click="changeName" class="icon iconfont icon-pencil rename" style="font-size:14px" v-if="!showInput"></i>
-      <el-dropdown class="dropdown-menu" trigger="click" placement="top-end">
+      <el-dropdown class="dropdown-menu" placement="top-end" trigger="click">
         <i class="icon iconfont icon-gengduo more" style="font-size:25px"></i>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item icon="icon iconfont icon-recycle">delete</el-dropdown-item>
@@ -47,18 +47,22 @@ export default {
     width: 300px !important;
     height: 240px !important;
   }
+  .name-input, .project-name {
+    width: 200px !important;
+  }
 }
 .work {
   @include setWAndH(250px, 200px);
   margin: 50px 20px 20px 20px;
   background-color: $dominantHue;
   border-radius: 5px;
-  transition: all 0.3s ease;
+  @include setTransition(all, .3s, ease);
   overflow: hidden;
   &:hover {
     box-shadow: 0 10px 10px #bebebe;
   }
   img {
+    cursor: pointer;
     @include setWAndH(100%, calc(100% - 50px));
   }
   .project-info {
@@ -71,7 +75,7 @@ export default {
     i {
       padding: 10px;
       color: $describe;
-      transition: all 0.3s ease;
+      @include setTransition(all, .3s, ease);
       cursor: pointer;
       &:hover {
         color: $primaryHued;
@@ -81,22 +85,31 @@ export default {
       position: absolute;
       right: 0;
     }
-    .input-box {
-      width: 0;
-      border-bottom: 1px solid $describe;
-      transition: all 0.3s ease;
+    .project-name {
+      width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
     }
-    .name-input {
-      width: 200px;
-      border: none;
-      outline: none;
-      color: $primaryHued;
-      font-size: 16px;
-      font-family: $josefinSans;
-      background-color: transparent;
+    .project-title {
+      .input-box {
+        width: 0;
+        border-bottom: 1px solid $describe;
+        @include setTransition(all, .3s, ease);
+      }
+      .name-input {
+        width: 160px;
+        border: none;
+        outline: none;
+        color: $primaryHued;
+        font-size: 16px;
+        font-family: $josefinSans;
+        background-color: transparent;
+      }
     }
     .name-input:focus + .input-box {
-      width: 200px;
+      width: 100%;
     }
   }
 }

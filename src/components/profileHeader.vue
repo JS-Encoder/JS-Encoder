@@ -14,7 +14,7 @@ export default {
   },
   data() {
     return {
-      
+
     }
   }
 }
@@ -22,8 +22,7 @@ export default {
 <style lang="scss" scoped>
 .profile-header {
   position: relative;
-  @include setWAndH(100%, 240px);
-  overflow: hidden;
+  @include setWAndH(100%, 240px !important);
   background: url('../../static/images/profile-bg.svg');
   .profile-info {
     margin-top: 50px;
@@ -42,6 +41,20 @@ export default {
     }
     .profile-login-name {
       color: $describe;
+      margin-bottom: 20px;
+    }
+    .profile-login-name,
+    .profile-name,
+    img {
+      animation: slide 1s ease 1;
+    }
+    @include keyframes(slide) {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
     }
   }
 }

@@ -14,8 +14,8 @@ module.exports = {
     proxyTable: proxyConfig.proxy,
 
     // Various Dev Server settings
-    host: 'https://longgererer.github.io/', // can be overwritten by process.env.HOST
-    port: 80, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+    host: 'localhost', // can be overwritten by process.env.HOST
+    port: 4040, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: true,
     errorOverlay: true,
     notifyOnErrors: true,

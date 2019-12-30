@@ -73,24 +73,21 @@ export default {
 }
 </script>
 <style lang="scss" >
-body {
-  overflow-y: auto !important;
-}
 .el-tabs__item {
   font-size: 16px !important;
 }
 .profile {
-  @include setWAndH(100%);
+  @include setWAndH(100%, 100%);
   font-family: $josefinSans;
+  overflow: auto;
   .profile-page {
-    @include setWAndH(100%, 100%);
+    @include setWAndH(100%, auto);
     margin-left: 240px;
     .profile-works {
-      padding: 20px 50px 50px 50px;
+      padding: 10px 50px 50px 50px;
       box-sizing: border-box;
       @for $i from 0 through 12 {
         .work#{$i}{
-          // margin-top: 20px;
           opacity: 0;
           animation: slide 1s ease 0.1s * ($i + 1) 1 normal;
           animation-fill-mode : forwards;

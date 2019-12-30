@@ -1,26 +1,45 @@
-@import './base.scss';
+@import "./base.scss";
 
 @mixin setWAndH($width: auto, $height: auto) {
   width: $width;
   height: $height;
 }
-@mixin setPAndM($margin: 0, $padding: 0){
+@mixin setPAndM($margin: 0, $padding: 0) {
   margin: $margin;
   padding: $padding;
 }
-@mixin setTransform($fn){
+@mixin setTransform($fn) {
   transform: $fn;
   -moz-transform: $fn;
   -webkit-transform: $fn;
 }
-@mixin setTransition($el, $time, $fn){
+@mixin setTransition($el, $time, $fn) {
   transition: $el $time $fn;
   -moz-transition: $el $time $fn;
   -webkit-transition: $el $time $fn;
 }
-@mixin setButton($radius: none, $border: none, $color: $primaryHued, $bgColor: $dominantHue){
+@mixin setButton(
+  $radius: none,
+  $border: none,
+  $color: $primaryHued,
+  $bgColor: $dominantHue
+) {
   color: $color;
   background-color: $bgColor;
   border-radius: $radius;
   border: $border;
+}
+@mixin keyframes($animationName) {
+  @-webkit-keyframes #{$animationName} {
+    @content;
+  }
+  @-moz-keyframes #{$animationName} {
+    @content;
+  }
+  @-o-keyframes #{$animationName} {
+    @content;
+  }
+  @keyframes #{$animationName} {
+    @content;
+  }
 }
