@@ -1,108 +1,135 @@
 <template>
-  <div class="profile flex">
-    <fixedSlider :sliderConf="sliderConf"></fixedSlider>
-    <div class="profile-page flex flex-clo">
-      <profileHeader :accountInfo="accountInfo"></profileHeader>
-      <div class="profile-works">
-        <div class="works-title">
-          <el-tabs @tab-click="handleClick" v-model="activeName">
-            <el-tab-pane class="flex flex-w flex-jca" label="Works" name="Works">
-              <work :key="index" v-for="(item, index) in worksInfo" :info="item" class="work" :class="'work'+index"></work>
-            </el-tab-pane>
-          </el-tabs>
-          <div class="work-list"></div>
-        </div>
-      </div>
+  <div id="profile" class="flex">
+    <div class="bg" v-if="showBg" @click.stop="closeBg"></div>
+    <Sidebar class="sidebar" :class="isShowSidebar?'sidebar-active':''" v-if="refresh" ref="sidebar"></Sidebar>
+    <div class="fold-sidebar" :class="isShowSidebar?'fold-sidebar-active':''">
+      <i class="icon iconfont icon-close" v-show="isShowSidebar" @click.stop="showSidebar(false)"></i>
+      <i class="icon iconfont icon-menu" v-show="!isShowSidebar" @click.stop="showSidebar(true)"></i>
     </div>
+    <ProfileBody class="profile-body"></ProfileBody>
+    <transition name="dialog-fade">
+      <div class="dialog-box" v-if="currentDialog !== ''">
+        <Dialog :dialogName="currentDialog"></Dialog>
+      </div>
+    </transition>
   </div>
 </template>
+
 <script>
-import fixedSlider from './fixedSlider.vue'
-import profileHeader from './profileHeader.vue'
-import work from './work.vue'
+import Sidebar from './sidebar'
+import Dialog from './dialog'
+import ProfileBody from './profileBody'
 import { mapState } from 'vuex'
 export default {
   data() {
     return {
-      sliderConf: {
-        event: 'triggerOpt',
-        options: [
-          {
-            title: 'new editor',
-            icon: 'icon iconfont icon-editor'
-          },
-          {
-            title: 'recyle bin',
-            icon: 'icon iconfont icon-recycle'
-          },
-          {
-            title: 'log out',
-            icon: 'icon iconfont icon-logOut'
-          }
-        ]
-      },
-      activeName: 'Works',
-      worksInfo: []
+      refresh: true,
+      isShowSidebar: false
     }
   },
-  created() {
-    const arr = []
-    for (let i = 0; i < 12; i++) {
-      arr.push({
-        name: 'project name',
-        id: i
-      })
-    }
-    this.worksInfo = arr
-  },
-  components: {
-    fixedSlider,
-    profileHeader,
-    work
+  mounted() {
+    // 如果用户已经登陆，给页面标题赋值
+    const loginStatus = this.loginStatus
+    const username = this.userInfo.name
+    document.title = `${username} JS-Encoder`
   },
   computed: {
     ...mapState({
-      accountInfo: 'accountInfo'
+      showBg: 'showBg',
+      currentDialog: 'currentDialog',
+      language: 'language',
+      loginStatus: 'loginStatus',
+      userInfo: 'userInfo'
     })
   },
-  methods: {
-    handleClick(tab, event) {
-
+  watch: {
+    language() {
+      // 重新渲染组件
+      this.refresh = false
+      this.$nextTick(() => {
+        this.refresh = true
+      })
     }
+  },
+  methods: {
+    showSidebar(status) {
+      this.isShowSidebar = status
+    },
+    closeBg() {
+      const commit = this.$store.commit
+      commit('updateShowBg', false)
+      commit('updateShowSlideUserMenu', false)
+      commit('updateCurrentDialog', '')
+    }
+  },
+  components: {
+    Sidebar,
+    ProfileBody,
+    Dialog
   }
 }
 </script>
-<style lang="scss" >
-.el-tabs__item {
-  font-size: 16px !important;
+<style lang="scss" src="./componentStyle/profile.scss" scoped></style>
+<style lang="scss" scoped>
+.dialog-fade-enter-active,
+.dialog-fade-leave-active {
+  @include setTransition(all, 0.3s, ease);
 }
-.profile {
+.dialog-fade-enter,
+.dialog-fade-leave-active {
+  opacity: 0;
+  transform: scale(0);
+  visibility: hidden;
+}
+#profile {
   @include setWAndH(100%, 100%);
-  font-family: $josefinSans;
-  overflow: auto;
-  .profile-page {
-    @include setWAndH(100%, auto);
-    margin-left: 240px;
-    .profile-works {
-      padding: 10px 50px 50px 50px;
-      box-sizing: border-box;
-      @for $i from 0 through 12 {
-        .work#{$i}{
-          opacity: 0;
-          animation: slide 1s ease 0.1s * ($i + 1) 1 normal;
-          animation-fill-mode : forwards;
-        }
-      }
-      @keyframes slide {
-        from{
-          opacity: 0;
-          margin-top: 50px;
-        }
-        to{
-          opacity: 1;
-          margin-top: 20px;
-        }
-      }
+  position: relative;
+  .bg {
+    position: absolute;
+    z-index: 999;
+    @include setWAndH(100%, 100%);
+    @include setTransition(all, 0.3s, ease);
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .slide-user-info {
+    @include setWAndH(300px, 100%);
+    @include setTransition(all, 0.3s, ease);
+    position: absolute;
+    background-color: $dominantHue;
+    z-index: 1000;
+    top: 0;
+    left: 100%;
+  }
+  .slide-user-info-show {
+    box-shadow: 0 0 5px 0 #000000;
+    left: calc(100% - 300px);
+  }
+  .dialog-box {
+    @include setWAndH(500px);
+    max-height: 500px;
+    overflow: auto;
+    left: calc(50% - 250px);
+    top: 100px;
+    position: absolute;
+    z-index: 1000;
+    background-color: $primaryHued;
+    border-radius: 5px;
+    box-shadow: 0 0 5px 0 $deepColor;
+    box-sizing: border-box;
+    padding: 0 10px 10px 10px;
+  }
+  .fold-sidebar {
+    display: none;
+    @include setWAndH(30px, 30px);
+    background-color: $dominantHue;
+    border-radius: 5px;
+    cursor: pointer;
+    & > i {
+      color: $beforeFocus;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
     }
   }
 }

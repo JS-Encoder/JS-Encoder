@@ -3,22 +3,24 @@ import JSZip from 'jszip'
 import getCompiledCode from './getCompiledCode'
 import { judgeMimeType } from './judgeMode'
 import judgeFormat from './judgeUrlFormat'
+import store from '../vuex/store'
 
-async function singleDownLoad(state, uncompiled) {
+async function singleDownLoad (unCompiled) {
+  const state = store.state
   // css link
   let validCss = ''
-  judgeFormat(state.cssLinks, function (item) {
+  judgeFormat(state.linkList, function (item) {
     validCss += `<link rel="stylesheet" href="${item}">`
   })
 
   // js cdn
   let validCDN = ''
-  judgeFormat(state.cdnJs, function (item) {
+  judgeFormat(state.CDNList, function (item) {
     validCDN += `<script src="${item}"><\/script>\n\t`
   })
 
   let codeObj
-  await getCompiledCode(state).then(obj => {
+  await getCompiledCode(state.codeAreaContent, state.preprocess).then(obj => {
     codeObj = obj
   })
 
@@ -29,7 +31,8 @@ async function singleDownLoad(state, uncompiled) {
     '\t<meta charset="UTF-8">\n' +
     '\t<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
     '\t<meta http-equiv="X-UA-Compatible" content="ie=edge">\n' +
-    `\t${validCss}` +
+    `\t${validCDN}\n` +
+    `\t${validCss}\n` +
     '\t<title>Document</title>\n' +
     '\t<style>\n' +
     `\t\t${codeObj.CSSCode}\n` +
@@ -37,7 +40,6 @@ async function singleDownLoad(state, uncompiled) {
     '</head>\n' +
     '<body>\n' +
     `${codeObj.HTMLCode}\n` +
-    `${validCDN}\n` +
     '<script>\n' +
     `${codeObj.JSCode}\n` +
     '<\/script>\n' +
@@ -46,39 +48,36 @@ async function singleDownLoad(state, uncompiled) {
 
   download(htmlCode, 'index.html')
 
-  if (uncompiled) {
-    const typeObj = judgePrep(state)
+  if (unCompiled) {
+    const typeObj = judgePrep()
     if (typeObj) {
-      const code = state.textBoxContent
+      const code = state.codeAreaContent
       typeObj.html && download(code.HTML, `index.${typeObj.html}`)
       typeObj.css && download(code.CSS, `index.${typeObj.css}`)
       typeObj.js && download(code.JavaScript, `index.${typeObj.js}`)
     }
   }
-
 }
 
-async function zipDownLoad(state, uncompiled) {
+async function zipDownLoad (unCompiled) {
+  const state = store.state
   // css link
   let validCss = ''
-  judgeFormat(state.cssLinks, function (item) {
+  judgeFormat(state.linkList, function (item) {
     validCss += `<link rel="stylesheet" href="${item}">`
   })
-
   // js cdn
   let validCDN = ''
-  judgeFormat(state.cdnJs, function (item) {
+  judgeFormat(state.CDNList, function (item) {
     validCDN += `<script src="${item}"><\/script>\n\t`
   })
-
   let codeObj
-
-  await getCompiledCode(state).then(obj => {
+  await getCompiledCode(state.codeAreaContent, state.preprocess).then(obj => {
     codeObj = obj
   })
-
+  // 创建压缩包
   const zip = new JSZip()
-  let code = zip.folder('code')
+  let zipFolder = zip.folder('code')
   const htmlCode =
     '<!DOCTYPE html>\n' +
     '<html lang="en">\n' +
@@ -95,18 +94,26 @@ async function zipDownLoad(state, uncompiled) {
     `${codeObj.HTMLCode}\n` +
     '</body>\n' +
     '</html>'
-
   const cssCode = codeObj.CSSCode
   const jsCode = codeObj.JSCode
-  code.file('index.html', htmlCode)
-  code.file('index.css', cssCode)
-  code.file('index.js', jsCode)
-  zip.generateAsync({ type: 'blob' }).then(function (content) {
-    saveAs(content, 'code.zip')
+  zipFolder.file('index.html', htmlCode)
+  zipFolder.file('index.css', cssCode)
+  zipFolder.file('index.js', jsCode)
+  if (unCompiled) {// 是否下载未编译文件
+    const typeObj = judgePrep()
+    if (typeObj) {
+      const code = state.codeAreaContent
+      typeObj.html && zipFolder.file(`index.${typeObj.html}`, code.HTML)
+      typeObj.css && zipFolder.file(`index.${typeObj.css}`, code.CSS)
+      typeObj.js && zipFolder.file(`index.${typeObj.js}`, code.JavaScript)
+    }
+  }
+  zip.generateAsync({ type: 'blob' }).then(content => {
+    saveAs(content, 'JSEncoderCode.zip')
   })
 }
-
-function download(code, name) {
+// 下载文件
+function download (code, name) {
   const aTag = document.createElement('a')
   let blob = new Blob([code])
   aTag.download = name
@@ -115,21 +122,16 @@ function download(code, name) {
   URL.revokeObjectURL(blob)
 }
 
-function judgePrep(state) {
-  const HTMLPrep = state.HTMLPrep
-  const CSSPrep = state.CSSPrep
-  const JSPrep = state.JSPrep
+function judgePrep () {
+  const preprocess = store.state.preprocess
+  const HTMLPrep = preprocess[0]
+  const CSSPrep = preprocess[1]
+  const JSPrep = preprocess[2]
   const typeObj = {}
 
-  if (HTMLPrep !== 'HTML') {
-    typeObj.html = judgeMimeType(HTMLPrep)
-  } else if (CSSPrep !== 'CSS') {
-    typeObj.css = judgeMimeType(CSSPrep)
-  } else if (JSPrep !== 'JavaScript') {
-    typeObj.js = judgeMimeType(JSPrep)
-  } else {
-    return
-  }
+  HTMLPrep !== 'HTML' && (typeObj.html = judgeMimeType(HTMLPrep))
+  CSSPrep !== 'CSS' && (typeObj.css = judgeMimeType(CSSPrep))
+  JSPrep !== 'JavaScript' && (typeObj.js = judgeMimeType(JSPrep))
 
   return typeObj
 }

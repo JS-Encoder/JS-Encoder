@@ -1,19 +1,52 @@
-$josefinSans: 'Josefin Sans', sans-serif;
+$josefinSans: "Josefin Sans", sans-serif;
+$deepColor: #1a1a1a;
 $dominantHue: #1e1e1e;
-$primaryHued: #f2f2f2;
+$primaryHued: #333333;
+$afterFocus: #f2f2f2;
+$beforeFocus: #bfbfbf;
 $describe: #999999;
 
 a {
   text-decoration: none;
 }
+
 li {
   list-style: none;
 }
+
 ul {
   padding: 0;
 }
-kbd{
-  background-color: #f2f2f2;
+
+kbd {
+  background-color: $deepColor;
   padding: 2px 4px;
   border-radius: 3px;
+  color: $beforeFocus;
+}
+
+.btn-def {
+  background-color: $deepColor;
+  color: $beforeFocus;
+  border-radius: 5px;
+  outline: none;
+  border: none;
+  transition: all .3s ease-in-out;
+  cursor: pointer;
+  &:hover {
+    color: $afterFocus;
+    background-color: $primaryHued;
+    box-shadow: 0 0 5px 0 $beforeFocus;
+  }
+}
+
+.describe {
+  font-size: 12px;
+  color: $describe;
+}
+
+.ellipsis-text {
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
 }

@@ -17,26 +17,26 @@ class LoadFiles {
   constructor() {
     this.map = {}
   }
-  set(k, v) {
+  set (k, v) {
     this.map[k] = v
   }
-  get(k) {
+  get (k) {
     return this.map[k]
   }
 }
 
 const loadFiles = new LoadFiles()
 
-function asyncLoad(resources, name) {
+function asyncLoad (resources, name) {
   return new Promise((resolve, reject) => {
     if (loadjs.isDefined(name)) {
       resolve()
     } else {
       loadjs(resources, name, {
-        success() {
+        success () {
           resolve()
         },
-        error() {
+        error () {
           reject(new Error('network error'))
         }
       })
@@ -44,7 +44,7 @@ function asyncLoad(resources, name) {
   })
 }
 
-async function compileMarkDown(code) {
+async function compileMarkDown (code) {
   if (!loadFiles.get('markdown')) {
     const marked = await import('marked')
     loadFiles.set('markdown', marked)
@@ -52,7 +52,7 @@ async function compileMarkDown(code) {
   return loadFiles.get('markdown')(code)
 }
 
-async function compileSass(code) {
+async function compileSass (code) {
   // scss&sass
   if (!loadFiles.get('sass')) {
     const Sass = await require('../../static/js/sass')
@@ -62,16 +62,18 @@ async function compileSass(code) {
 
   const defSass = loadFiles.get('sass')
   const sass = new defSass()
-
   return new Promise((resolve, reject) => {
+
     sass.compile(code, result => {
       if (result.status === 0) resolve(result.text)
-      else reject(new Error('fail to get result'))
+      else {
+        resolve(code)
+      }
     })
   })
 }
 
-async function compileLess(code) {
+async function compileLess (code) {
   if (!loadFiles.get('less')) {
     const less = await import('less')
     loadFiles.set('less', less)
@@ -80,7 +82,7 @@ async function compileLess(code) {
   return defLess.render(code)
 }
 
-async function compileStylus(code) {
+async function compileStylus (code) {
   if (!loadjs.isDefined('stylus')) {
     await asyncLoad('../../static/js/stylus.js', 'stylus')
   }
@@ -92,7 +94,7 @@ async function compileStylus(code) {
   })
 }
 
-function compileTypeScript(code) {
+function compileTypeScript (code) {
   const res = window.typescript.transpileModule(code, {
     fileName: '/foo.ts',
     reportDiagnostics: true,
@@ -103,7 +105,7 @@ function compileTypeScript(code) {
   return res.outputText
 }
 
-async function compileCoffeeScript(code) {
+async function compileCoffeeScript (code) {
   if (!loadjs.isDefined('coffeeScript')) {
     await asyncLoad('../../static/js/coffeescript.js', 'coffeeScript')
   }

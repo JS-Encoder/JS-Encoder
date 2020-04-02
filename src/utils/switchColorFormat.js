@@ -3,17 +3,17 @@ function switchRGB(color) {
   if (!color) return
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color)
   return {
-    r: parseInt(result[1], 16) + '',
-    g: parseInt(result[2], 16) + '',
-    b: parseInt(result[3], 16) + ''
+    R: parseInt(result[1], 16) + '',
+    G: parseInt(result[2], 16) + '',
+    B: parseInt(result[3], 16) + ''
   }
 }
 
 function switchHEX(color) {
-  if (!(color.r && color.g && color.b)) return
-  const r = parseInt(color.r)
-  const g = parseInt(color.g)
-  const b = parseInt(color.b)
+  if (!(color.R && color.G && color.B)) return
+  const r = parseInt(color.R)
+  const g = parseInt(color.G)
+  const b = parseInt(color.B)
   return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
 }
 

@@ -1,11 +1,11 @@
 /* eslint-disable */
-import * as compiler from '../utils/compiler'
+import * as compiler from './compiler'
 
-async function getCompiledCode(state) {
-  const content = state.textBoxContent
-  const HTMLPrep = state.HTMLPrep
-  const CSSPrep = state.CSSPrep
-  const JSPrep = state.JSPrep
+async function getCompiledCode (codeAreaContent, preprocess) {
+  const content = codeAreaContent
+  const HTMLPrep = preprocess[0]
+  const CSSPrep = preprocess[1]
+  const JSPrep = preprocess[2]
   let HTMLCode = '',
     CSSCode = '',
     JSCode = ''

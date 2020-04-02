@@ -4,9 +4,9 @@ import qs from 'qs'
 
 axios.defaults.withCredentials = true
 
-function post(url = '', params = {}) {
+function post(url = '', params = {}, config = {}) {
   return new Promise((resolve, reject) => {
-    axios.post(url, qs.stringify(params))
+    axios.post(url, qs.stringify(params), config)
       .then(res => {
         resolve(res.data)
       }).catch(err => {

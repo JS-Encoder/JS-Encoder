@@ -1,0 +1,64 @@
+@include phone {
+  .sidebar {
+    display: none;
+  }
+  .sidebar-active {
+    flex-shrink: 0;
+    display: block;
+  }
+  .fold-sidebar {
+    background-color: $primaryHued !important;
+    display: block !important;
+    position: absolute;
+    z-index: 20;
+    top: 0px;
+    left: 10px;
+    i {
+      color: $afterFocus !important;
+    }
+  }
+  .fold-sidebar-active {
+    left: 60px;
+  }
+  .dialog-box {
+    width: 340px !important;
+    left: calc(50% - 170px) !important;
+  }
+}
+@include phone-pad {
+  .sidebar {
+    display: none;
+  }
+  .sidebar-active {
+    flex-shrink: 0;
+    display: block;
+  }
+  .fold-sidebar {
+    background-color: $primaryHued !important;
+    display: block !important;
+    position: absolute;
+    z-index: 20;
+    top: 0px;
+    left: 10px;
+    i {
+      color: $afterFocus !important;
+    }
+  }
+  .fold-sidebar-active {
+    left: 60px;
+  }
+  .dialog-box {
+    width: 460px !important;
+    left: calc(50% - 230px) !important;
+  }
+}
+@include pad {
+}
+@include pc {
+}
+@include landscape {
+  .dialog-box {
+    top: 20px !important;
+    max-height: 300px !important;
+  }
+}

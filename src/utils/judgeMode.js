@@ -12,7 +12,7 @@ const modeList = {
   CoffeeScript: 'text/coffeescript'
 }
 
-function judgeMode(edit) {
+function judgeMode (edit) {
   switch (edit) {
     case 'HTML':
     case 'MarkDown':
@@ -34,7 +34,7 @@ function judgeMode(edit) {
   }
 }
 
-function judgeExtension(edit) {
+function judgeExtension (edit) {
   switch (edit) {
     case 'html':
     case 'md':
@@ -52,7 +52,7 @@ function judgeExtension(edit) {
   }
 }
 
-function judgeMimeType(edit) {
+function judgeMimeType (edit) {
   switch (edit) {
     case 'MarkDown':
       return 'md'
@@ -71,7 +71,32 @@ function judgeMimeType(edit) {
   }
 }
 
-function getStyleMode(edit) {
+function judgeModeByMimeType (type) {
+  switch (type) {
+    case 'md':
+      return 'MarkDown'
+    case 'sass':
+      return 'Sass'
+    case 'scss':
+      return 'Scss'
+    case 'less':
+      return 'Less'
+    case 'styl':
+      return 'Stylus'
+    case 'ts':
+      return 'TypeScript'
+    case 'coffee':
+      return 'CoffeeScript'
+    case 'html':
+      return 'HTML'
+    case 'css':
+      return 'CSS'
+    case 'js':
+      return 'JavaScript'
+  }
+}
+
+function getStyleMode (edit) {
   return modeList[edit]
 }
 
@@ -79,5 +104,6 @@ export {
   judgeMode,
   judgeExtension,
   judgeMimeType,
-  getStyleMode
+  getStyleMode,
+  judgeModeByMimeType
 }

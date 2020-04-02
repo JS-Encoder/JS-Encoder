@@ -1,0 +1,16 @@
+@include phone{
+
+}
+@include landscape {
+  @media(max-height: 480px){
+    .sb-opts{
+      & > div{
+        height: 40px !important;
+        &>i{
+          font-size: 25px !important;
+          line-height: 40px !important;
+        }
+      }
+    }
+  }
+}

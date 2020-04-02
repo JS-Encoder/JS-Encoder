@@ -18,6 +18,9 @@
 .flex-ai{
   align-items: center;
 }
+.flex-aend{
+  align-items: flex-end;
+}
 .flex-jcc{
   justify-content: center;
 }

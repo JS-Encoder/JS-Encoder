@@ -1,216 +1,205 @@
 <template>
-  <div id="editor">
-    <Header></Header>
-    <SettingBar @changeTab="changeTabSpace" @hasChanged="changeTypeList"></SettingBar>
-    <div class="code-box" ref="codeBox">
-      <textareaBox
-        :extraConsole="extraConsole"
-        :index="index"
-        :key="item"
-        :len="types.length"
-        :space="tabSpace"
-        :title="item"
-        :typeList="types"
-        @updateConsole="updateConsole"
-        class="textareaBox"
-        v-for="(item,index) in types"
-      ></textareaBox>
+  <div id="editor" class="flex">
+    <div class="bg" v-if="showBg" @click.stop="closeBg"></div>
+    <Sidebar class="sidebar" :class="isShowSidebar?'sidebar-active':''" v-if="refresh"></Sidebar>
+    <div class="fold-sidebar" :class="isShowSidebar?'fold-sidebar-active':''">
+      <i class="icon iconfont icon-close" v-show="isShowSidebar" @click.stop="showSidebar(false)"></i>
+      <i class="icon iconfont icon-menu" v-show="!isShowSidebar" @click.stop="showSidebar(true)"></i>
     </div>
+    <MainBody></MainBody>
+    <div class="slide-user-info" :class="showSlideUserMenu ? 'slide-user-info-show' : ''">
+      <SlideUserMenu v-if="showSlideUserMenu"></SlideUserMenu>
+    </div>
+    <transition name="dialog-fade">
+      <div class="dialog-box" v-if="currentDialog !== ''">
+        <Dialog :dialogName="currentDialog"></Dialog>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
-import Header from './header'
-import SettingBar from './settingBar'
-import textareaBox from './textareaBox'
-import { judgeMode } from '@/utils/judgeMode'
+import Sidebar from './sidebar'
+import MainBody from './mainbody'
+import SlideUserMenu from './slideUserMenu'
 import { getUrlParams } from '@/utils/handleUrl'
 import { post, get } from '@/utils/request'
+import handleCookie from '@/utils/handleCookie'
+import Dialog from './dialog'
 import { mapState } from 'vuex'
-import qs from 'qs'
-
 export default {
-  name: 'editor',
+  components: {
+    Sidebar,
+    MainBody,
+    SlideUserMenu,
+    Dialog
+  },
   data() {
     return {
-      types: [],
-      screenWidth: document.body.clientWidth,
-      typeListQueue: {
-        HTML: 1,
-        MarkDown: 1,
-        CSS: 2,
-        Sass: 2,
-        Scss: 2,
-        Less: 2,
-        Stylus: 2,
-        JavaScript: 3,
-        TypeScript: 3,
-        CoffeeScript: 3,
-        Console: 4,
-        Output: 5
-      },
-      boxW: '',
-      tabSpace: 2,
-      extraConsole: []
+      refresh: true,
+      isShowSidebar: false
     }
+  },
+  mounted() {
+    // 获取用户跳转到github进行注册之后会跳转回来，进行用户信息获取
+    this.getUserInfo()
   },
   computed: {
     ...mapState({
-      HTMLPrep: 'HTMLPrep',
-      CSSPrep: 'CSSPrep',
-      JSPrep: 'JSPrep',
-      accountInfo: 'accountInfo',
+      showBg: 'showBg',
+      showSlideUserMenu: 'showSlideUserMenu',
+      currentDialog: 'currentDialog',
+      language: 'language',
       loginStatus: 'loginStatus'
     })
   },
-  created() {
-    this.types = [this.HTMLPrep, this.CSSPrep, this.JSPrep, 'Console', 'Output']
-    this.getUserInfo()
-  },
-  mounted() {
-    this.changeAllWidth()
-    window.onresize = () => {
-      return (() => {
-        this.screenWidth = document.body.clientWidth
-      })()
-    }
-  },
   watch: {
-    screenWidth(newVal, oldVal) {
-      const changeW = (newVal - oldVal) / this.types.length
-      const store = this.$store
-      for (let item of this.types) {
-        const attr = judgeMode(item)
-        const changeNum = parseFloat(store.state.textBoxW[attr])
-        store.commit('updateTextBoxW', {
-          attr: item,
-          value: changeNum + changeW + 'px'
-        })
-      }
+    language() {
+      // 重新渲染组件
+      this.refresh = false
+      this.$nextTick(() => {
+        this.refresh = true
+      })
     }
-  },
-  components: {
-    Header,
-    SettingBar,
-    textareaBox
   },
   methods: {
+    showSidebar(status) {
+      this.isShowSidebar = status
+    },
+    closeBg() {
+      const commit = this.$store.commit
+      commit('updateShowBg', false)
+      commit('updateShowSlideUserMenu', false)
+      commit('updateCurrentDialog', '')
+    },
     async getCode() {
-      // 如果有code（用户登陆），获取code值
-      // 去除尾部的#/
+      /**
+       * 判断环境以使用不同的方式截取参数
+       * 获取code参数，开发模式下去除尾部的#/
+       * 如果没有code参数，直接返回
+       */
       const href = window.location.href
-      const url = href.substr(0, href.indexOf('#/'))
-      const paramObj = getUrlParams(url)
-      if (!paramObj) return
+      let url = ''
+      let paramObj = {}
+      let userInfo = {}
+      url = href.substr(0, href.indexOf('#/'))
+      paramObj = getUrlParams(url)
 
-      const clientInfo = await require('@/info/clientInfo.json')
-      let obj = {}
+      if (!paramObj.code) return 'NO CODE'
 
-      // 获取传回来的授权码code
-      await post('/github/login/oauth/access_token', {
-        client_id: clientInfo.clientID,
-        client_secret: clientInfo.clientSecret,
-        code: paramObj.code
+      // 向后台发送code，后台请求用户信息
+      await get('/jsEncoder/login/loginGithub', {
+        params: {
+          code: paramObj.code
+        }
       }).then(res => {
-        obj = qs.parse(res)
+        userInfo = res
       })
-
-      return obj
+      return userInfo
     },
     getUserInfo() {
-      if (this.loginStatus) return
-      if (window.location.href.indexOf('?') < 0) return
-
+      const commit = this.$store.commit
+      // 查看用户登录状态，如果已登录就不需要进行用户信息获取
+      if (this.loginStatus) return void 0
+      // 如果url中没有带参数，也不能获取用户信息
+      if (window.location.href.indexOf('?') < 0) {
+        // 显示欢迎弹窗
+        const jsEcdStore = sessionStorage.getItem('jsEcdStore')
+        const id = handleCookie.getCookieValue('_id')
+        if (!id && !jsEcdStore) {
+          commit('updateShowBg', true)
+          commit('updateCurrentDialog', 'welcome')
+        }
+        return void 0
+      }
+      commit('updateShowPageLoader', true)
       this.getCode().then(res => {
-        get('/gitUser/user', {
-          headers: {
-            Authorization: `Bearer ${res.access_token}`
-          }
-        }).then(res => {
-          const commit = this.$store.commit
-
-          commit('updateAccountInfo', {
-            avatarUrl: res.avatar_url,
-            name: res.name,
-            login: res.login,
-            email: res.email
+        if (res === 'NO CODE') return void 0
+        if (!Object.keys(res)) {
+          // 提示登陆失败
+          this.$notify({
+            message: this.language === 'zh' ? '登陆失败' : 'Login Failed',
+            position: 'bottom-right',
+            iconClass: 'icon iconfont icon-error1 error-icon',
+            duration: 3000
           })
-          commit('updateLoginStatus', true)
+          return void 0
+        }
+        handleCookie.setCookie('_id', res._id, 30)
+        commit('updateLoginStatus', true)
+        commit('updateUserInfo', res)
+        // 跳转到用户界面
+        commit('updateShowPageLoader', false)
+        this.$router.push({
+          path: '/profile'
         })
       })
-    },
-    updateConsole(code) {
-      const len = this.extraConsole.length
-      this.extraConsole.splice(len, 0, code)
-    },
-    changeTypeList(checkType) {
-      // The five Windows are arranged in sequence, so set it to 1~5 in data.typeListQueue, judge the window position according to the value size
-      // checkType is an array,it is used to store the window currently displayed on the page
-      if (checkType.length) {
-        const arr = []
-        const finalArr = []
-        checkType.forEach(item => {
-          arr.push(this.typeListQueue[item])
-        })
-        arr.sort((a, b) => {
-          // Sort the elements in the arr from smallest to largest
-          return a - b
-        })
-        arr.forEach(item => {
-          // Replaces the value of the arr elements with the window,and push result into finalArr
-          let str = ''
-          switch (item) {
-            case 1:
-              str = this.HTMLPrep
-              break
-            case 2:
-              str = this.CSSPrep
-              break
-            case 3:
-              str = this.JSPrep
-              break
-            case 4:
-              str = 'Console'
-              break
-            case 5:
-              str = 'Output'
-              break
-          }
-          finalArr.push(str)
-        })
-        this.types = finalArr
-        this.changeAllWidth()
-        return null
-      }
-      this.types = checkType
-    },
-    changeAllWidth() {
-      // Change all window widths to : browser visible width / this.types.length
-      // this.$store.state.textBoxW is used to store the width of each window
-      const len = this.types.length
-      const store = this.$store
-      this.boxW = `${this.screenWidth / len}px`
-      for (let item of this.types) {
-        store.commit('updateTextBoxW', {
-          attr: item,
-          value: this.boxW
-        })
-      }
-    },
-    changeTabSpace(newVal) {
-      this.tabSpace = newVal
     }
   }
 }
 </script>
-
+<style lang="scss" src="./componentStyle/editor.scss" scoped></style>
 <style lang="scss" scoped>
-#editor {
-  width: 100%;
-  height: 100%;
+.dialog-fade-enter-active,
+.dialog-fade-leave-active {
+  @include setTransition(all, 0.3s, ease);
 }
-.code-box {
-  display: flex;
-  @include setWAndH(100%, calc(100% - 100px));
+.dialog-fade-enter,
+.dialog-fade-leave-active {
+  opacity: 0;
+  transform: scale(0);
+  visibility: hidden;
+}
+#editor {
+  @include setWAndH(100%, 100%);
+  position: relative;
+  .bg {
+    position: absolute;
+    z-index: 999;
+    @include setWAndH(100%, 100%);
+    @include setTransition(all, 0.3s, ease);
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .fold-sidebar {
+    display: none;
+    @include setWAndH(30px, 30px);
+    background-color: $dominantHue;
+    border-radius: 5px;
+    cursor: pointer;
+    & > i {
+      color: $beforeFocus;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+  .slide-user-info {
+    @include setWAndH(300px, 100%);
+    @include setTransition(all, 0.3s, ease);
+    position: absolute;
+    background-color: $dominantHue;
+    z-index: 1000;
+    top: 0;
+    left: 100%;
+  }
+  .slide-user-info-show {
+    box-shadow: 0 0 5px 0 #000000;
+    left: calc(100% - 300px);
+  }
+  .dialog-box {
+    @include setWAndH(500px);
+    max-height: 500px;
+    overflow: auto;
+    left: calc(50% - 250px);
+    top: 100px;
+    position: absolute;
+    z-index: 1000;
+    background-color: $primaryHued;
+    border-radius: 5px;
+    box-shadow: 0 0 5px 0 $deepColor;
+    box-sizing: border-box;
+    padding: 0 10px 10px 10px;
+  }
 }
 </style>
