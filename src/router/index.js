@@ -95,6 +95,7 @@ router.beforeEach((to, from, next) => {
     }
   } else if (id) {
     requestUserInfo.getUserInfo(id).then(res => {
+      console.log('route')
       commit('updateUserInfo', res)
       commit('updateLoginStatus', true)
       router.push({

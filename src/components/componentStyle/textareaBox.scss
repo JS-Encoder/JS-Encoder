@@ -1,0 +1,82 @@
+@media screen and (max-width: 600px) {
+  .title {
+    span {
+      font-size: 10px !important;
+    }
+  }
+  #textareaBox {
+    width: 100% !important;
+  }
+}
+.bgc {
+  background-color: $dominantHue;
+}
+#textareaBox {
+  height: 100%;
+  min-width: 72px;
+  box-sizing: border-box;
+  .title {
+    position: relative;
+    span {
+      color: $primaryHued;
+      font-size: 12px;
+      line-height: 20px;
+      background-color: $dominantHue;
+      padding: 1px 10px;
+      display: inline-block;
+      height: 20px;
+      font-family: $josefinSans !important;
+    }
+    .iframe-width{
+      font-size: 12px;
+      color: $describe;
+    }
+    .type-box {
+      @include setWAndH(100px, 100px);
+      background-color: $primaryHued;
+      position: absolute;
+      z-index: 100;
+      top: 100%;
+    }
+  }
+  .text-box {
+    @include setWAndH(100%, 100%);
+    position: relative;
+    .code {
+      @include setWAndH(100%, 100%);
+      background-color: $dominantHue;
+      resize: none;
+      outline: none;
+      border: none;
+      color: $primaryHued;
+    }
+    iframe {
+      @include setWAndH(100%, 100%);
+      background-color: #fff;
+    }
+    .screen-box {
+      @include setWAndH(100%, 100%);
+      position: absolute;
+      z-index: 10;
+    }
+    .resize {
+      @include setWAndH(5px, 100%);
+      box-sizing: border-box;
+      position: relative;
+      cursor: e-resize;
+      position: absolute;
+      right: 0;
+      z-index: 1000;
+      .resize-line {
+        @include setWAndH(1px, 100%);
+        border: 0.5px solid $describe;
+        box-sizing: border-box;
+        position: absolute;
+        right: 0;
+      }
+    }
+    .resize:hover .resize-line{
+      border: .5px dashed #65d3fd;
+    }
+  }
+}

@@ -94,6 +94,8 @@ export default {
         }
       }).then(res => {
         userInfo = res
+      }).catch(err =>{
+        console.log(err)
       })
       return userInfo
     },
@@ -115,7 +117,7 @@ export default {
       commit('updateShowPageLoader', true)
       this.getCode().then(res => {
         if (res === 'NO CODE') return void 0
-        if (!Object.keys(res)) {
+        if (!Object.keys(res).length) {
           // 提示登陆失败
           this.$notify({
             message: this.language === 'zh' ? '登陆失败' : 'Login Failed',
@@ -123,6 +125,7 @@ export default {
             iconClass: 'icon iconfont icon-error1 error-icon',
             duration: 3000
           })
+          commit('updateShowPageLoader', false)
           return void 0
         }
         handleCookie.setCookie('_id', res._id, 30)

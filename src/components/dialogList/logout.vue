@@ -45,10 +45,7 @@ export default {
       //   path: '/editor'
       // })
       // 直接跳转路由依然会带code参数
-      location.href =
-        process.env.NODE_ENV === 'production'
-          ? 'https://www.lliiooiill.cn/JSEncoderEnhance/index.html'
-          : 'http://localhost:8080/'
+      location.href = Global.publicUrl + '#/editor'
     }
   },
   components: {}
