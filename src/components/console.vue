@@ -369,7 +369,7 @@ export default {
             background-color: $describe;
           }
           span {
-            white-space: pre-wrap !important;
+            // white-space: pre-wrap !important;
           }
         }
         .system-error,
@@ -403,7 +403,7 @@ export default {
             margin-right: 10px;
           }
           pre {
-            @include setWAndH(100%);
+            // @include setWAndH(100%);
             white-space: pre-wrap;
             .cm-string {
               white-space: pre;

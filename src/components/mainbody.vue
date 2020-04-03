@@ -202,7 +202,9 @@ export default {
         this.showResize = true
         this.isSmallScreen = false
         iframeWidth = (clientWidth - 50 - 4) / 2
-        commit('updateCurrentTab', 'HTML')
+        if (this.currentTab === 'Output') {
+          commit('updateCurrentTab', this.preprocess[0])
+        }
       }
       this.judgeIframeShows(this.currentTab)
       commit('updateIframeWidth', iframeWidth)

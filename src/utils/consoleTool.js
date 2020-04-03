@@ -7,7 +7,18 @@ import * as judge from './judgeType'
  */
 function getObjAllKeys (obj) {
   const type = judge.judgeType(obj)
-  if (type !== 'Object' && type !== 'Array') return []
+  if (type === 'Map') {
+    const arr = []
+    for(let key of obj){
+      const keyType = judge.judgeType(key[0])
+      if(keyType !== 'Object' && keyType !== 'Array'){
+        arr.push(key[0])
+      } else {
+        arr.push(key[0])
+      }
+    }
+    return arr
+  } else if (type !== 'Object' && type !== 'Array') return []
   if (type === 'Array') {
     const arr = []
     obj.forEach((_, index) => {
@@ -36,7 +47,7 @@ function stringifyDOM (dom) {
  */
 function JSONStringify (stringObject) {
   const type = judge.judgeType(stringObject)
-  if (type !== 'Object' && type !== 'Array') {
+  if (type !== 'Object' && type !== 'Array' && type !== 'Map') {
     return JSON.stringify(stringObject)
   }
 
@@ -50,7 +61,8 @@ function JSONStringify (stringObject) {
   const keys = getObjAllKeys(stringObject)
   for (let i = 0;i < keys.length;i++) {
     const key = keys[i]
-    const value = stringObject[key]
+    let value = stringObject[key]
+    if(type === 'Map') value = stringObject.get(key)
     try {
       // key
       if (type !== 'Array') {
@@ -132,6 +144,7 @@ function judgeBaseArray (arr) {
       case 'number':
       case 'symbol':
       case null:
+      case 'boolean':
       case 'undefined':
       case 'string':
         break
