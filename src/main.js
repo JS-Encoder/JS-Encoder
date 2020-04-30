@@ -10,9 +10,9 @@ import '../static/css/codemirror.css'
 import '../static/css/monokai.css'
 import '../static/css/style.css'
 import '../static/css/show-hint.css'
-// import '../static/css/main.css'
 import '../static/css/public.css'
 import '../static/css/foldgutter.css'
+import '../static/css/dialog.css'
 import store from './vuex/store'
 
 Vue.config.productionTip = true

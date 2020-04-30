@@ -332,7 +332,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 
 .CodeMirror-vscrollbar {
   outline: none;
-  right: 5px;
+  right: 0;
   top: 0;
   overflow-x: hidden;
   overflow-y: scroll;
@@ -526,8 +526,7 @@ div.CodeMirror-dragcursors {
 }
 
 .cm-searching {
-  background-color: #ffa;
-  background-color: rgba(255, 255, 0, 0.4);
+  background-color: #6e4b3b;
 }
 
 /* Used to force a border model for a node */

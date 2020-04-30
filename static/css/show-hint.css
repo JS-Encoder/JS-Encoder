@@ -23,7 +23,6 @@
 }
 
 .CodeMirror-hint:hover {
-  /* transition: all .3s ease; */
   background-color: #555555;
 }
 

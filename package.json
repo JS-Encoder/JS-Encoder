@@ -1,13 +1,14 @@
 {
   "name": "js-encoder",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A WEB Compiler",
   "author": "lliiooiill",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
-    "build": "node build/build.js"
+    "build": "node build/build.js",
+    "serve": "vue-cli-service serve"
   },
   "dependencies": {
     "axios": "^0.19.0",

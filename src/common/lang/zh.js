@@ -109,8 +109,11 @@ module.exports = {
     help: ['快捷键', '反馈']
   },
   tabsCommands: [
-    'Run',
-    'Reset'
+    'Run'
+  ],
+  tabsMenu: [
+    '清空代码',
+    '全屏查看'
   ],
   slideUserMenu: [
     '工作空间',
@@ -195,7 +198,10 @@ module.exports = {
         '聚焦CSS编辑器',
         '聚焦JS编辑器',
         '左缩进代码',
-        '右缩进代码'
+        '右缩进代码',
+        '代码查询',
+        '代码替换',
+        '跳至某行'
       ]
     },
     feedback: {

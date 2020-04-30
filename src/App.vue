@@ -63,6 +63,7 @@ export default {
   },
   watch: {
     language(newLang) {
+      console.log(123)
       const lang = newLang === 'zh' ? zh : en
       window.Global.language = lang
     },

@@ -109,8 +109,11 @@ module.exports = {
     help: ['Shortcut', 'Feedback']
   },
   tabsCommands: [
-    'Run',
-    'Reset'
+    'Run'
+  ],
+  tabsMenu: [
+    'Reset code',
+    'Fullscreen view'
   ],
   slideUserMenu: [
     'Workspace',
@@ -193,8 +196,11 @@ module.exports = {
         'Focus into HTML editor',
         'Focus into CSS editor',
         'Focus into JS editor',
-        'Indent Code Left',
-        'Indent Code Right'
+        'Indent code left',
+        'Indent code right',
+        'Code search',
+        'Code replace',
+        'Jump to line'
       ]
     },
     feedback: {

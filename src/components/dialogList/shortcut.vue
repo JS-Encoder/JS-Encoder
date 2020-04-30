@@ -30,7 +30,10 @@ export default {
         ['Ctrl', '2'],
         ['Ctrl', '3'],
         ['Ctrl', '['],
-        ['Ctrl', ']']
+        ['Ctrl', ']'],
+        ['Ctrl', 'F'],
+        ['Ctrl', 'Shift', 'F'],
+        ['Alt', 'G']
       ]
     }
   },

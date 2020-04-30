@@ -27,18 +27,15 @@ export default {
   },
   mounted() {
     this.initCoder()
-    // 设置代码框的底边距
-    const codeWindow = document.querySelectorAll('.CodeMirror-lines')[
-      this.index
-    ]
-    codeWindow.style.marginBottom = '300px'
+    this.setCodeAreaBottom(this.codeAreaHeight)
   },
   computed: {
     ...mapState({
       codeOptions: 'codeOptions',
       showSaveTip: 'showSaveTip',
       language: 'language',
-      loginStatus: 'loginStatus'
+      loginStatus: 'loginStatus',
+      codeAreaHeight: 'codeAreaHeight'
     }),
     currentPrep() {
       return this.$store.state.preprocess[this.index]
@@ -57,6 +54,9 @@ export default {
         this.refreshCodeArea()
         this.getFocus()
       }
+    },
+    codeAreaHeight(newHeight) {
+      newHeight >= 50 && this.setCodeAreaBottom(newHeight)
     },
     codeAreaContent(newVal) {
       this.message = newVal
@@ -111,6 +111,13 @@ export default {
       this.message = content[judge.judgeMode(codeMode)]
       // 第一次初始化完毕再开始监听内容变化
       this.unwatch = this.$watch('message', this.messageChangeHandler)
+    },
+    setCodeAreaBottom(newHeight) {
+      // 设置代码框的底边距
+      const codeWindow = document.querySelectorAll('.CodeMirror-lines')[
+        this.index
+      ]
+      codeWindow.style.paddingBottom = `${newHeight - 20}px`
     },
     refreshCodeArea() {
       // 使用v-show切换codemirror元素显示时，会出现需要点击才能显示内容的问题，需要在显示的时候执行刷新

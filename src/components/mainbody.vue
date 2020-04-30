@@ -5,15 +5,28 @@
         <Tabs :key="index" :tabInfo="item" v-for="(item, index) in tabsInfo"></Tabs>
       </div>
       <div class="tabs-commands flex">
-        <div @click="saveProject" v-show="showSaveBtn" class="save flex-ai flex-jcc" title="Save">
+        <div @click="saveProject" v-show="showSaveBtn" class="save flex flex-ai flex-jcc" title="Save">
           <i class="icon iconfont icon-gengxin1"></i>
           <span>{{langSave}}</span>
         </div>
-        <div v-for="(item, index) in tabsCommands" :key="index" :title="tabsLang[index]" class="flex-ai flex-jcc"
+        <div v-for="(item, index) in tabsCommands" :key="index" :title="tabsLang[index]" class="flex flex-ai flex-jcc"
           @click="judgeTabsCommands(item.name)">
           <i class="icon iconfont" :class="item.class"></i>
         </div>
-        <div class="user flex-ai flex-jcc" title="User" @click="showUserMenu">
+        <div class="menu flex flex-ai flex-jcc">
+          <el-dropdown class="dropdown-menu flex flex-ai flex-jcc" placement="top-start" trigger="hover">
+            <i class="icon iconfont icon-gengduo2 more" style="font-size:22px"></i>
+            <el-dropdown-menu class="menu" slot="dropdown" placement="bottom">
+              <el-dropdown-item icon="icon iconfont icon-zhongzhi" @click.native="resetCode">
+                {{tabMenuLang[0]}}
+              </el-dropdown-item>
+              <el-dropdown-item icon="icon iconfont icon-fangda" @click.native="fullScreen">
+                {{tabMenuLang[1]}}
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+        <div class="user flex flex-ai flex-jcc" title="User" @click="showUserMenu">
           <i v-if="!avatar" class="icon iconfont icon-user"></i>
           <img class="avatar" v-if="avatar" :src="avatar" alt="">
         </div>
@@ -23,15 +36,31 @@
       <CodeArea v-for="(item, index) in preprocess" :key="index" :codeMode="item" :style="{width: codeAreaWidth+'px'}"
         v-show="item === currentTab" :showCodeArea="item === currentTab" :index="index" @runCode="runCode"></CodeArea>
       <div v-if="showResize" class="resize" @mousedown="boxMouseDown"></div>
-      <div v-show="showIframe" class="iframe-box" :style="{ height: codeAreaHeight+'px', width: iframeWidth+'px'}">
+      <div v-show="showIframe" class="iframe-box" :class="iframeFullScreen?'full-screen':''"
+        :style="{ height: codeAreaHeight+'px', width: iframeWidth+'px'}">
         <div class="iframe-screen" v-show="iframeScreen"></div>
         <div class="iframe-size-height" v-show="showIframeHeight">{{codeAreaHeight+'px'}}</div>
         <div class="iframe-size-width" v-show="showIframeWidth">{{iframeWidth+'px'}}</div>
+        <div class="iframe-opt" v-show="iframeFullScreen">
+          <div class="opt-list flex">
+            <div class="opt flex flex-ai flex-jcc" @click="runWithFullScreen(200)">
+              <i class="icon iconfont icon-zhihang"></i>
+            </div>
+            <div class="opt flex flex-ai flex-jcc" @click="exitFullScreen">
+              <i class="icon iconfont icon-suoxiao"></i>
+            </div>
+          </div>
+          <div class="scale-box flex flex-ai flex-jcc">
+            <span class="proportion">{{iframeScale}}%</span>
+            <el-slider v-model="iframeScale" :step="25" show-stops :min="25" :max="500">
+            </el-slider>
+          </div>
+        </div>
         <iframe
           allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media"
           frameborder="0" id="iframe" name="iframe" ref="iframeBox"
           sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts"
-          scrolling="yes" src="static/html/runner.html"></iframe>
+          scrolling="yes" allowfullscreen="true" src="static/html/runner.html"></iframe>
       </div>
     </div>
     <div class="console-box" :style="{ height: consoleSize + 'px' }">
@@ -59,17 +88,16 @@ export default {
         {
           name: 'run',
           class: 'icon-zhihang'
-        },
-        {
-          name: 'reset',
-          class: 'icon-zhongzhi'
         }
       ],
       consoleInfo: [],
       init: false,
       showResize: true,
       isSmallScreen: false,
-      showIframe: true
+      showIframe: true,
+      iframeFullScreen: false,
+      iframeScale: 100,
+      tabMenuLang: window.Global.language.tabsMenu
     }
   },
   created() {
@@ -175,6 +203,9 @@ export default {
     }
   },
   watch: {
+    language(newLang) {
+      this.tabMenuLang = window.Global.language.tabsMenu
+    },
     consoleInfo(newInfo) {
       this.$store.commit('updateConsoleInfo', newInfo)
     },
@@ -183,6 +214,9 @@ export default {
     },
     clientWidth(newWidth) {
       this.updateDisplay(newWidth)
+    },
+    iframeScale(newP) {
+      this.changeIframeProportion(newP)
     }
   },
   methods: {
@@ -211,7 +245,7 @@ export default {
       commit('updateCodeAreaWidth', iframeWidth)
     },
     judgeIframeShows(newTab) {
-      if (this.isSmallScreen) {
+      if (this.isSmallScreen && !this.iframeFullScreen) {
         this.showIframe = newTab === 'Output'
       } else {
         this.showIframe = true
@@ -342,9 +376,6 @@ export default {
         case 'run':
           this.runCode(500)
           break
-        case 'reset':
-          this.resetCode()
-          break
       }
     },
     async runCode(waitTime) {
@@ -417,6 +448,36 @@ export default {
     cleanConsoleInfo() {
       new iframeConsole().setConsoleInfo([])
       this.$store.commit('updateConsoleInfo', [])
+    },
+    fullScreen() {
+      // 将iframe全屏显示
+      this.showIframe = true
+      this.iframeFullScreen = true
+    },
+    exitFullScreen() {
+      // 退出全屏
+      this.showIframe = false
+      this.iframeFullScreen = false
+      const iframe = this.$refs.iframeBox
+      iframe.contentWindow.document.body.style.transformOrigin = ''
+      this.iframeScale = 100
+      this.judgeIframeShows(this.currentTab)
+    },
+    runWithFullScreen() {
+      // 由于重载iframe会导致放大缩小比例回到100%，所以需要重新设置
+      this.runCode(500).then(() => {
+        this.$refs.iframeBox.onload = () => {
+          this.changeIframeProportion(this.iframeScale)
+        }
+      })
+    },
+    changeIframeProportion(newP) {
+      // 改变iframe显示比例
+      const iframe = this.$refs.iframeBox
+      const bodyStyle = iframe.contentWindow.document.body.style
+      newP /= 100
+      !bodyStyle.transformOrigin && (bodyStyle.transformOrigin = 'top left')
+      bodyStyle.transform = `scale(${newP})`
     }
   },
   components: {
@@ -428,6 +489,33 @@ export default {
 </script>
 <style lang="scss" src="./componentStyle/mainbody.scss" scoped></style>
 <style lang="scss" scoped>
+.el-dropdown-menu {
+  position: absolute;
+  transform: translateX(-35%);
+  transform-origin: top right;
+  width: 150px;
+  background-color: $primaryHued;
+  border: none;
+  color: $describe;
+  overflow: hidden;
+  font-size: 14px;
+  outline: none;
+  & >>> .el-dropdown-menu__item {
+    outline: none;
+    @include setTransition(all, 0.3s, ease);
+    i {
+      font-size: 18px;
+      @include setTransition(all, 0.3s, ease);
+    }
+    &:hover {
+      background-color: $deepColor;
+      color: $afterFocus;
+      i {
+        color: $afterFocus;
+      }
+    }
+  }
+}
 @keyframes shining {
   0%,
   100% {
@@ -456,15 +544,24 @@ export default {
         @include setWAndH(50px, 100%);
         @include setTransition(all, 0.3s, ease);
         color: $beforeFocus;
-        display: inline-block;
+        display: inline-flex;
         text-align: center;
         cursor: pointer;
         i {
           font-size: 25px;
         }
+        .icon-gengduo2 {
+          font-size: 22px;
+        }
         &:hover {
           background-color: $dominantHue;
           color: $afterFocus;
+        }
+      }
+      .menu {
+        position: relative;
+        i:focus {
+          outline: none !important;
         }
       }
       .user {
@@ -510,6 +607,8 @@ export default {
     .iframe-box {
       background-color: #ffffff;
       position: relative;
+      overflow: hidden;
+      transform-origin: top right;
       .iframe-screen {
         @include setWAndH(100%, 100%);
         position: absolute;
@@ -526,9 +625,68 @@ export default {
         background-color: $primaryHued;
         color: $afterFocus;
       }
+      .iframe-opt {
+        @include setWAndH(100%, 30px);
+        position: relative;
+        background-color: $primaryHued;
+        .opt-list {
+          position: absolute;
+          right: 0;
+          .opt {
+            @include setWAndH(50px, 30px);
+            color: $beforeFocus;
+            @include setTransition(all, 0.3s, ease);
+            cursor: pointer;
+            &:hover {
+              background-color: $dominantHue;
+              color: $afterFocus;
+            }
+            i {
+              font-size: 22px;
+            }
+            .icon-zhihang {
+              font-size: 24px;
+            }
+          }
+        }
+        .scale-box {
+          @include setWAndH(300px, 100%);
+          color: $afterFocus;
+          .proportion {
+            margin-right: 10px;
+          }
+          .el-slider {
+            @include setWAndH(200px, 125%);
+          }
+        }
+      }
       iframe {
         @include setWAndH(100%, 100%);
       }
+    }
+    @include keyframes(big) {
+      from {
+        transform: scale(0.5);
+        border-radius: 50%;
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        border-radius: 0;
+        opacity: 1;
+      }
+    }
+    .full-screen {
+      opacity: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 2000;
+      width: 100% !important;
+      height: 100% !important;
+      transform-origin: top right;
+      border-radius: 50%;
+      @include animation(big, 0.5s, ease, 0.3s, forwards);
     }
   }
   .console-box {
