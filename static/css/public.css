@@ -36,3 +36,6 @@
 .flex-w{
   flex-wrap: wrap;
 }
+.flex-sh{
+  flex-shrink: 0;
+}
