@@ -63,7 +63,6 @@ export default {
   },
   watch: {
     language(newLang) {
-      console.log(123)
       const lang = newLang === 'zh' ? zh : en
       window.Global.language = lang
     },
@@ -90,13 +89,14 @@ export default {
     clientWidth(newVal, oldVal) {
       // 浏览器可视窗口宽度改变时同时改变编辑器和iframe窗口宽度
       // 宽度减小时同时等比缩小两个窗口宽度，两个窗口宽度都不能小于100，有任何一个窗口达到最小值，那么只减少另一个窗口的宽度
-      const commit = this.$store.commit
-      const codeAreaWidth = this.codeAreaWidth
-      const iframeWidth = this.iframeWidth
+      const { commit, state } = this.$store
+      let codeAreaWidth = this.codeAreaWidth
+      let iframeWidth = this.iframeWidth
       const resizeWidth = newVal - oldVal
 
-      if (codeAreaWidth <= 100 && iframeWidth <= 100 && resizeWidth < 0)
+      if (codeAreaWidth <= 100 && iframeWidth <= 100 && resizeWidth < 0) {
         return void 0
+      }
       if (codeAreaWidth <= 100 && resizeWidth < 0) {
         commit('updateIframeWidth', iframeWidth + resizeWidth)
         return void 0
