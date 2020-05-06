@@ -183,6 +183,21 @@ module.exports = {
     },
     shortcut: {
       title: 'Shortcut Key',
+      common: 'Common',
+      markdown: 'Markdown',
+      markdownList: [
+        'Bold',
+        'Italic',
+        'Line through',
+        'Link',
+        'Picture',
+        'Quote',
+        'Code',
+        'Unordered list',
+        'Ordered list',
+        'Line',
+        'List editing'
+      ],
       shortcutList: [
         'Indent code',
         'Format code',

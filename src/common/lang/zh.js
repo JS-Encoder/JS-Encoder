@@ -184,6 +184,21 @@ module.exports = {
     },
     shortcut: {
       title: '快捷键',
+      common: '通用',
+      markdown: 'Markdown',
+      markdownList:[
+        '加粗',
+        '倾斜',
+        '删除线',
+        '链接',
+        '图片',
+        '引用',
+        '代码',
+        '无序列表',
+        '有序列表',
+        '横线',
+        '列表延伸'
+      ],
       shortcutList: [
         '缩进代码',
         '格式化代码',
