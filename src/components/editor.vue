@@ -1,10 +1,10 @@
 <template>
   <div id="editor" class="flex">
     <div class="bg" v-if="showBg" @click.stop="closeBg"></div>
-    <Sidebar class="sidebar" :class="isShowSidebar?'sidebar-active':''" v-if="refresh"></Sidebar>
-    <div class="fold-sidebar" :class="isShowSidebar?'fold-sidebar-active':''">
-      <i class="icon iconfont icon-close" v-show="isShowSidebar" @click.stop="showSidebar(false)"></i>
-      <i class="icon iconfont icon-menu" v-show="!isShowSidebar" @click.stop="showSidebar(true)"></i>
+    <Sidebar class="sidebar" :class="sidebarStatus?'sidebar-active':''" v-if="refresh"></Sidebar>
+    <div class="fold-sidebar" :class="sidebarStatus?'fold-sidebar-active':''">
+      <i class="icon iconfont icon-close" v-show="sidebarStatus" @click.stop="showSidebar(false)"></i>
+      <i class="icon iconfont icon-menu" v-show="!sidebarStatus" @click.stop="showSidebar(true)"></i>
     </div>
     <MainBody></MainBody>
     <div class="slide-user-info" :class="showSlideUserMenu ? 'slide-user-info-show' : ''">
@@ -36,8 +36,7 @@ export default {
   },
   data() {
     return {
-      refresh: true,
-      isShowSidebar: false
+      refresh: true
     }
   },
   mounted() {
@@ -50,7 +49,8 @@ export default {
       showSlideUserMenu: 'showSlideUserMenu',
       currentDialog: 'currentDialog',
       language: 'language',
-      loginStatus: 'loginStatus'
+      loginStatus: 'loginStatus',
+      sidebarStatus: 'sidebarStatus'
     })
   },
   watch: {
@@ -64,7 +64,9 @@ export default {
   },
   methods: {
     showSidebar(status) {
-      this.isShowSidebar = status
+      // 改变侧边栏状态
+      const commit = this.$store.commit
+      commit('updateSidebarStatus', status)
     },
     closeBg() {
       const commit = this.$store.commit
@@ -92,11 +94,13 @@ export default {
         params: {
           code: paramObj.code
         }
-      }).then(res => {
-        userInfo = res
-      }).catch(err =>{
-        console.log(err)
       })
+        .then(res => {
+          userInfo = res
+        })
+        .catch(err => {
+          console.log(err)
+        })
       return userInfo
     },
     getUserInfo() {

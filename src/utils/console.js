@@ -86,9 +86,8 @@ export default class Console {
     this.ableMethods = ['log', 'dir', 'info', 'warn', 'error']
     const consoleInfo = this.consoleInfo
     const iframeConsole = this.console
-    // 重写window的onerror事件
-    this.window.onerror = (msg, _, row, col) => {
-      consoleInfo.push({
+    this.window.onerror = (msg, _, row, col) => {// 重写window的onerror事件
+      consoleInfo.push({//生成错误日志
         type: 'system-error',
         content: msg,
         row,
@@ -96,35 +95,25 @@ export default class Console {
       })
       return false
     }
-    // 重写console的一些方法
-    this.consoleMethods.forEach(item => {
+    this.consoleMethods.forEach(item => {// 重写console的一些方法
       iframeConsole[item] = (...arg) => {
-        // 在浏览器控制台打印日志
-        console[item](...arg)
+        console[item](...arg)// 在浏览器控制台打印日志
         switch (item) {
           // console.time,console.timeEnd,console.timeLog都只接收第一个参数
           case 'time':
-            this.setTimer(arg[0])
+            this.setTimer(arg[0])//设置计时器
             break
-          case 'timeLog': {
-            const time = this.calcTime(arg[0])
-            const finContent = time ? this.renderNumber(time) : this.renderUndefined(time)
-            consoleInfo.push({
-              type: 'log',
-              logs: [finContent]
-            })
-            break
-          }
+          case 'timeLog': 
           case 'timeEnd': {
-            const time = this.calcTime(arg[0])
+            const time = this.calcTime(arg[0])//计算时差
             const finContent = time ? this.renderNumber(time) : this.renderUndefined(time)
-            consoleInfo.push({
+            consoleInfo.push({//生成日志
               type: 'log',
               logs: [finContent]
             })
             break
           }
-          case 'clear': {
+          case 'clear': {//清空console日志
             this.setConsoleInfo('')
             break
           }
@@ -132,8 +121,8 @@ export default class Console {
             // 先判断参数中是否含有global或window
             let haveLargeOb = false
             arg.forEach(item => {
-              if (consoleTool.judgeWindow(item)) {
-                consoleInfo.push({
+              if (consoleTool.judgeWindow(item)) {//日志内容是否过大
+                consoleInfo.push({//生成警告日志
                   type: 'error',
                   content: 'Sorry, this log was too large for our console. You might need to use the browser console instead.'
                 })
@@ -141,7 +130,7 @@ export default class Console {
               }
             })
             if (haveLargeOb) return
-            this.printLog({
+            this.printLog({//生成日志
               type: item,
               content: arg
             }).then(finLog => {

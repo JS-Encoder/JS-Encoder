@@ -96,11 +96,11 @@ async function zipDownLoad (unCompiled) {
     '</html>'
   const cssCode = codeObj.CSSCode
   const jsCode = codeObj.JSCode
-  zipFolder.file('index.html', htmlCode)
+  zipFolder.file('index.html', htmlCode)//创建html，css和js文件
   zipFolder.file('index.css', cssCode)
   zipFolder.file('index.js', jsCode)
-  if (unCompiled) {// 是否下载未编译文件
-    const typeObj = judgePrep()
+  if (unCompiled) {//是否下载未编译文件
+    const typeObj = judgePrep()//使用了什么预处理语言
     if (typeObj) {
       const code = state.codeAreaContent
       typeObj.html && zipFolder.file(`index.${typeObj.html}`, code.HTML)
@@ -108,17 +108,17 @@ async function zipDownLoad (unCompiled) {
       typeObj.js && zipFolder.file(`index.${typeObj.js}`, code.JavaScript)
     }
   }
-  zip.generateAsync({ type: 'blob' }).then(content => {
+  zip.generateAsync({ type: 'blob' }).then(content => {// 生成压缩包并下载
     saveAs(content, 'JSEncoderCode.zip')
   })
 }
 // 下载文件
 function download (code, name) {
-  const aTag = document.createElement('a')
-  let blob = new Blob([code])
+  const aTag = document.createElement('a') //创建a标签
+  let blob = new Blob([code]) // 创建文件流
   aTag.download = name
-  aTag.href = URL.createObjectURL(blob)
-  aTag.click()
+  aTag.href = URL.createObjectURL(blob) // 创建下载链接
+  aTag.click() // 触发a标签点击事件下载文件
   URL.revokeObjectURL(blob)
 }
 

@@ -1,8 +1,10 @@
 <template>
   <div id="mainbody" class="flex flex-clo">
     <div class="tabs-list flex">
+      <MarkdownTools :cm="cm" v-show="isMD"></MarkdownTools>
       <div class="tabs flex">
-        <Tabs :key="index" :tabInfo="item" v-for="(item, index) in tabsInfo"></Tabs>
+        <Tabs :key="index" :tabInfo="item" v-for="(item, index) in tabsInfo"
+          v-show="!isMD||(preprocess[0]==='MarkDown'&&(item.name==='MarkDown'||item.name==='Output'))"></Tabs>
       </div>
       <div class="tabs-commands flex">
         <div @click="saveProject" v-show="showSaveBtn" class="save flex flex-ai flex-jcc" title="Save">
@@ -32,11 +34,13 @@
         </div>
       </div>
     </div>
-    <div class="code-area-box flex" ref="codeArea" :style="{ height: codeAreaHeight+'px'}">
-      <CodeArea v-for="(item, index) in preprocess" :key="index" :codeMode="item" :style="{width: codeAreaWidth+'px'}"
-        v-show="item === currentTab" :showCodeArea="item === currentTab" :index="index" @runCode="runCode"></CodeArea>
+    <div class="code-area-box flex" :class="isMD?'code-area-box-full':''" ref="codeArea"
+      :style="{ height: codeAreaHeight+'px'}">
+      <CodeArea :ref="'codeArea'+index" v-for="(item, index) in preprocess" :key="index" :codeMode="item"
+        :style="{width: codeAreaWidth+'px'}" v-show="item === currentTab" :showCodeArea="item === currentTab"
+        :index="index" @runCode="runCode"></CodeArea>
       <div v-if="showResize" class="resize" @mousedown="boxMouseDown"></div>
-      <div v-show="showIframe" class="iframe-box" :class="iframeFullScreen?'full-screen':''"
+      <div v-show="showIframe" class="iframe-box" :class="{'full-screen':iframeFullScreen,'iframe-box-full':isMD}"
         :style="{ height: codeAreaHeight+'px', width: iframeWidth+'px'}">
         <div class="iframe-screen" v-show="iframeScreen"></div>
         <div class="iframe-size-height" v-show="showIframeHeight">{{codeAreaHeight+'px'}}</div>
@@ -63,7 +67,7 @@
           scrolling="yes" allowfullscreen="true" src="static/html/runner.html"></iframe>
       </div>
     </div>
-    <div class="console-box" :style="{ height: consoleSize + 'px' }">
+    <div class="console-box" :style="{ height: consoleSize + 'px' }" v-show="!isMD">
       <Console></Console>
     </div>
   </div>
@@ -74,6 +78,7 @@ import { mapState } from 'vuex'
 import Tabs from './tabs.vue'
 import Console from './console.vue'
 import CodeArea from './codeArea.vue'
+import MarkdownTools from './markdownTools'
 import handleIframe from '@/utils/handleIframe'
 import getCompiledCode from '@/utils/getCompiledCode'
 import reqUserInfo from '@/utils/requestUserInfo'
@@ -97,7 +102,9 @@ export default {
       showIframe: true,
       iframeFullScreen: false,
       iframeScale: 100,
-      tabMenuLang: window.Global.language.tabsMenu
+      tabMenuLang: window.Global.language.tabsMenu,
+      isChildrenMounted: false,
+      isMD: false
     }
   },
   created() {
@@ -114,14 +121,19 @@ export default {
      * 屏幕宽度小于480px(最大手机宽度)时，侧边菜单栏隐藏，点击显示按钮才会显示
      */
     const commit = this.$store.commit
+    this.judgeMD(this.currentTab)
     const codeAreaH = document.body.clientHeight - 180
     this.updateDisplay(this.clientWidth)
     commit('updateCodeAreaHeight', codeAreaH)
+    commit('updateIframeScreen', false)
     new iframeConsole(this.$refs.iframeBox)
     new handleShortcut().init()
     this.runCode().then(consoleInfo => {
       this.consoleInfo = consoleInfo
       this.init = true
+    })
+    this.$nextTick(() => {
+      this.isChildrenMounted = true
     })
   },
   computed: {
@@ -198,8 +210,16 @@ export default {
         })
       return finArr
     },
+    firstPrep() {
+      return this.preprocess[0]
+    },
     avatar() {
       return this.$store.state.userInfo.avatarUrl
+    },
+    cm() {
+      if (this.isChildrenMounted) {
+        return this.getCodeMirror()
+      }
     }
   },
   watch: {
@@ -208,6 +228,9 @@ export default {
     },
     consoleInfo(newInfo) {
       this.$store.commit('updateConsoleInfo', newInfo)
+    },
+    firstPrep(newPrep) {
+      this.judgeMD(newPrep)
     },
     currentTab(newTab) {
       this.judgeIframeShows(newTab)
@@ -220,9 +243,13 @@ export default {
     }
   },
   methods: {
+    judgeMD(newPrep) {
+      this.isMD = newPrep === 'MarkDown'
+    },
     updateDisplay(clientWidth) {
       clientWidth = clientWidth ? clientWidth : document.body.clientWidth
       const commit = this.$store.commit
+      let sidebarWidth = 50
       let iframeWidth = 0
       if (clientWidth <= 485) {
         this.showResize = false
@@ -235,7 +262,7 @@ export default {
       } else {
         this.showResize = true
         this.isSmallScreen = false
-        iframeWidth = (clientWidth - 50 - 4) / 2
+        iframeWidth = (clientWidth - sidebarWidth - 4) / 2
         if (this.currentTab === 'Output') {
           commit('updateCurrentTab', this.preprocess[0])
         }
@@ -283,24 +310,25 @@ export default {
       }
       iframeBody.style.width = '1200px'
       iframeBody.style.height = '666px'
-      // 截图
       handleIframeImage.getIframeImage(iframeBody, async dataURL => {
+        //截图
         let imgUrl = ''
         iframeBody.style.width = ''
         iframeBody.style.height = ''
         if (this.isSmallScreen) commit('updateCurrentTab', currentTab)
-        // 获取七牛云token
-        let token = handleCookie.getCookieValue('qnyToken')
+        let token = handleCookie.getCookieValue('qnyToken') // 获取七牛云token
         if (!token) {
+          //没有token？
           await handleIframeImage.getToken().then(res => {
+            //重新请求token
             token = res
           })
-          handleCookie.setCookie('qnyToken', token, 1 / 24)
+          handleCookie.setCookie('qnyToken', token, 1 / 24) //设置token有效时间
         }
-        // 获取七牛云返回的图片链接
         await handleIframeImage
           .sendImageToQiNiuYun(dataURL, token)
           .then(res => {
+            // 获取七牛云返回的图片链接
             if (res.error) {
               // 弹出错误提示
               this.$notify({
@@ -314,9 +342,9 @@ export default {
             imgUrl = res
             commit('updateShowSaveBtn', false)
           })
-        // 将图片链接连带项目更新至数据库
         await reqUserInfo
           .updateProjectDetail({
+            // 将图片链接连带项目更新至数据库
             poster: imgUrl,
             id: this.projectId,
             name: this.projectName,
@@ -332,8 +360,8 @@ export default {
               position: 'bottom-right',
               duration: 1500
             })
-            // 删除旧封面
             handleIframeImage.deleteOldPoster(this.posterKey).then(res => {
+              // 删除旧封面
               if (!res) commit('updatePosterKey', imgUrl)
             })
           })
@@ -385,13 +413,14 @@ export default {
       const codeAreaContent = state.codeAreaContent
       const preprocessor = state.preprocess
       const codeOptions = this.codeOptions
+      const isMD = preprocessor[0] === 'MarkDown'
       let link = state.linkList
       let cdn = state.CDNList
       // 传入waitTime参数代表立即显示效果(仍然有500ms延迟)，否则按照设置的时间延迟显示效果
       waitTime = waitTime ? waitTime : codeOptions.waitTime
       // 重新引入iframe，之前的js代码不会因为删除了原本的js代码而消失，必须重新引入
-      // 第一次执行代码时不需要重新载入iframe
-      if (this.init) await handleIframe.refresh(iframe)
+      // 第一次执行代码时或者预处理为markdown时不需要重新载入iframe
+      if (this.init && !isMD) await handleIframe.refresh(iframe)
       iframe.onload = () => {
         new iframeConsole().refreshConsole(iframe)
         if (!codeOptions.showHistoryLog) this.cleanConsoleInfo()
@@ -402,15 +431,15 @@ export default {
         finCode = code
       })
       // 如果html预处理为markdown，不引入外部css和js
-      if (preprocessor[0] === 'MarkDown') {
+      if (isMD) {
         link = ['../css/github-markdown.css']
         cdn = []
       }
       // 重新加载iframe会有延迟，不加定时器会导致写入到iframe的代码消失
       await setTimeout(() => {
-        handleIframe.sendCodeToIframe(iframe, finCode, link, cdn)
+        handleIframe.sendCodeToIframe(iframe, finCode, link, cdn, isMD)
       }, waitTime)
-      return this.getConsoleInfo()
+      return this.getConsoleInfo() // 返回Console日志列表
     },
     resetCode() {
       /**
@@ -478,12 +507,16 @@ export default {
       newP /= 100
       !bodyStyle.transformOrigin && (bodyStyle.transformOrigin = 'top left')
       bodyStyle.transform = `scale(${newP})`
+    },
+    getCodeMirror() {
+      return this.$refs.codeArea0[0].getCodeMirror()
     }
   },
   components: {
     Tabs,
     Console,
-    CodeArea
+    CodeArea,
+    MarkdownTools
   }
 }
 </script>
@@ -688,6 +721,12 @@ export default {
       border-radius: 50%;
       @include animation(big, 0.5s, ease, 0.3s, forwards);
     }
+  }
+  .code-area-box-full {
+    height: calc(100% - 30px) !important;
+  }
+  .iframe-box-full{
+    height: 100% !important;
   }
   .console-box {
     @include setWAndH(100%, 150px);

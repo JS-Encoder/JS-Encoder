@@ -65,17 +65,16 @@ export default {
       for (let i = 0; i < files.length; i++) {
         let fileString = '', mimeType = ''
         const currentFile = files[i]
-        // 读取每个文件的信息
-        await upLoader.readFile(currentFile).then(res => {
-          /**
+                  /**
            * 如果是html文件，就需要把里面的js，css以及外部链接分开来
            * 将链接更新至state，覆盖原本的外部链接
            * 将文件内容更新各自对应的编辑窗口中
            */
+        await upLoader.readFile(currentFile).then(res => {//读取文件信息
           this.chooseFiles = []
-          if(this.getMimeType(currentFile.name) === 'html'){
+          if(this.getMimeType(currentFile.name) === 'html'){//html文件
             const commit = this.$store.commit
-            for (let item in res) {
+            for (let item in res) {//拆分文件内容
               let content = res[item].content
               const type = res[item].type
               if (type === 'css') {
@@ -85,7 +84,7 @@ export default {
                 commit('updateCdnJS', content.CDN)
                 content = content.finCode
               }
-              this.updateEditorContent(content, type)
+              this.updateEditorContent(content, type)//渲染至编辑窗口
             }
             return void 0
           }

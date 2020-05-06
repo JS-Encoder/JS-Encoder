@@ -1,7 +1,7 @@
 /* eslint-disable */
 import * as createTags from './createTags'
 
-async function sendCodeToIframe (iframe, code, link, cdn) {
+async function sendCodeToIframe (iframe, code, link, cdn, isMD) {
   const document = iframe.contentWindow.document
   const HTMLCode = code.HTMLCode
   const CSSCode = code.CSSCode
@@ -12,7 +12,7 @@ async function sendCodeToIframe (iframe, code, link, cdn) {
     // 判断iframe中是否存在用于存放用户编写css的style标签，将其删除再引入
     const runnerStyle = document.getElementById('JSEncoderRunnerCSS')
     if (runnerStyle) runnerStyle.parentNode.removeChild(runnerStyle)
-    createTags.createStyleOrScript(iframe, 'style', 'JSEncoderRunnerCSS', CSSCode)
+    !isMD && createTags.createStyleOrScript(iframe, 'style', 'JSEncoderRunnerCSS', CSSCode)
   }
   // 在iframe中创建link外部链接
   if (link.length) {
@@ -32,7 +32,7 @@ async function sendCodeToIframe (iframe, code, link, cdn) {
     // 判断iframe中是否存在用于存放用户编写js的script标签，将其删除再引入
     const runnerScript = document.getElementById('JSEncoderRunnerJS')
     if (runnerScript) runnerScript.parentNode.removeChild(runnerScript)
-    createTags.createStyleOrScript(iframe, 'script', 'JSEncoderRunnerJS', JSCode)
+    !isMD && createTags.createStyleOrScript(iframe, 'script', 'JSEncoderRunnerJS', JSCode)
   }
   // 在iframe中创建外部cdn
   if (cdn.length) {
