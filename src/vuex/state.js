@@ -10,6 +10,8 @@ export default {
   language: 'zh',
   // 浏览器宽度
   clientWidth: 0,
+  // 侧边栏状态
+  sidebarStatus: false,
   // 当前对话框
   currentDialog: '',
   // 当前显示二级选项栏

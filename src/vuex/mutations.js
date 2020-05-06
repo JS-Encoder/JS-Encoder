@@ -5,6 +5,9 @@ export default {
   updateLang: (state, lang) => {
     if (state.language !== lang) state.language = lang
   },
+  updateSidebarStatus: (state, status) => {
+    state.sidebarStatus = status
+  },
   updateClientWidth: (state, newWidth) => {
     state.clientWidth = newWidth
   },
