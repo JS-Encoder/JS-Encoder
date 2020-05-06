@@ -48,6 +48,7 @@ export default {
   watch: {
     currentPrep(newVal) {
       this.cmOptions.mode = judge.getStyleMode(newVal)
+      this.cmOptions.lineWrapping = newVal === 'MarkDown'
     },
     showCodeArea(newVal) {
       if (newVal) {
@@ -108,6 +109,7 @@ export default {
       const codeMode = this.codeMode
       this.cmOptions = getEditor(judge.judgeMode(codeMode))
       this.cmOptions.mode = judge.getStyleMode(codeMode)
+      this.cmOptions.lineWrapping = this.currentPrep === 'MarkDown'
       this.message = content[judge.judgeMode(codeMode)]
       // 第一次初始化完毕再开始监听内容变化
       this.unwatch = this.$watch('message', this.messageChangeHandler)
@@ -117,7 +119,7 @@ export default {
       const codeWindow = document.querySelectorAll('.CodeMirror-lines')[
         this.index
       ]
-      codeWindow.style.paddingBottom = `${newHeight - 20}px`
+      codeWindow.style.paddingBottom = `${newHeight - 23}px`
     },
     refreshCodeArea() {
       // 使用v-show切换codemirror元素显示时，会出现需要点击才能显示内容的问题，需要在显示的时候执行刷新
@@ -143,6 +145,10 @@ export default {
         })
         if (codeOptions.autoUp) this.runCode()
       }, codeOptions.waitTime)
+    },
+    getCodeMirror() {
+      // 获取当前codemirror实例
+      return this.$refs.codeArea.codemirror
     }
   },
   components: {

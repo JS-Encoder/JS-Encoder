@@ -39,6 +39,10 @@ import 'codemirror/addon/dialog/dialog'
 import 'codemirror/addon/search/jump-to-line'
 
 import * as format from '../utils/prettyFormat'
+import markdownTools from '../utils/markdownTools'
+
+const mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault
+const runKey = mac ? "Cmd" : "Ctrl"
 
 export default function (mode = '') {
   const cmOptions = {// codemirror编辑配置
@@ -51,18 +55,20 @@ export default function (mode = '') {
     lineWiseCopyCut: true,
     indentWithTabs: true,
     indentUnit: 2,
+    lineWrapping: false,
     autoCloseTags: true,
     autoCloseBrackets: true,
     autofocus: true,
     foldGutter: true,
     keyMap: 'sublime',
     extraKeys: {// 快捷键配置
-      'Ctrl-Alt': 'autocomplete',// 智能提示
-      'Ctrl-Q': cm => {
+      [`${runKey}-Alt`]: 'autocomplete',// 智能提示
+      [`${runKey}-Q`]: cm => {
         cm.foldCode(cm.getCursor())
       },
       'Shift-Alt-F': async cm => {// 格式化代码
         const code = cm.getValue()
+        const cursor = cm.getCursor()
         let finCode = ''
         switch (mode) {
           case 'HTML':
@@ -76,12 +82,13 @@ export default function (mode = '') {
             break
         }
         cm.setValue(finCode)
+        cm.setCursor(cursor)
       }
     },
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
     styleActiveLine: true
   }
-  import('codemirror-emmet').then(emmet => {// 配置html emmet
+  import('codemirror-emmet').then(emmet => {// 配置html和markdown的emmet
     emmet(CodeMirror)
     cmOptions.extraKeys = {
       ...cmOptions.extraKeys,
@@ -98,41 +105,160 @@ export default function (mode = '') {
           const spaces = Array(cm.getOption('indentUnit') + 1).join(' ')
           cm.replaceSelection(spaces, 'end', '+input')
         }
-        if (cm.somethingSelected()) {
-          cm.indentSelection('add')
+        if (cm.somethingSelected()) {// 光标选中文本
+          cm.indentSelection('add') // 整行缩进
         } else {
           const cursor = cm.getCursor() // 获取焦点
-          const line = cursor.line
+          const line = cursor.line // 获取光标所在行数
           const ch = cursor.ch // 获取光标位置
           if (ch === 0 || cm.getOption('mode') === 'text/x-markdown') {
-            indent()
+            indent() // 为markdown
           } else {
-            const value = cm.getLine(line)
-            const front = value[ch - 1]
-            const end = value[ch]
-            switch (front) {
-              case '\t':
-              case '<':
-              case ' ':
-              case '\'':
-              case '/':
+            const value = cm.getLine(line)// 获取当前行文本
+            const front = value[ch - 1]// 获取光标前一字符
+            switch (front) { // 为空格，tab或其他特定字符
+              case '\t': case '<': case ' ': case '\'': case '/':
                 indent()
                 return void 0
             }
-            if (cm.getOption('mode').indexOf('html') > -1) {
-              if (front === '>') {
-                indent()
-              }
+            if (cm.getOption('mode').indexOf('html') > -1) {// 为html
+              if (front === '>') indent()
               try {
-                cm.execCommand('emmetExpandAbbreviation')
+                cm.execCommand('emmetExpandAbbreviation')// emmet扩展
               } catch (err) {
                 console.error(err)
               }
-            } else {
-              cm.showHint()
-            }
+            } else cm.showHint()
           }
         }
+      },
+      [`${runKey}-Enter`]: cm => {
+        if (cm.getOption('mode') === 'text/x-markdown') {
+          let matchStr = ''
+          // 判断开头是'> '还是'- '还是'1. '开头
+          if (cm.somethingSelected()) {
+            const selectContent = cm.listSelections()[0] // 第一个选中的文本
+            let { anchor, head } = selectContent
+            // 选中文本时，光标要么在内容前，要么在内容后，需要判断前后位置
+            head.line >= anchor.line &&
+              head.sticky === 'before' &&
+              ([head, anchor] = [anchor, head])
+            let { line: preLine, ch: prePos } = head
+            const selectVal = cm.getSelection()
+            let preStr = cm.getRange({ line: preLine, ch: 0 }, head)
+            let preBlank = ''
+            if (/^( |\t)+/.test(preStr)) {
+              preBlank = preStr.match(/^( |\t)+/)[0]
+              preStr = preStr.trimLeft()
+            }
+            if (/^> /.test(preStr)) {
+              // 以'> '开头
+              matchStr = '> '
+              prePos && (matchStr = `\n${preBlank}${matchStr}${selectVal}\n`) && ++preLine
+              cm.replaceSelection(matchStr)
+              cm.setCursor({ line: preLine, ch: matchStr.length })
+            } else if (/^- /.test(preStr)) {
+              // 以'- '开头
+              matchStr = '- '
+              prePos && (matchStr = `\n${preBlank}${matchStr}${selectVal}\n`) && ++preLine
+              cm.replaceSelection(matchStr)
+              cm.setCursor({ line: preLine, ch: matchStr.length })
+            } else if (/^\d+(\.) /.test(preStr)) {
+              let preNumber = 0
+              if (/^\d+(\.) /.test(preStr)) {
+                // 是否以'数字. '开头，找出前面的数字
+                preNumber = Number.parseInt(preStr.match(/^\d+/)[0])
+              }
+              matchStr = `\n${preBlank}${preNumber + 1}. ${selectVal}\n`
+              cm.replaceSelection(matchStr)
+              cm.setCursor({ line: preLine + 1, ch: matchStr.length - 2 })
+            }
+          } else {
+            const cursor = cm.getCursor()
+            let { line: curLine, ch: curPos } = cursor // 获取光标位置
+            let preStr = cm.getRange({ line: curLine, ch: 0 }, cursor)
+            let preBlank = ''
+            if (/^( |\t)+/.test(preStr)) {
+              // 有序列表标识前也许会有空格或tab缩进
+              preBlank = preStr.match(/^( |\t)+/)[0]
+              preStr = preStr.trimLeft()
+            }
+            if (/^> /.test(preStr)) {
+              // 以'> '开头
+              matchStr = '> '
+              curPos && (matchStr = `\n${preBlank}${matchStr}\n`) && ++curLine
+              cm.replaceSelection(matchStr)
+              cm.setCursor({ line: curLine, ch: matchStr.length })
+            } else if (/^- /.test(preStr)) {
+              // 以'- '开头
+              matchStr = '- '
+              curPos && (matchStr = `\n${preBlank}${matchStr}\n`) && ++curLine
+              cm.replaceSelection(matchStr)
+              cm.setCursor({ line: curLine, ch: matchStr.length })
+            } else if (/^\d+(\.) /.test(preStr)) {
+              // 以'数字. '开头
+              let preNumber = 0
+              if (/^\d+(\.) /.test(preStr)) {
+                // 是否以'数字. '开头，找出前面的数字
+                preNumber = Number.parseInt(preStr.match(/^\d+/)[0])
+              }
+              matchStr = `\n${preBlank}${preNumber + 1}. `
+              cm.replaceSelection(matchStr)
+              cm.setCursor({ line: curLine + 1, ch: matchStr.length - 1 })
+            }
+          }
+          cm.focus()
+        }
+      },
+      [`${runKey}-B`]: cm => {
+        // 加粗
+        cm.getOption('mode') === 'text/x-markdown' &&
+          markdownTools.changeTextStyle(cm, '**')
+      },
+      [`${runKey}-I`]: cm => {
+        // 倾斜
+        cm.getOption('mode') === 'text/x-markdown' &&
+          markdownTools.changeTextStyle(cm, '*')
+      },
+      [`${runKey}-D`]: cm => {
+        // 删除
+        cm.getOption('mode') === 'text/x-markdown' &&
+          markdownTools.changeTextStyle(cm, '~~')
+      },
+      [`${runKey}-L`]: cm => {
+        // 插入链接
+        cm.getOption('mode') === 'text/x-markdown' &&
+          markdownTools.addLink(cm)
+      },
+      [`${runKey}-P`]: cm => {
+        // 插入图片
+        cm.getOption('mode') === 'text/x-markdown' &&
+          markdownTools.addLink(cm, true)
+      },
+      [`${runKey}-H`]: cm => {
+        // 插入横线
+        cm.getOption('mode') === 'text/x-markdown' &&
+          markdownTools.addLine(cm)
+      },
+      [`${runKey}-K`]: cm => {
+        // 插入代码
+        cm.getOption('mode') === 'text/x-markdown' &&
+          markdownTools.changeTextStyle(cm, '`')
+      },
+      [`${runKey}-U`]: cm => {
+        // 插入代码
+        cm.getOption('mode') === 'text/x-markdown' &&
+          markdownTools.addList(cm, '- ')
+      },
+      [`${runKey}-O`]: cm => {
+        // 插入代码
+        cm.getOption('mode') === 'text/x-markdown' &&
+          markdownTools.addOrderList(cm)
+      },
+      [`${runKey}-Shift-Q`]: cm => {
+        // 插入代码
+        cm.getOption('mode') === 'text/x-markdown' &&
+          markdownTools.addList(cm, '> ')
       },
       Enter: 'emmetInsertLineBreak'
     }

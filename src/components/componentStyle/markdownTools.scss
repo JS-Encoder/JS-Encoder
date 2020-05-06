@@ -1,0 +1,20 @@
+@include phone {
+  #markdownTools {
+    .tools-list {
+      .tool {
+        width: 28px !important;
+        border-left: none !important;
+      }
+    }
+  }
+}
+@include phone-pad {
+  #markdownTools {
+    .tools-list {
+      .tool {
+        width: 28px !important;
+        border-left: none !important;
+      }
+    }
+  }
+}
