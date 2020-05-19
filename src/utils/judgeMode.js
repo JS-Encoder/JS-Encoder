@@ -1,7 +1,7 @@
 /* eslint-disable */
 const modeList = {
   HTML: 'text/html',
-  MarkDown: 'text/x-markdown',
+  Markdown: 'text/x-markdown',
   CSS: 'css',
   Sass: 'text/x-sass',
   Scss: 'text/x-scss',
@@ -15,7 +15,7 @@ const modeList = {
 function judgeMode (edit) {
   switch (edit) {
     case 'HTML':
-    case 'MarkDown':
+    case 'Markdown':
       return 'HTML'
     case 'CSS':
     case 'Sass':
@@ -54,7 +54,7 @@ function judgeExtension (edit) {
 
 function judgeMimeType (edit) {
   switch (edit) {
-    case 'MarkDown':
+    case 'Markdown':
       return 'md'
     case 'Sass':
       return 'sass'
@@ -74,7 +74,7 @@ function judgeMimeType (edit) {
 function judgeModeByMimeType (type) {
   switch (type) {
     case 'md':
-      return 'MarkDown'
+      return 'Markdown'
     case 'sass':
       return 'Sass'
     case 'scss':

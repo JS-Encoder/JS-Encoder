@@ -11,8 +11,9 @@ import 'codemirror/mode/coffeescript/coffeescript'
 
 import 'codemirror/addon/fold/foldcode'
 import 'codemirror/addon/fold/foldgutter'
-import 'codemirror/addon/fold/brace-fold'
+// import 'codemirror/addon/fold/brace-fold'
 import 'codemirror/addon/fold/xml-fold'
+import 'codemirror/addon/fold/markdown-fold'
 
 import 'codemirror/addon/hint/javascript-hint'
 import 'codemirror/addon/hint/html-hint'

@@ -1,18 +1,6 @@
 /* eslint-disable */
 import loadjs from 'loadjs'
 
-const defaultPresets = [
-  [
-    'es2015',
-    {
-      modules: false
-    }
-  ],
-  'es2016',
-  'es2017',
-  'stage-0'
-]
-
 class LoadFiles {
   constructor() {
     this.map = {}
@@ -45,11 +33,35 @@ function asyncLoad (resources, name) {
 }
 
 async function compileMarkDown (code) {
-  if (!loadFiles.get('markdown')) {
-    const marked = await import('marked')
-    loadFiles.set('markdown', marked)
+  let highlightJS, marked
+
+  if (!loadFiles.get('highlight')) {
+    highlightJS = await import('highlight.js')
+    loadFiles.set('highlight', highlightJS)
+  } else {
+    highlightJS = loadFiles.get('highlight')
   }
-  return loadFiles.get('markdown')(code)
+  if (!loadFiles.get('markdown')) {
+    marked = await import('marked')
+    loadFiles.set('markdown', marked)
+  } else {
+    marked = loadFiles.get('markdown')
+  }
+  marked.setOptions({
+    renderer: new marked.Renderer(),
+    highlight (code, language) {
+      return highlightJS.highlightAuto(code).value
+    },
+    pedantic: false,
+    gfm: true,
+    tables: true,
+    breaks: false,
+    sanitize: false,
+    smartLists: true,
+    smartypants: false,
+    xhtml: false
+  })
+  return marked(code)
 }
 
 async function compileSass (code) {

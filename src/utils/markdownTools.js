@@ -2,7 +2,7 @@ function changeTextStyle (cm, matchStr) {
   // 在前后加上matchStr
   const changePos = matchStr.length
   let preAlready = false,
-    aftAlready = false // 前后是否已经有相应样式标识，如**，_，~等
+    aftAlready = false // 前后是否已经有相应样式标识，如**，`，~等
   if (cm.somethingSelected()) {
     // 如果选中了文本
     const selectContent = cm.listSelections()[0] // 第一个选中的文本
