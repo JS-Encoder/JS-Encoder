@@ -9,11 +9,11 @@ class LoadFiles {
   constructor() {
     this.map = {}
   }
-  set (k, v) {this.map[k] = v}
-  get (k) {return this.map[k]}
+  set (k, v) { this.map[k] = v }
+  get (k) { return this.map[k] }
 }
 const loadFiles = new LoadFiles()
-function changeFormatOptions(newOption){
+function changeFormatOptions (newOption) {
   formatOptions[newOption.attr] = newOption.val
 }
 async function formatHtml (code) { // 格式化HTML
