@@ -22,7 +22,7 @@ export default {
         {
           title: 'HTML',
           value: this.preprocess[0],
-          options: ['HTML', 'MarkDown']
+          options: ['HTML', 'Markdown']
         },
         {
           title: 'CSS',

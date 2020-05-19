@@ -4,8 +4,9 @@
       <MarkdownTools :cm="cm" v-show="isMD"></MarkdownTools>
       <div class="tabs flex">
         <Tabs :key="index" :tabInfo="item" v-for="(item, index) in tabsInfo"
-          v-show="!isMD||(preprocess[0]==='MarkDown'&&(item.name==='MarkDown'||item.name==='Output'))"></Tabs>
+          v-show="!isMD||(preprocess[0]==='Markdown'&&(item.name==='Markdown'||item.name==='Output'))"></Tabs>
       </div>
+      <button @click="saveProject">截图</button>
       <div class="tabs-commands flex">
         <div @click="saveProject" v-show="showSaveBtn" class="save flex flex-ai flex-jcc" title="Save">
           <i class="icon iconfont icon-gengxin1"></i>
@@ -86,6 +87,7 @@ import iframeConsole from '@/utils/console'
 import handleShortcut from '@/utils/handleShortcut'
 import handleIframeImage from '@/utils/handleIframeImage'
 import handleCookie from '@/utils/handleCookie'
+import SyncScroll from '@/utils/syncScroll'
 export default {
   data() {
     return {
@@ -121,7 +123,7 @@ export default {
      * 屏幕宽度小于480px(最大手机宽度)时，侧边菜单栏隐藏，点击显示按钮才会显示
      */
     const commit = this.$store.commit
-    this.judgeMD(this.currentTab)
+    this.judgeMD(this.preprocess[0])
     const codeAreaH = document.body.clientHeight - 180
     this.updateDisplay(this.clientWidth)
     commit('updateCodeAreaHeight', codeAreaH)
@@ -129,7 +131,7 @@ export default {
     new iframeConsole(this.$refs.iframeBox)
     new handleShortcut().init()
     this.runCode().then(consoleInfo => {
-      this.consoleInfo = consoleInfo
+      !this.isMD && (this.consoleInfo = consoleInfo)
       this.init = true
     })
     this.$nextTick(() => {
@@ -170,7 +172,7 @@ export default {
       let iconHTML = 'icon-html',
         iconCSS = 'icon-style',
         iconJavaScript = 'icon-javascript'
-      if (preprocess[0] === 'MarkDown') iconHTML = 'icon-markdown'
+      if (preprocess[0] === 'Markdown') iconHTML = 'icon-markdown'
       switch (preprocess[1]) {
         case 'Sass':
         case 'Scss':
@@ -229,8 +231,15 @@ export default {
     consoleInfo(newInfo) {
       this.$store.commit('updateConsoleInfo', newInfo)
     },
-    firstPrep(newPrep) {
+    firstPrep(newPrep, oldPrep) {
       this.judgeMD(newPrep)
+    },
+    isMD(newVal) {
+      if (newVal) {
+        new SyncScroll().init()
+      } else {
+        new SyncScroll().clearScroll()
+      }
     },
     currentTab(newTab) {
       this.judgeIframeShows(newTab)
@@ -244,7 +253,7 @@ export default {
   },
   methods: {
     judgeMD(newPrep) {
-      this.isMD = newPrep === 'MarkDown'
+      this.isMD = newPrep === 'Markdown'
     },
     updateDisplay(clientWidth) {
       clientWidth = clientWidth ? clientWidth : document.body.clientWidth
@@ -310,11 +319,11 @@ export default {
       }
       iframeBody.style.width = '1200px'
       iframeBody.style.height = '666px'
-      handleIframeImage.getIframeImage(iframeBody, async dataURL => {
-        //截图
-        let imgUrl = ''
+      handleIframeImage.getIframeImage(iframeBody).then(async dataUrl => {
+        console.log(dataUrl)
         iframeBody.style.width = ''
         iframeBody.style.height = ''
+        let imgUrl = ''
         if (this.isSmallScreen) commit('updateCurrentTab', currentTab)
         let token = handleCookie.getCookieValue('qnyToken') // 获取七牛云token
         if (!token) {
@@ -326,13 +335,13 @@ export default {
           handleCookie.setCookie('qnyToken', token, 1 / 24) //设置token有效时间
         }
         await handleIframeImage
-          .sendImageToQiNiuYun(dataURL, token)
+          .sendImageToQiNiuYun(dataUrl, token)
           .then(res => {
             // 获取七牛云返回的图片链接
             if (res.error) {
-              // 弹出错误提示
               this.$notify({
-                message: language ? '项目保存失败' : 'Project save failed',
+                message:
+                  language === 'zh' ? '项目保存失败' : 'Project save failed',
                 position: 'bottom-right',
                 iconClass: 'icon iconfont icon-error1 error-icon',
                 duration: 1500
@@ -356,7 +365,7 @@ export default {
           .then(res => {
             // 弹出提示消息
             this.$notify({
-              message: language ? '项目已保存' : 'Project saved',
+              message: language === 'zh' ? '项目已保存' : 'Project saved',
               position: 'bottom-right',
               duration: 1500
             })
@@ -366,6 +375,62 @@ export default {
             })
           })
       })
+      // handleIframeImage.getIframeImage(iframeBody, async dataURL => {
+      //   //截图
+      //   let imgUrl = ''
+      //   iframeBody.style.width = ''
+      //   iframeBody.style.height = ''
+      //   if (this.isSmallScreen) commit('updateCurrentTab', currentTab)
+      //   let token = handleCookie.getCookieValue('qnyToken') // 获取七牛云token
+      //   if (!token) {
+      //     //没有token？
+      //     await handleIframeImage.getToken().then(res => {
+      //       //重新请求token
+      //       token = res
+      //     })
+      //     handleCookie.setCookie('qnyToken', token, 1 / 24) //设置token有效时间
+      //   }
+      //   await handleIframeImage
+      //     .sendImageToQiNiuYun(dataURL, token)
+      //     .then(res => {
+      //       // 获取七牛云返回的图片链接
+      //       if (res.error) {
+      //         // 弹出错误提示
+      //         this.$notify({
+      //           message: language ? '项目保存失败' : 'Project save failed',
+      //           position: 'bottom-right',
+      //           iconClass: 'icon iconfont icon-error1 error-icon',
+      //           duration: 1500
+      //         })
+      //         return void 0
+      //       }
+      //       imgUrl = res
+      //       commit('updateShowSaveBtn', false)
+      //     })
+      //   await reqUserInfo
+      //     .updateProjectDetail({
+      //       // 将图片链接连带项目更新至数据库
+      //       poster: imgUrl,
+      //       id: this.projectId,
+      //       name: this.projectName,
+      //       prep: this.preprocess,
+      //       content: this.codeAreaContent,
+      //       CDNList: this.CDNList,
+      //       linkList: this.linkList
+      //     })
+      //     .then(res => {
+      //       // 弹出提示消息
+      //       this.$notify({
+      //         message: language ? '项目已保存' : 'Project saved',
+      //         position: 'bottom-right',
+      //         duration: 1500
+      //       })
+      //       handleIframeImage.deleteOldPoster(this.posterKey).then(res => {
+      //         // 删除旧封面
+      //         if (!res) commit('updatePosterKey', imgUrl)
+      //       })
+      //     })
+      // })
     },
     showUserMenu() {
       const commit = this.$store.commit
@@ -413,7 +478,7 @@ export default {
       const codeAreaContent = state.codeAreaContent
       const preprocessor = state.preprocess
       const codeOptions = this.codeOptions
-      const isMD = preprocessor[0] === 'MarkDown'
+      const isMD = preprocessor[0] === 'Markdown'
       let link = state.linkList
       let cdn = state.CDNList
       // 传入waitTime参数代表立即显示效果(仍然有500ms延迟)，否则按照设置的时间延迟显示效果
@@ -422,8 +487,10 @@ export default {
       // 第一次执行代码时或者预处理为markdown时不需要重新载入iframe
       if (this.init && !isMD) await handleIframe.refresh(iframe)
       iframe.onload = () => {
-        new iframeConsole().refreshConsole(iframe)
-        if (!codeOptions.showHistoryLog) this.cleanConsoleInfo()
+        if (!isMD) {
+          new iframeConsole().refreshConsole(iframe)
+          if (!codeOptions.showHistoryLog) this.cleanConsoleInfo()
+        }
       }
       // 获取已经编译成为html、css、js的代码。判断是否使用预处理语言，如果使用，将预处理语言编译完成后返回，否则直接返回
       let finCode
@@ -433,13 +500,30 @@ export default {
       // 如果html预处理为markdown，不引入外部css和js
       if (isMD) {
         link = ['../css/github-markdown.css']
-        cdn = []
+        cdn = [
+          'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML',
+          'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js',
+          'https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.13.0/flowchart.min.js'
+        ]
       }
       // 重新加载iframe会有延迟，不加定时器会导致写入到iframe的代码消失
       await setTimeout(() => {
-        handleIframe.sendCodeToIframe(iframe, finCode, link, cdn, isMD)
+        handleIframe
+          .sendCodeToIframe(iframe, finCode, link, cdn, isMD)
+          .then(() => {
+            if (isMD) {
+              const el = this.getCodeEditor()
+              const cm = this.getCodeMirror()
+              const docWindow = iframe.contentWindow
+              const {
+                documentElement: docEle,
+                body: docBody
+              } = docWindow.document
+              new SyncScroll({ el, cm }, { docEle, docBody, docWindow })
+            }
+          })
       }, waitTime)
-      return this.getConsoleInfo() // 返回Console日志列表
+      return isMD ? void 0 : this.getConsoleInfo() // 返回Console日志列表
     },
     resetCode() {
       /**
@@ -507,6 +591,9 @@ export default {
       newP /= 100
       !bodyStyle.transformOrigin && (bodyStyle.transformOrigin = 'top left')
       bodyStyle.transform = `scale(${newP})`
+    },
+    getCodeEditor() {
+      return this.$refs.codeArea0[0].getCodeEditor()
     },
     getCodeMirror() {
       return this.$refs.codeArea0[0].getCodeMirror()
@@ -725,7 +812,7 @@ export default {
   .code-area-box-full {
     height: calc(100% - 30px) !important;
   }
-  .iframe-box-full{
+  .iframe-box-full {
     height: 100% !important;
   }
   .console-box {

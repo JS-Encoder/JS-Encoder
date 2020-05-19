@@ -1,6 +1,7 @@
 <template>
   <div id="codeArea">
-    <codemirror :options="cmOptions" :value="message" v-model="message" class="code" ref="codeArea"></codemirror>
+    <codemirror :options="cmOptions" :value="message" v-model="message" class="code" ref="codeArea">
+    </codemirror>
   </div>
 </template>
 
@@ -48,7 +49,7 @@ export default {
   watch: {
     currentPrep(newVal) {
       this.cmOptions.mode = judge.getStyleMode(newVal)
-      this.cmOptions.lineWrapping = newVal === 'MarkDown'
+      this.cmOptions.lineWrapping = newVal === 'Markdown'
     },
     showCodeArea(newVal) {
       if (newVal) {
@@ -109,7 +110,7 @@ export default {
       const codeMode = this.codeMode
       this.cmOptions = getEditor(judge.judgeMode(codeMode))
       this.cmOptions.mode = judge.getStyleMode(codeMode)
-      this.cmOptions.lineWrapping = this.currentPrep === 'MarkDown'
+      this.cmOptions.lineWrapping = this.currentPrep === 'Markdown'
       this.message = content[judge.judgeMode(codeMode)]
       // 第一次初始化完毕再开始监听内容变化
       this.unwatch = this.$watch('message', this.messageChangeHandler)
@@ -145,6 +146,9 @@ export default {
         })
         if (codeOptions.autoUp) this.runCode()
       }, codeOptions.waitTime)
+    },
+    getCodeEditor() {
+      return this.$refs.codeArea.$el
     },
     getCodeMirror() {
       // 获取当前codemirror实例
