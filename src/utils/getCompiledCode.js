@@ -12,7 +12,7 @@ async function getCompiledCode (codeAreaContent, preprocess) {
 
   if (HTMLPrep === 'HTML') {
     HTMLCode = content.HTML
-  } else if (HTMLPrep === 'MarkDown') {
+  } else if (HTMLPrep === 'Markdown') {
     await compiler
       .compileMarkDown(content.HTML)
       .then(code => {
