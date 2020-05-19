@@ -45,6 +45,7 @@ In fact, JS-Encoder was released in its original version last year, but there we
   - Preprocessing files: if you are using a preprocessing language, you can download a preprocessing language file that is not compiled.
 - [x] File import, you can import the file from the local to the compiler, the compiler will automatically read the contents of the file and display in the edit window.
 - [x] Support for multiple keyboard shortcuts, including the emmet extension.
+- [x] Add markdown mode, support edit window and preview window real-time preview and synchronous scrolling, and add shortcut menu bar.
 
 ## Future ❓
 
