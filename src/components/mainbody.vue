@@ -6,7 +6,6 @@
         <Tabs :key="index" :tabInfo="item" v-for="(item, index) in tabsInfo"
           v-show="!isMD||(preprocess[0]==='Markdown'&&(item.name==='Markdown'||item.name==='Output'))"></Tabs>
       </div>
-      <button @click="saveProject">截图</button>
       <div class="tabs-commands flex">
         <div @click="saveProject" v-show="showSaveBtn" class="save flex flex-ai flex-jcc" title="Save">
           <i class="icon iconfont icon-gengxin1"></i>
