@@ -79,6 +79,29 @@ async function sendImageToQiNiuYun (dataURL, token) {
   return imageUrl
 }
 
+async function blobToDataURL (blob) {
+  return new Promise((resolve, reject) => {
+    let a = new FileReader()
+    a.onload = async e => { resolve(e.target.result) }
+    a.readAsDataURL(blob)
+  })
+}
+
+function dataURLtoFile (dataURL, filename = 'file') {
+  let arr = dataURL.split(',')
+  let mime = arr[0].match(/:(.*?);/)[1]
+  let suffix = mime.split('/')[1]
+  let bstr = atob(arr[1])
+  let n = bstr.length
+  let u8arr = new Uint8Array(n)
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n)
+  }
+  return new File([u8arr], `${filename}.${suffix}`, {
+    type: mime
+  })
+}
+
 // async function screenshotBySVG (iframe) {
 //   // 通过svg实现截图
 //   const iframeWindow = iframe.contentWindow
@@ -242,29 +265,6 @@ async function sendImageToQiNiuYun (dataURL, token) {
 //     })
 //   })
 //   return url
-// }
-
-// async function blobToDataURL (blob) {
-//   return new Promise((resolve, reject) => {
-//     let a = new FileReader()
-//     a.onload = async e => { resolve(e.target.result) }
-//     a.readAsDataURL(blob)
-//   })
-// }
-
-// function dataURLtoFile (dataURL, filename = 'file') {
-//   let arr = dataURL.split(',')
-//   let mime = arr[0].match(/:(.*?);/)[1]
-//   let suffix = mime.split('/')[1]
-//   let bstr = atob(arr[1])
-//   let n = bstr.length
-//   let u8arr = new Uint8Array(n)
-//   while (n--) {
-//     u8arr[n] = bstr.charCodeAt(n)
-//   }
-//   return new File([u8arr], `${filename}.${suffix}`, {
-//     type: mime
-//   })
 // }
 
 // async function compileCSS (CSSPrep, CSSCode) {

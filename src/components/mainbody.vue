@@ -319,7 +319,6 @@ export default {
       iframeBody.style.width = '1200px'
       iframeBody.style.height = '666px'
       handleIframeImage.getIframeImage(iframeBody).then(async dataUrl => {
-        console.log(dataUrl)
         iframeBody.style.width = ''
         iframeBody.style.height = ''
         let imgUrl = ''
