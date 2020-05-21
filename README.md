@@ -51,7 +51,6 @@ In fact, JS-Encoder was released in its original version last year, but there we
 
 - **rebuild**, Vue3.0 is coming soon, with enhanced support for TypeScript, so TypeScript refactoring will be considered.
 - **Preprocessor support**, JS-Encoder may support more front-end languages.
-- **Backend**, JS-Encoder is a single page app without backend. Later, backend will have made by Node.js.
 - **Code share**, share your code to another by url🔗.
 - **More personalized settings**.
 
