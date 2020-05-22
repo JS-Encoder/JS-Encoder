@@ -21,7 +21,7 @@
   </a>
 </div>
 
-<p align="center">简体中文 | <a href="https://github.com/Longgererer/JS-Encoder-Enhance/blob/master/READMECN.md">English</a></p>
+<p align="center">简体中文 | <a href="https://github.com/Longgererer/JS-Encoder/blob/master/READMECN.md">English</a></p>
 
 ## 使用
 
