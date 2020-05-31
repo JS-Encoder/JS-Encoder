@@ -447,7 +447,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   position: relative;
   z-index: 2;
   padding: 0.1px;
-  /* Force widget margins to stay inside of the container */
+  font-size: 12px;
 }
 
 .CodeMirror-widget {}
