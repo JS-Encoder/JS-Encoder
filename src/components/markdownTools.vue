@@ -26,11 +26,12 @@
 import markdownTools from '@/utils/markdownTools'
 export default {
   props: {
-    cm: Object
+    cm: Object,
+    getIframeBody: Function
   },
   data() {
     return {
-      isMDToolsOpen: false,
+      isMDToolsOpen: true,
       toolsList: [
         {
           class: 'icon-jiacu',
@@ -75,6 +76,10 @@ export default {
         {
           class: 'icon-hengxian',
           name: 'line'
+        },
+        {
+          class:'icon-pdf',
+          name: 'pdf'
         }
       ]
     }
@@ -117,6 +122,10 @@ export default {
           break
         case 'ol':
           markdownTools.addOrderList(cm)
+          break
+        case 'pdf':
+          const element = this.$props.getIframeBody()
+          markdownTools.htmlToPDF(element)
           break
         case 'title':
           return
@@ -198,7 +207,7 @@ export default {
     }
   }
   .tools-list-open {
-    width: 440px;
+    width: 480px;
   }
 }
 </style>

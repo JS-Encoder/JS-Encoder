@@ -1,3 +1,4 @@
+import html2pdf from 'html2pdf.js'
 function changeTextStyle (cm, matchStr) {
   // 在前后加上matchStr
   const changePos = matchStr.length
@@ -295,6 +296,10 @@ function judgePreOrAft (selectContent) {
 function judgeUrl (url) {
   return /^http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/.test(url)
 }
+function htmlToPDF (iframe) {
+  iframe.contentWindow.focus()
+  iframe.contentWindow.print()
+}
 
 export default {
   addOrderList,
@@ -302,5 +307,6 @@ export default {
   addLine,
   addTitle,
   addLink,
-  changeTextStyle
+  changeTextStyle,
+  htmlToPDF
 }

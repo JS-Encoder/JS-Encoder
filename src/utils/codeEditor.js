@@ -11,9 +11,9 @@ import 'codemirror/mode/coffeescript/coffeescript'
 
 import 'codemirror/addon/fold/foldcode'
 import 'codemirror/addon/fold/foldgutter'
-// import 'codemirror/addon/fold/brace-fold'
 import 'codemirror/addon/fold/xml-fold'
 import 'codemirror/addon/fold/markdown-fold'
+import 'codemirror/addon/fold/brace-fold'
 
 import 'codemirror/addon/hint/javascript-hint'
 import 'codemirror/addon/hint/html-hint'
@@ -45,7 +45,7 @@ import markdownTools from '../utils/markdownTools'
 const mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault
 const runKey = mac ? "Cmd" : "Ctrl"
 
-export default function (mode = '') {
+export default function (mode = '', lang = '') {
   const cmOptions = {// codemirror编辑配置
     tabSize: 2,// tab缩进数
     mode: '',// 语言
@@ -67,20 +67,24 @@ export default function (mode = '') {
       [`${runKey}-Q`]: cm => {
         cm.foldCode(cm.getCursor())
       },
-      'Shift-Alt-F': async cm => {// 格式化代码
+      'Shift-Alt-F': function (cm) {// 格式化代码
         const code = cm.getValue()
         const cursor = cm.getCursor()
         let finCode = ''
-        switch (mode) {
-          case 'HTML':
-            await format.formatHtml(code).then(res => { finCode = res })
-            break
-          case 'CSS':
-            await format.formatCss(code).then(res => { finCode = res })
-            break
-          case 'JavaScript':
-            await format.formatJavaScript(code).then(res => { finCode = res })
-            break
+        if (cm.getOption('mode') === 'text/x-markdown') {
+          return
+        } else {
+          switch (mode) {
+            case 'HTML':
+              finCode = format.formatHtml(code)
+              break
+            case 'CSS':
+              finCode = format.formatCss(code)
+              break
+            case 'JavaScript':
+              finCode = format.formatJavaScript(code)
+              break
+          }
         }
         cm.setValue(finCode)
         cm.setCursor(cursor)

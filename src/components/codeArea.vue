@@ -23,7 +23,8 @@ export default {
       message: '',
       updateCode: null,
       init: false,
-      firstUpdate: true
+      firstUpdate: true,
+      lineWidget: []
     }
   },
   mounted() {
@@ -36,7 +37,8 @@ export default {
       showSaveTip: 'showSaveTip',
       language: 'language',
       loginStatus: 'loginStatus',
-      codeAreaHeight: 'codeAreaHeight'
+      codeAreaHeight: 'codeAreaHeight',
+      consoleInfo: 'consoleInfo'
     }),
     currentPrep() {
       return this.$store.state.preprocess[this.index]
@@ -48,14 +50,18 @@ export default {
   },
   watch: {
     currentPrep(newVal) {
-      this.cmOptions.mode = judge.getStyleMode(newVal)
-      this.cmOptions.lineWrapping = newVal === 'Markdown'
+      const cmOptions = this.cmOptions
+      cmOptions.mode = judge.getStyleMode(newVal)
+      cmOptions.lineWrapping = newVal === 'Markdown'
     },
     showCodeArea(newVal) {
       if (newVal) {
         this.refreshCodeArea()
         this.getFocus()
       }
+    },
+    consoleInfo(newInfo) {
+      this.updateEditorErrorInfo(newInfo)
     },
     codeAreaHeight(newHeight) {
       newHeight >= 50 && this.setCodeAreaBottom(newHeight)
@@ -69,7 +75,6 @@ export default {
       const commit = this.$store.commit
       if (this.loginStatus) {
         commit('updateShowSaveBtn', true)
-
         // 项目改变弹出提示框
         if (this.showSaveTip) {
           const language = this.language === 'zh'
@@ -103,12 +108,36 @@ export default {
     }
   },
   methods: {
+    updateEditorErrorInfo(consoleInfo) {
+      // 再错误行下面放置错误提示组件
+      if (this.index === 2) {
+        this.lineWidget.forEach(line => {
+          line.clear()
+        })
+        consoleInfo.forEach(info => {
+          if (info.type === 'system-error') {
+            const { col, row, content } = info
+            const div = document.createElement('div')
+            div.innerHTML = `${content}`
+            div.style.color = '#ef6066'
+            div.style.background = '#290000'
+            div.style.padding = '4px 0 4px 45px'
+            const cm = this.getCodeMirror()
+            this.lineWidget.push(
+              cm.addLineWidget(row - 1, div, {
+                coverGutter: true
+              })
+            )
+          }
+        })
+      }
+    },
     initCoder() {
       // 初始化代码及编辑器配置
       if (this.unwatch) this.unwatch()
       const content = this.$store.state.codeAreaContent
       const codeMode = this.codeMode
-      this.cmOptions = getEditor(judge.judgeMode(codeMode))
+      this.cmOptions = getEditor(judge.judgeMode(codeMode), codeMode)
       this.cmOptions.mode = judge.getStyleMode(codeMode)
       this.cmOptions.lineWrapping = this.currentPrep === 'Markdown'
       this.message = content[judge.judgeMode(codeMode)]
