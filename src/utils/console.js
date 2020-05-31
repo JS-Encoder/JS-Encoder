@@ -36,13 +36,12 @@ export default class Console {
       })
       return
     }
-    this.printLog({
+    const finLog = this.printLog({
       type: 'print',
       content: [returnVal]
-    }).then(finLog => {
-      if (finLog.type === 'mixed') finLog.type = 'mixedPrint'
-      this.consoleInfo.push(finLog)
     })
+    finLog.type === 'mixed' && (finLog.type = 'mixedPrint')
+    this.consoleInfo.push(finLog)
   }
   /**
    * @param Element iframe 重新载入过后的iframe
@@ -103,7 +102,7 @@ export default class Console {
           case 'time':
             this.setTimer(arg[0])//设置计时器
             break
-          case 'timeLog': 
+          case 'timeLog':
           case 'timeEnd': {
             const time = this.calcTime(arg[0])//计算时差
             const finContent = time ? this.renderNumber(time) : this.renderUndefined(time)
@@ -130,12 +129,11 @@ export default class Console {
               }
             })
             if (haveLargeOb) return
-            this.printLog({//生成日志
+            const finLog = this.printLog({//生成日志
               type: item,
               content: arg
-            }).then(finLog => {
-              consoleInfo.push(finLog)
             })
+            consoleInfo.push(finLog)
           }
         }
       }
@@ -177,7 +175,7 @@ export default class Console {
    * @param Array content 日志内容
    * @return finLog 最终显示在页面上的日志html
    */
-  async printLog (item) {
+  printLog (item) {
     const type = item.type
     let content = item.content
     if (!this.judgeMethodsAllowed(type) && type !== 'print') {
@@ -193,25 +191,21 @@ export default class Console {
       case 'print':
         // 先判断是否为基本数组（所有元素都是基本类型的数组），如果不是基本类型数组，就定为mixed类型，放到codeMirror组件中
         if (!consoleTool.judgeBaseArray(content)) {
-          await formatJavaScript(this.switchContentToString(content)).then(finStr => {
-            content = finStr
-          })
+          content = formatJavaScript(this.switchContentToString(content))
           finLog = {
             type: 'mixed',
             content
           }
         } else {
           finLog = {
-            type, logs: await this.log(content)
+            type, logs: this.log(content)
           }
         }
         break
       case 'info':
       case 'warn':
       case 'error': {
-        await formatJavaScript(this.switchContentToString(content)).then(finStr => {
-          content = finStr
-        })
+        content = formatJavaScript(this.switchContentToString(content))
         finLog = {
           type, content
         }
@@ -264,8 +258,8 @@ export default class Console {
    * @param Array content 输出内容
    * @return finLog 最终显示在页面上的日志
    */
-  async log (content) {
-    const finLog = await []
+  log (content) {
+    const finLog = []
     if (!content.length) return ''
     content.forEach(item => {
       const type = judge.judgeType(item)

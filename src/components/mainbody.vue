@@ -1,14 +1,17 @@
 <template>
   <div id="mainbody" class="flex flex-clo">
     <div class="tabs-list flex">
-      <MarkdownTools :cm="cm" v-show="isMD"></MarkdownTools>
+      <MarkdownTools :cm="cm" v-show="isMD" :getIframeBody="getIframeBody"></MarkdownTools>
       <div class="tabs flex">
         <Tabs :key="index" :tabInfo="item" v-for="(item, index) in tabsInfo"
           v-show="!isMD||(preprocess[0]==='Markdown'&&(item.name==='Markdown'||item.name==='Output'))"></Tabs>
       </div>
+      <div>
+        <button @click="saveProject">screenshot</button>
+      </div>
       <div class="tabs-commands flex">
         <div @click="saveProject" v-show="showSaveBtn" class="save flex flex-ai flex-jcc" title="Save">
-          <i class="icon iconfont icon-gengxin1"></i>
+          <i class="icon iconfont" :class="showSaveLoader?'icon-load1 load':'icon-gengxin1'"></i>
           <span>{{langSave}}</span>
         </div>
         <div v-for="(item, index) in tabsCommands" :key="index" :title="tabsLang[index]" class="flex flex-ai flex-jcc"
@@ -105,7 +108,8 @@ export default {
       iframeScale: 100,
       tabMenuLang: window.Global.language.tabsMenu,
       isChildrenMounted: false,
-      isMD: false
+      isMD: false,
+      showSaveLoader: false
     }
   },
   created() {
@@ -235,7 +239,8 @@ export default {
     },
     isMD(newVal) {
       if (newVal) {
-        new SyncScroll().init()
+        this.$store.commit('updateCurrentTab', 'Markdown')
+        this.initSyncScroll()
       } else {
         new SyncScroll().clearScroll()
       }
@@ -305,6 +310,7 @@ export default {
        * token存储于cookie，有效期为1小时，时效过了向后台请求
        * 最后请求七牛云删除旧的poster
        */
+      this.showSaveLoader = true
       const iframe = this.$refs.iframeBox
       const iframeStyle = iframe.style
       const iframeBody = iframe.contentWindow.document.body
@@ -316,11 +322,7 @@ export default {
       if (currentTab !== 'Output' && this.isSmallScreen) {
         commit('updateCurrentTab', 'Output')
       }
-      iframeBody.style.width = '1200px'
-      iframeBody.style.height = '666px'
-      handleIframeImage.getIframeImage(iframeBody).then(async dataUrl => {
-        iframeBody.style.width = ''
-        iframeBody.style.height = ''
+      handleIframeImage.screenshotBySVG(iframe).then(async dataUrl => {
         let imgUrl = ''
         if (this.isSmallScreen) commit('updateCurrentTab', currentTab)
         let token = handleCookie.getCookieValue('qnyToken') // 获取七牛云token
@@ -336,10 +338,10 @@ export default {
           .sendImageToQiNiuYun(dataUrl, token)
           .then(res => {
             // 获取七牛云返回的图片链接
+            this.showSaveLoader = false
             if (res.error) {
               this.$notify({
-                message:
-                  language === 'zh' ? '项目保存失败' : 'Project save failed',
+                message: language ? '项目保存失败' : 'Project save failed',
                 position: 'bottom-right',
                 iconClass: 'icon iconfont icon-error1 error-icon',
                 duration: 1500
@@ -361,9 +363,10 @@ export default {
             linkList: this.linkList
           })
           .then(res => {
+            this.showSaveLoader = false
             // 弹出提示消息
             this.$notify({
-              message: language === 'zh' ? '项目已保存' : 'Project saved',
+              message: language ? '项目已保存' : 'Project saved',
               position: 'bottom-right',
               duration: 1500
             })
@@ -373,62 +376,6 @@ export default {
             })
           })
       })
-      // handleIframeImage.getIframeImage(iframeBody, async dataURL => {
-      //   //截图
-      //   let imgUrl = ''
-      //   iframeBody.style.width = ''
-      //   iframeBody.style.height = ''
-      //   if (this.isSmallScreen) commit('updateCurrentTab', currentTab)
-      //   let token = handleCookie.getCookieValue('qnyToken') // 获取七牛云token
-      //   if (!token) {
-      //     //没有token？
-      //     await handleIframeImage.getToken().then(res => {
-      //       //重新请求token
-      //       token = res
-      //     })
-      //     handleCookie.setCookie('qnyToken', token, 1 / 24) //设置token有效时间
-      //   }
-      //   await handleIframeImage
-      //     .sendImageToQiNiuYun(dataURL, token)
-      //     .then(res => {
-      //       // 获取七牛云返回的图片链接
-      //       if (res.error) {
-      //         // 弹出错误提示
-      //         this.$notify({
-      //           message: language ? '项目保存失败' : 'Project save failed',
-      //           position: 'bottom-right',
-      //           iconClass: 'icon iconfont icon-error1 error-icon',
-      //           duration: 1500
-      //         })
-      //         return void 0
-      //       }
-      //       imgUrl = res
-      //       commit('updateShowSaveBtn', false)
-      //     })
-      //   await reqUserInfo
-      //     .updateProjectDetail({
-      //       // 将图片链接连带项目更新至数据库
-      //       poster: imgUrl,
-      //       id: this.projectId,
-      //       name: this.projectName,
-      //       prep: this.preprocess,
-      //       content: this.codeAreaContent,
-      //       CDNList: this.CDNList,
-      //       linkList: this.linkList
-      //     })
-      //     .then(res => {
-      //       // 弹出提示消息
-      //       this.$notify({
-      //         message: language ? '项目已保存' : 'Project saved',
-      //         position: 'bottom-right',
-      //         duration: 1500
-      //       })
-      //       handleIframeImage.deleteOldPoster(this.posterKey).then(res => {
-      //         // 删除旧封面
-      //         if (!res) commit('updatePosterKey', imgUrl)
-      //       })
-      //     })
-      // })
     },
     showUserMenu() {
       const commit = this.$store.commit
@@ -456,9 +403,9 @@ export default {
           commit('updateIframeWidth', wholeSize - finSize)
         }
         document.onmouseup = () => {
-          document.onmousemove = null
           commit('updateIframeScreen', false)
           commit('updateShowIframeWidth', false)
+          document.onmousemove = null
         }
       }
     },
@@ -510,14 +457,7 @@ export default {
           .sendCodeToIframe(iframe, finCode, link, cdn, isMD)
           .then(() => {
             if (isMD) {
-              const el = this.getCodeEditor()
-              const cm = this.getCodeMirror()
-              const docWindow = iframe.contentWindow
-              const {
-                documentElement: docEle,
-                body: docBody
-              } = docWindow.document
-              new SyncScroll({ el, cm }, { docEle, docBody, docWindow })
+              this.initSyncScroll()
             }
           })
       }, waitTime)
@@ -590,11 +530,22 @@ export default {
       !bodyStyle.transformOrigin && (bodyStyle.transformOrigin = 'top left')
       bodyStyle.transform = `scale(${newP})`
     },
+    initSyncScroll() {
+      const iframe = this.$refs.iframeBox
+      const el = this.getCodeEditor()
+      const cm = this.getCodeMirror()
+      const docWindow = iframe.contentWindow
+      const { documentElement: docEle, body: docBody } = docWindow.document
+      new SyncScroll({ el, cm }, { docEle, docBody, docWindow })
+    },
     getCodeEditor() {
       return this.$refs.codeArea0[0].getCodeEditor()
     },
     getCodeMirror() {
       return this.$refs.codeArea0[0].getCodeMirror()
+    },
+    getIframeBody() {
+      return this.$refs.iframeBox
     }
   },
   components: {
@@ -641,6 +592,17 @@ export default {
   }
   50% {
     color: $afterFocus;
+  }
+}
+@keyframes rotate {
+  0% {
+    transform: (0);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 #mainbody {
@@ -703,6 +665,11 @@ export default {
         i {
           font-size: 22px;
           margin-right: 5px;
+          @include setTransition(transform, 0.3s, ease);
+          transform: rotate(0);
+        }
+        .load {
+          animation: rotate 3s ease infinite;
         }
         span {
           font-size: 14px;
