@@ -34,7 +34,6 @@ function asyncLoad (resources, name) {
 
 async function compileMarkDown (code) {
   let highlightJS, marked
-
   if (!loadFiles.get('highlight')) {
     highlightJS = await import('highlight.js')
     loadFiles.set('highlight', highlightJS)
