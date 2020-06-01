@@ -467,7 +467,6 @@ ${xmlStr}
 
 export default {
   screenshotBySVG,
-  getIframeImage,
   getToken,
   sendImageToQiNiuYun,
   deleteOldPoster
