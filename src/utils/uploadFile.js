@@ -1,4 +1,7 @@
-/* eslint-disable */
+/**
+ * 本工具函数集用于上传文件使用
+ */
+
 const limitType = [
   'html',
   'css',
@@ -11,7 +14,10 @@ const limitType = [
   'ts',
   'coffee'
 ]
-
+/**
+ * 读取文件并获取处理后的文本
+ * @param File file 
+ */
 async function readFile(file) {
   const reader = new FileReader()
   reader.readAsText(file, 'UTF-8')
@@ -19,6 +25,7 @@ async function readFile(file) {
     reader.onload = e => {
       const fileString = e.target.result
       const mimeType = getMimeType(file.name)
+      // 如果文件是html，需要把里面的html，css和javascript代码区分开
       if (mimeType === 'html') {
         const htmlContent = splitHTML(fileString)
         const cssContent = splitCSS(fileString)

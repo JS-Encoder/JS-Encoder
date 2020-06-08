@@ -1,4 +1,6 @@
-/* eslint-disable */
+/**
+ * 封装axios请求
+ */
 import axios from 'axios'
 import qs from 'qs'
 

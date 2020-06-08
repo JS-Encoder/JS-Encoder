@@ -1,4 +1,6 @@
-/* eslint-disable */
+/**
+ * 使用qs处理url
+ */
 import qs from 'qs'
 
 function spliceUrl(path, params) {

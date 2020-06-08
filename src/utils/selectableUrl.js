@@ -1,4 +1,6 @@
-/* eslint-disable */
+/**
+ * 储存的常用外部脚本和样式，在外部链接搜索时使用
+ */
 const CDN = {
   Vue: 'https://cdn.bootcss.com/vue/2.6.10/vue.min.js',
   Vuex: 'https://cdn.bootcss.com/vuex/3.1.1/vuex.min.js',

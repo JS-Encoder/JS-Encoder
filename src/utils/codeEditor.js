@@ -45,7 +45,11 @@ import markdownTools from '../utils/markdownTools'
 const mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault
 const runKey = mac ? "Cmd" : "Ctrl"
 
-export default function (mode = '', lang = '') {
+/**
+ * 配置codemirror编辑器
+ * @param string mode 语言类型
+ */
+export default function (mode = '') {
   const cmOptions = {// codemirror编辑配置
     tabSize: 2,// tab缩进数
     mode: '',// 语言
@@ -72,7 +76,7 @@ export default function (mode = '', lang = '') {
         const cursor = cm.getCursor()
         let finCode = ''
         if (cm.getOption('mode') === 'text/x-markdown') {
-          return
+          return void 0
         } else {
           switch (mode) {
             case 'HTML':

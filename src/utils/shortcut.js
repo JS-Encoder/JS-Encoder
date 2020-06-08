@@ -1,3 +1,7 @@
+/**
+ * 处理快捷键
+ */
+
 const shortcut = {
   all_shortcuts: {},
   add (shortcut_combination, callback, filed, opt) {

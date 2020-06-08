@@ -1,3 +1,4 @@
+// 防抖函数
 export function debounce (fn, wait) {
   let timeout = null
   wait = wait || 600

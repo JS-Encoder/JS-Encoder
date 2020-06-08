@@ -1,3 +1,6 @@
+/**
+ * 配置窗口切换的快捷键
+ */
 import shortcut from './shortcut'
 import store from '../vuex/store'
 

@@ -1,4 +1,6 @@
-/* eslint-disable */
+/**
+ * 将预处理语言编译成html，css和javascript
+ */
 import loadjs from 'loadjs'
 
 class LoadFiles {

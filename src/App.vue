@@ -67,8 +67,10 @@ export default {
       window.Global.language = lang
     },
     clientHeight(newVal, oldVal) {
-      // 浏览器可视窗口高度改变时同时改变console和代码窗口大小
-      // 改变策略：高度减小时等比缩小两个窗口高度，console不能小于25，代码窗口不小于100，有任何一个窗口达到最小值，那么只减少另一个窗口的高度
+      /**
+       * 浏览器可视窗口高度改变时同时改变console和代码窗口大小
+       * 改变策略：高度减小时等比缩小两个窗口高度，console不能小于25，代码窗口不小于100，有任何一个窗口达到最小值，那么只减少另一个窗口的高度
+       */
       const commit = this.$store.commit
       const consoleSize = this.consoleSize
       const codeAreaHeight = this.codeAreaHeight
@@ -87,8 +89,10 @@ export default {
       commit('updateConsoleSize', consoleSize + resizeHeight / 2)
     },
     clientWidth(newVal, oldVal) {
-      // 浏览器可视窗口宽度改变时同时改变编辑器和iframe窗口宽度
-      // 宽度减小时同时等比缩小两个窗口宽度，两个窗口宽度都不能小于100，有任何一个窗口达到最小值，那么只减少另一个窗口的宽度
+      /**
+       * 浏览器可视窗口宽度改变时同时改变编辑器和iframe窗口宽度
+       * 宽度减小时同时等比缩小两个窗口宽度，两个窗口宽度都不能小于100，有任何一个窗口达到最小值，那么只减少另一个窗口的宽度
+       */
       const { commit, state } = this.$store
       let codeAreaWidth = this.codeAreaWidth
       let iframeWidth = this.iframeWidth

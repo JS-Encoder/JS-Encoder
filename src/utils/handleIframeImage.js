@@ -1,47 +1,16 @@
-import html2canvas from 'html2canvas'
+/**
+ * 将iframe转化为图片并储存至七牛云
+ * 先后使用html2canvas和dom-painter，然后弃用
+ */
+// import html2canvas from 'html2canvas'
+// import domPainter from 'dom-painter'
 import axios from 'axios'
 import { get } from './request'
-import domPainter from 'dom-painter'
 import store from '../vuex/store'
 
-const domPainterConfig = {
-  width: 1200,
-  height: 666,
-  format: 'image/jpeg',
-  quality: 0.7,
-  links: [],
-  fonts: [],
-  otherStyles: ''
-}
-
-// async function getIframeImage (dom) {
-//   let dataUrl = ''
-//   // 先使用domPainter进行截图，如果失败，使用html2canvas截图
-//   try {
-//     await domPainter(dom, domPainterConfig).then(dataURL => {
-//       dataUrl = dataURL
-//     })
-//   } catch (error) {
-//     const canvas = document.createElement('canvas')
-//     canvas.width = 600
-//     canvas.height = 333
-//     const content = canvas.getContext("2d")
-//     content.fillStyle = getComputedStyle(dom, null).backgroundColor
-//     content.fillRect(0, 0, canvas.width, canvas.height)
-//     await html2canvas(dom, {
-//       backgroundColor: null,
-//       useCORS: true,
-//       allowTaint: true,
-//       canvas,
-//       logging: true,
-//       allowTaint: false
-//     }).then(canvas => {
-//       dataUrl = canvas.toDataURL('image/jpeg')
-//     })
-//   }
-//   return dataUrl
-// }
-
+/**
+ * 向七牛云获取token
+ */
 async function getToken () {
   let token = ''
   await get('/jsEncoder/project/token', {}).then(res => {
@@ -49,7 +18,10 @@ async function getToken () {
   })
   return token
 }
-
+/**
+ * 请求七牛云删除指定图片
+ * @param 图片的key key 
+ */
 async function deleteOldPoster (key) {
   let result = ''
   await get('/jsEncoder/project/delFile', {
@@ -59,7 +31,11 @@ async function deleteOldPoster (key) {
   })
   return result
 }
-
+/**
+ * 向七牛云发送图片并储存
+ * @param string dataURL 
+ * @param string token 
+ */
 async function sendImageToQiNiuYun (dataURL, token) {
   const file = dataURLtoFile(dataURL)
   const param = new FormData()
@@ -79,7 +55,11 @@ async function sendImageToQiNiuYun (dataURL, token) {
   })
   return imageUrl
 }
-
+/**
+ * 将dataURL转化为文件
+ * @param string dataURL 
+ * @param string filename 
+ */
 function dataURLtoFile (dataURL, filename = 'file') {
   let arr = dataURL.split(',')
   let mime = arr[0].match(/:(.*?);/)[1]
@@ -94,7 +74,10 @@ function dataURLtoFile (dataURL, filename = 'file') {
     type: mime
   })
 }
-
+/**
+ * 使用svg将iframe截图
+ * @param Dom iframe 
+ */
 async function screenshotBySVG (iframe) {
   // 通过svg实现截图
   const width = 1200, height = 666
@@ -135,10 +118,12 @@ async function screenshotBySVG (iframe) {
   })
   return url
 }
-
+/**
+ * 提前绘制页面上的canvas
+ * @param Dom node 
+ */
 function drawCanvas (node) {
   let arr = []
-  // 提前绘制页面上的canvas
   function findNodes (node) {
     if (!node) return
     let nodeName = node.nodeName.toLowerCase()
@@ -158,7 +143,10 @@ function drawCanvas (node) {
   findNodes(node)
   return arr
 }
-
+/**
+ * 将blob转化为dataURL
+ * @param Blob blob 
+ */
 async function blobToDataURL (blob) {
   return new Promise((resolve, reject) => {
     let a = new FileReader()
@@ -166,9 +154,11 @@ async function blobToDataURL (blob) {
     a.readAsDataURL(blob)
   })
 }
-
+/**
+ * 加载外部css
+ * @param Array linkList 
+ */
 async function loadLinkCss (linkList) {
-  // 加载外部css
   const promises = []
   let linkCssStr = ''
   linkList.forEach(item => {
@@ -186,7 +176,10 @@ async function loadLinkCss (linkList) {
   })
   return linkCssStr
 }
-
+/**
+ * 获取id为JSEncoderRunnerCSS的style标签，这里存放着用户编写的css代码
+ * @param Dom iframeDoc 
+ */
 function getStyleStr (iframeDoc) {
   const iframeHead = iframeDoc.head
   const style = iframeHead.childNodes
@@ -200,7 +193,11 @@ function getStyleStr (iframeDoc) {
   styleStr = filterStyleUrl(styleStr) // 过滤掉网络链接
   return styleStr
 }
-
+/**
+ * 遍历结点，处理一些特定节点，如img，canvas和svg
+ * @param Dom node 
+ * @param string canvasDataURL 
+ */
 async function handleHTML (node, canvasDataURL) {
   const canvasList = []
   async function handleNode (node) {
@@ -247,9 +244,11 @@ async function handleHTML (node, canvasDataURL) {
   }
   return void 0
 }
-
+/**
+ * 去掉'@import'和其他外部链接
+ * @param  styleStr 
+ */
 function filterStyleUrl (styleStr) {
-  // 去掉@import和和其他外部链接
   let str = styleStr.replace(
     /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/g,
     ""
@@ -262,7 +261,10 @@ function isBase64 (str) {
   const match = /^data:image\//
   return match.test(str)
 }
-
+/**
+ * 将svg通过canvas绘制成img
+ * @param Dom svg 
+ */
 function svgToImage (svg) {
   let { width, height } = svg.viewBox.baseVal
   if (!width && !height) {
@@ -287,25 +289,13 @@ function svgToImage (svg) {
     }
   })
 }
-
-function getFonts (rules) {
-  const fontUrlList = []
-  for (let i = rules.length - 1;i >= 0;i--) {
-    const rule = rules[i]
-    const type = judgeType(rule)
-    if (type === 'CSSFontFaceRule') {
-      const { src, fontFamily } = rule.style
-      const match = src.match(/url\("([\s\S]*)"\)/)// 取出url字符串中的链接
-      const url = match[1]
-      const format = url.match(/^http(s|):\/\/([\s\S]*).(woff2|woff|ttf|otf|svg|eot)$/)[3]
-      judgeFontsUrl(url) &&
-        (fontUrlList.indexOf(url) < 0) &&
-        fontUrlList.push({ url, format, fontFamily })
-    }
-  }
-  return fontUrlList
-}
-
+/**
+ * 构建svg，将svg转化为blob
+ * @param number width 
+ * @param number height 
+ * @param string xmlStr 
+ * @param string styleStr 
+ */
 function buildSVG (width, height, xmlStr, styleStr) {
   const htmlStr = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">\n
 <style>\n
@@ -321,6 +311,60 @@ ${xmlStr}
   })
   return svg
 }
+// function getFonts (rules) {
+//   const fontUrlList = []
+//   for (let i = rules.length - 1;i >= 0;i--) {
+//     const rule = rules[i]
+//     const type = judgeType(rule)
+//     if (type === 'CSSFontFaceRule') {
+//       const { src, fontFamily } = rule.style
+//       const match = src.match(/url\("([\s\S]*)"\)/)// 取出url字符串中的链接
+//       const url = match[1]
+//       const format = url.match(/^http(s|):\/\/([\s\S]*).(woff2|woff|ttf|otf|svg|eot)$/)[3]
+//       judgeFontsUrl(url) &&
+//         (fontUrlList.indexOf(url) < 0) &&
+//         fontUrlList.push({ url, format, fontFamily })
+//     }
+//   }
+//   return fontUrlList
+// }
+
+// const domPainterConfig = {
+//   width: 1200,
+//   height: 666,
+//   format: 'image/jpeg',
+//   quality: 0.7,
+//   links: [],
+//   fonts: [],
+//   otherStyles: ''
+// }
+// async function getIframeImage (dom) {
+//   let dataUrl = ''
+//   // 先使用domPainter进行截图，如果失败，使用html2canvas截图
+//   try {
+//     await domPainter(dom, domPainterConfig).then(dataURL => {
+//       dataUrl = dataURL
+//     })
+//   } catch (error) {
+//     const canvas = document.createElement('canvas')
+//     canvas.width = 600
+//     canvas.height = 333
+//     const content = canvas.getContext("2d")
+//     content.fillStyle = getComputedStyle(dom, null).backgroundColor
+//     content.fillRect(0, 0, canvas.width, canvas.height)
+//     await html2canvas(dom, {
+//       backgroundColor: null,
+//       useCORS: true,
+//       allowTaint: true,
+//       canvas,
+//       logging: true,
+//       allowTaint: false
+//     }).then(canvas => {
+//       dataUrl = canvas.toDataURL('image/jpeg')
+//     })
+//   }
+//   return dataUrl
+// }
 
 // async function loadFonts (fontUrlList) {
 //   // 加载外部字体
@@ -355,8 +399,6 @@ ${xmlStr}
 //   })
 //   return fontStyleStr
 // }
-
-
 
 // function judgeFontsUrl (url) {
 //   const reg = /^http(s|):\/\/([\s\S]*).(woff2|woff|ttf|otf|svg|eot)$/

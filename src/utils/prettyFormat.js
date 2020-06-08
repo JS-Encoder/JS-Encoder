@@ -1,4 +1,6 @@
-/* eslint-disable */
+/**
+ * 格式化代码
+ */
 const formatOptions = {
   indent_size: 2, // tab缩进数
   indent_level: 0, // 缩进等级

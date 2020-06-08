@@ -28,7 +28,7 @@ new Vue({
   template: '<App/>'
 })
 
-//自定义指令
+//自定义指令:聚焦元素
 Vue.directive('focus', {
   inserted(el) {
     el.focus()

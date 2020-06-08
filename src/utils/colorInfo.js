@@ -1,3 +1,6 @@
+/**
+ * HEX color table
+ */
 const GAndB = [
   '#000000',
   '#000033',

@@ -1,5 +1,7 @@
-/* eslint-disable */
-
+/**
+ * 获取详细数据类型
+ * @param any data 
+ */
 export function judgeType(data) {
   if (data === null) return null
   const type = typeof data

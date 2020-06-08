@@ -1,3 +1,6 @@
+/**
+ * markdown的编辑窗口与预览窗口同步滚动功能
+ */
 export default class SyncScroll {
   constructor(editor, preview) {
     if (!SyncScroll.instance) {

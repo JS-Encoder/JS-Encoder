@@ -1,4 +1,6 @@
-/* eslint-disable */
+/**
+ * 按需引入elementUI
+ */
 import { Button, Backtop, Tag, Slider, Dialog, Notification, Select, Dropdown, Pagination, DropdownMenu, DropdownItem, Tabs, TabPane, Option, Input, InputNumber, Checkbox, CheckboxGroup, CheckboxButton, RadioGroup, RadioButton, Collapse, CollapseItem, Message } from 'element-ui'
 const element = {
   install (Vue) {

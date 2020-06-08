@@ -1,3 +1,6 @@
+/**
+ * VueX mutations
+ */
 export default {
   updateUserInfo: (state, newInfo) => {
     state.userInfo = newInfo

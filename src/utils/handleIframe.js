@@ -63,7 +63,7 @@ async function sendCodeToIframe (iframe, code, link, cdn, isMD) {
     createTags.createStyleOrScript(iframe, 'script', 'JSEncoderRunnerJS', JSCode)
   }
 }
-
+// 如果是markdown需要做额外处理，如公式显示，代码高亮等
 function handleMarkdown (iframe) {
   const contentWindow = iframe.contentWindow
   const document = contentWindow.document

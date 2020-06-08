@@ -1,4 +1,7 @@
-/* eslint-disable */
+/**
+ * 颜色格式转换
+ */
+
 function switchRGB(color) {
   if (!color) return
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color)

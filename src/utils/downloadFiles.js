@@ -1,4 +1,6 @@
-/* eslint-disable */
+/**
+ * 本工具函数集用于将在线文件打包下载
+ */
 import JSZip from 'jszip'
 import getCompiledCode from './getCompiledCode'
 import { judgeMimeType } from './judgeMode'
@@ -7,13 +9,13 @@ import store from '../vuex/store'
 
 async function singleDownLoad (unCompiled) {
   const state = store.state
-  // css link
+  // 外部css链接
   let validCss = ''
   judgeFormat(state.linkList, function (item) {
     validCss += `<link rel="stylesheet" href="${item}">`
   })
 
-  // js cdn
+  // 外部script链接
   let validCDN = ''
   judgeFormat(state.CDNList, function (item) {
     validCDN += `<script src="${item}"><\/script>\n\t`
@@ -61,12 +63,12 @@ async function singleDownLoad (unCompiled) {
 
 async function zipDownLoad (unCompiled) {
   const state = store.state
-  // css link
+  // 外部css链接
   let validCss = ''
   judgeFormat(state.linkList, function (item) {
     validCss += `<link rel="stylesheet" href="${item}">`
   })
-  // js cdn
+  // 外部script链接
   let validCDN = ''
   judgeFormat(state.CDNList, function (item) {
     validCDN += `<script src="${item}"><\/script>\n\t`

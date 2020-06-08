@@ -1,4 +1,9 @@
-import html2pdf from 'html2pdf.js'
+/**
+ * markdown工具栏处理函数集
+ * 通过操纵codemirror API实现
+ */
+
+
 function changeTextStyle (cm, matchStr) {
   // 在前后加上matchStr
   const changePos = matchStr.length
