@@ -1,5 +1,5 @@
 <div align=center>
-  <img width="150" src="https://github.com/Longgererer/JS-Encoder-Enhance/blob/master/src/assets/logo.svg"/>
+  <img width="150" src="https://i.loli.net/2020/05/24/KshSixA9N3qUZk4.png"/>
 </div>
 
 <h1 align="center">JS-Encoder</h1>
