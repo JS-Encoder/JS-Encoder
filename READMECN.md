@@ -1,5 +1,5 @@
 <div align=center>
-  <img width="150" src="https://i.loli.net/2020/05/24/KshSixA9N3qUZk4.png"/>
+  <img width="150" src="https://i.loli.net/2020/06/10/5Fzxlw8oiCDPeQg.png"/>
 </div>
 
 <h1 align="center">JS-Encoder</h1>

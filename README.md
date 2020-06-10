@@ -1,5 +1,5 @@
 <div align=center>
-  <img width="150" src="https://i.loli.net/2020/05/24/KshSixA9N3qUZk4.png"/>
+  <img width="150" src="https://i.loli.net/2020/06/10/5Fzxlw8oiCDPeQg.png"/>
 </div>
 
 <h1 align="center">JS-Encoder</h1>
@@ -29,7 +29,7 @@
 
 ## Describe🖋
 
-**JS-Encoder** gets some inspiration from [JS Bin](https://jsbin.com) and [CODEPEN](https://codepen.io/pen/), both of them are excellent online compiler. Built with Vue.js and Koa2.
+**JS-Encoder** gets some inspiration from [JS Bin](https://jsbin.com) and [CODEPEN](https://codepen.io/pen/), both of then are excellent online compiler. Built with Vue.js and Koa2.
 
 In fact, JS-Encoder was released in its original version last year, but there were many shortcomings, so this year I rebuilt the JS-Encoder. If you want to see the old version, please go to: [The old version](https://www.lliiooiill.cn/jsencoder).
 
