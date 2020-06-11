@@ -6,9 +6,9 @@
         <Tabs :key="index" :tabInfo="item" v-for="(item, index) in tabsInfo"
           v-show="!isMD||(preprocess[0]==='Markdown'&&(item.name==='Markdown'||item.name==='Output'))"></Tabs>
       </div>
-      <div>
+      <!-- <div>
         <button @click="saveProject">screenshot</button>
-      </div>
+      </div> -->
       <div class="tabs-commands flex">
         <div @click="saveProject" v-show="showSaveBtn" class="save flex flex-ai flex-jcc" title="Save">
           <i class="icon iconfont" :class="showSaveLoader?'icon-load1 load':'icon-gengxin1'"></i>
