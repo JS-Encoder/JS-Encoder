@@ -3,6 +3,10 @@
  */
 import loadjs from 'loadjs'
 
+const cdn = {
+  typeScript: 'https://cdn.jsdelivr.net/npm/browserified-typescript@0.3.0/index.js'
+}
+
 class LoadFiles {
   constructor() {
     this.map = {}
@@ -107,7 +111,10 @@ async function compileStylus (code) {
   })
 }
 
-function compileTypeScript (code) {
+async function compileTypeScript (code) {
+  if (!loadjs.isDefined('typeScript')) {
+    await asyncLoad(cdn.typeScript, 'typeScript')
+  }
   const res = window.typescript.transpileModule(code, {
     fileName: '/foo.ts',
     reportDiagnostics: true,

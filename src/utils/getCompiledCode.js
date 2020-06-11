@@ -57,7 +57,13 @@ async function getCompiledCode (codeAreaContent, preprocess) {
   if (JSPrep === 'JavaScript') {
     JSCode = content.JavaScript
   } else if (JSPrep === 'TypeScript') {
-    JSCode = compiler.compileTypeScript(content.JavaScript)
+    await compiler.compileTypeScript(content.JavaScript)
+      .then(code => {
+        JSCode = code
+      })
+      .catch(err => {
+        console.log(err)
+      })
   } else if (JSPrep === 'CoffeeScript') {
     await compiler
       .compileCoffeeScript(content.JavaScript)

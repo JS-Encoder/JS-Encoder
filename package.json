@@ -13,11 +13,9 @@
   "dependencies": {
     "axios": "^0.19.0",
     "codemirror-emmet": "^1.0.0",
-    "dom-painter": "^1.0.7",
     "element-ui": "^2.8.2",
     "file-saver": "^2.0.2",
     "highlight.js": "^10.0.3",
-    "html2canvas": "^1.0.0-rc.5",
     "html2pdf.js": "^0.9.2",
     "jszip": "^3.2.1",
     "less": "^3.9.0",
