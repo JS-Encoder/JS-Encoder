@@ -1,7 +1,8 @@
 /* eslint-disable */
-const modeList = {
+const modeStyleList = {
   HTML: 'text/html',
-  Markdown: 'text/x-markdown',
+  Markdown: 'text/md-mix',
+  Pug: 'text/x-pug',
   CSS: 'css',
   Sass: 'text/x-sass',
   Scss: 'text/x-scss',
@@ -9,13 +10,13 @@ const modeList = {
   Stylus: 'text/x-styl',
   JavaScript: 'text/javascript',
   TypeScript: 'text/typescript',
-  CoffeeScript: 'text/coffeescript'
 }
 
-function judgeMode (edit) {
+function judgeMode(edit) {
   switch (edit) {
     case 'HTML':
     case 'Markdown':
+    case 'Pug':
       return 'HTML'
     case 'CSS':
     case 'Sass':
@@ -34,10 +35,11 @@ function judgeMode (edit) {
   }
 }
 
-function judgeExtension (edit) {
+function judgeExtension(edit) {
   switch (edit) {
     case 'html':
     case 'md':
+    case 'pug':
       return 'HTML'
     case 'css':
     case 'sass':
@@ -52,58 +54,29 @@ function judgeExtension (edit) {
   }
 }
 
-function judgeMimeType (edit) {
-  switch (edit) {
-    case 'Markdown':
-      return 'md'
-    case 'Sass':
-      return 'sass'
-    case 'Scss':
-      return 'scss'
-    case 'Less':
-      return 'less'
-    case 'Stylus':
-      return 'styl'
-    case 'TypeScript':
-      return 'ts'
-    case 'CoffeeScript':
-      return 'coffee'
-  }
+const mimeTypeMap = {
+  Markdown: 'md',
+  Pug: 'pug',
+  Sass: 'sass',
+  Scss: 'scss',
+  Less: 'less',
+  Stylus: 'styl',
+  TypeScript: 'ts',
+  CoffeeScript: 'coffee',
 }
 
-function judgeModeByMimeType (type) {
-  switch (type) {
-    case 'md':
-      return 'Markdown'
-    case 'sass':
-      return 'Sass'
-    case 'scss':
-      return 'Scss'
-    case 'less':
-      return 'Less'
-    case 'styl':
-      return 'Stylus'
-    case 'ts':
-      return 'TypeScript'
-    case 'coffee':
-      return 'CoffeeScript'
-    case 'html':
-      return 'HTML'
-    case 'css':
-      return 'CSS'
-    case 'js':
-      return 'JavaScript'
-  }
+const ModeMimeTypeMap = {
+  md: 'Markdown',
+  pug: 'Pug',
+  sass: 'Sass',
+  scss: 'Scss',
+  less: 'Less',
+  styl: 'Stylus',
+  ts: 'TypeScript',
+  coffee: 'CoffeeScript',
+  html: 'HTML',
+  css: 'CSS',
+  js: 'JavaScript',
 }
 
-function getStyleMode (edit) {
-  return modeList[edit]
-}
-
-export {
-  judgeMode,
-  judgeExtension,
-  judgeMimeType,
-  getStyleMode,
-  judgeModeByMimeType
-}
+export { judgeMode, judgeExtension, mimeTypeMap, modeStyleList, ModeMimeTypeMap }

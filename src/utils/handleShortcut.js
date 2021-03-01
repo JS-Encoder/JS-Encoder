@@ -1,61 +1,56 @@
 /**
- * 配置窗口切换的快捷键
+ * 配置CodeMirror编辑窗口之间相互跳转的快捷键
  */
-import shortcut from './shortcut'
-import store from '../vuex/store'
 
-export default class HandleShortcut {
+import shortcut from './shortcut'
+import store from '../store/index'
+import { isMac } from './tools'
+
+export default class ShortcutHandler {
   constructor() {
-    if (!HandleShortcut.instance) {
+    if (!ShortcutHandler.instance) {
       /**
        * 快捷键方案
-       * CTRL + 1 HTML窗口
-       * CTRL + 2 CSS窗口
-       * CTRL + 3 JS窗口
+       * CTRL/Cmd + 1 HTML窗口
+       * CTRL/Cmd + 2 CSS窗口
+       * CTRL/Cmd + 3 JS窗口
        */
+      const runKey = isMac() ? 'Cmd' : 'Ctrl'
       this.shortcutList = {
-        switchHTML: 'Ctrl+1',
-        switchCSS: 'Ctrl+2',
-        switchJS: 'Ctrl+3'
+        switchHTML: `${runKey}+1`,
+        switchCSS: `${runKey}+2`,
+        switchJS: `${runKey}+3`,
       }
-      this.preprocess = store.state.preprocess
+      this.preprocessor = store.state.preprocessor
       this.commit = store.commit
-      this.install = false
-      HandleShortcut.instance = this
+      this.isInstalled = false
+      ShortcutHandler.instance = this
     }
-    return HandleShortcut.instance
+    return ShortcutHandler.instance
   }
-  /**
-   * 快捷键添加
-   */
-  init () {
+  install() {
     const shortcutList = this.shortcutList
     const keys = Object.keys(shortcutList)
-    keys.forEach(item => {
+    keys.forEach((item) => {
       shortcut.add(shortcutList[item], this[item], this)
     })
   }
-  /**
-   * 快捷键移除
-   */
-  clear () {
+  remove() {
     const shortcutList = this.shortcutList
-    for(let item in shortcutList){
+    for (let item in shortcutList) {
       shortcut.remove(shortcutList[item])
     }
   }
-  isInit(){
-    return this.install
+  getIsInstalled() {
+    return this.isInstalled
   }
-  switchHTML () {
-    this.commit('updateCurrentTab', this.preprocess[0])
+  switchHTML() {
+    this.commit('handleCurrentTab', this.preprocessor[0])
   }
-  switchCSS () {
-    this.commit('updateCurrentTab', this.preprocess[1])
+  switchCSS() {
+    this.commit('handleCurrentTab', this.preprocessor[1])
   }
-  switchJS () {
-    this.commit('updateCurrentTab', this.preprocess[2])
+  switchJS() {
+    this.commit('handleCurrentTab', this.preprocessor[2])
   }
 }
-
-

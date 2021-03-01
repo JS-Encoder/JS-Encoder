@@ -1,0 +1,260 @@
+/*
+  此文件对element-ui的一些样式做一些修改，以更好地契合项目
+*/
+
+@import './base.scss';
+.el-dropdown-menu {
+  background-color: $thirdColor !important;
+  box-shadow: 0 5px 5px 0 $dialogShadow !important;
+  border: none !important;
+  padding: 5px 0;
+  .el-dropdown-menu__item {
+    color: $beforeFocus !important;
+    overflow: hidden !important;
+    &:hover {
+      color: $afterFocus !important;
+      background-color: $mainColor !important;
+    }
+  }
+  .popper__arrow {
+    border-bottom-color: transparent !important;
+    border-top-color: $thirdColor !important;
+    bottom: 0;
+    &::after {
+      top: 0 !important;
+      border-bottom-color: $thirdColor !important;
+      border-top-color: transparent !important;
+    }
+  }
+}
+.el-form-item__label {
+  font-size: 16px !important;
+  line-height: normal !important;
+  padding: 0 0 5px 0 !important;
+  color: $afterFocus !important;
+}
+.el-form-item__content {
+  line-height: 20px !important;
+}
+.el-input {
+  & > .el-input__inner {
+    border: 1px solid $thirdColor;
+    background-color: $deep;
+    color: $afterFocus;
+    &:hover,
+    &:focus {
+      border-color: $primary;
+    }
+  }
+  & > .el-input-group__prepend {
+    background-color: $thirdColor;
+    border: none;
+    color: $beforeFocus;
+  }
+  & > .el-input-group__append {
+    cursor: pointer;
+    color: $beforeFocus;
+    background-color: $thirdColor;
+    border: none;
+    &:hover {
+      color: $afterFocus;
+    }
+  }
+}
+.el-textarea {
+  & > .el-textarea__inner {
+    border: 1px solid $thirdColor;
+    background-color: $deep;
+    color: $afterFocus;
+    &:hover,
+    &:focus {
+      border-color: $primary;
+    }
+  }
+  & > .el-input__count {
+    background-color: $deep !important;
+  }
+}
+.el-message-box {
+  background-color: $thirdColor !important;
+  border: none !important;
+  .el-message-box__header {
+    .el-message-box__title,
+    .el-message-box__headerbtn {
+      color: $beforeFocus !important;
+    }
+  }
+  .el-message-box__message {
+    color: $afterFocus !important;
+  }
+}
+.el-dialog {
+  background-color: $deep !important;
+  .el-dialog__header {
+    .el-dialog__title,
+    .el-dialog__headerbtn {
+      font-size: 16px !important;
+      color: $beforeFocus !important;
+    }
+  }
+  .el-dialog__body {
+    padding: 20px !important;
+  }
+  &::-webkit-scrollbar {
+    outline: none;
+    width: 10px;
+    height: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: rgba(30, 30, 30, 0) !important;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(80, 80, 80, 0.3) !important;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    outline: none;
+    background-color: rgba(80, 80, 80, 0.7) !important;
+  }
+}
+.el-select-dropdown {
+  border: none !important;
+  background-color: $thirdColor !important;
+  box-shadow: 0 5px 5px 0 $dialogShadow !important;
+  .el-scrollbar {
+    .selected {
+      background-color: $deep !important;
+    }
+    .el-select-dropdown__wrap {
+      .el-select-dropdown__item {
+        color: $beforeFocus !important;
+        &:hover {
+          color: $afterFocus !important;
+          background-color: $deep !important;
+        }
+      }
+      .hover {
+        background-color: $deep !important;
+      }
+    }
+  }
+  .popper__arrow {
+    border-bottom-color: transparent !important;
+    border-top-color: $thirdColor !important;
+    &::after {
+      top: 0 !important;
+      border-bottom-color: $thirdColor !important;
+      border-top-color: transparent !important;
+    }
+  }
+}
+.is-checked {
+  .el-checkbox__inner {
+    background-color: $primary !important;
+  }
+  .el-checkbox__label {
+    color: $primary !important;
+  }
+  .el-radio__label {
+    color: $primary !important;
+  }
+}
+.el-slider {
+  .el-slider__bar {
+    background-color: $primary !important;
+  }
+  .el-slider__button {
+    border-color: $primary !important;
+  }
+}
+.el-tag {
+  background-color: $thirdColor !important;
+  color: $afterFocus !important;
+  border-color: $thirdColor !important;
+  margin-right: 10px;
+  &:hover {
+    border-color: $primary !important;
+  }
+  .el-tag__close {
+    color: $beforeFocus !important;
+    background-color: $deep !important;
+    &:hover {
+      color: $afterFocus !important;
+    }
+  }
+}
+.el-radio {
+  color: $beforeFocus !important;
+}
+.el-popover {
+  border-color: $thirdColor !important;
+  background-color: $thirdColor;
+  box-shadow: 0 5px 5px 0 $dialogShadow !important;
+  .popper__arrow {
+    border-bottom-color: transparent !important;
+    &::after {
+      top: 0 !important;
+      border-bottom-color: transparent !important;
+    }
+  }
+  .el-popover__title {
+    color: $afterFocus;
+  }
+}
+.el-input-number {
+  .el-input-number__decrease {
+    background-color: $thirdColor !important;
+    color: $beforeFocus !important;
+    border-color: $thirdColor !important;
+  }
+  .el-input-number__increase {
+    background-color: $thirdColor !important;
+    color: $beforeFocus !important;
+    border-color: $thirdColor !important;
+  }
+  .el-input-number__decrease,
+  .el-input-number__increase {
+    &:hover {
+      color: $afterFocus !important;
+    }
+  }
+}
+.el-checkbox {
+  .el-checkbox__label {
+    color: $afterFocus !important;
+  }
+}
+
+.el-tabs__item {
+  color: $beforeFocus !important;
+}
+.el-tabs__item:hover {
+  color: $primary !important;
+}
+.el-tabs__item.is-active {
+  color: $primary !important;
+}
+.el-tabs__nav-wrap::after {
+  height: 2px !important;
+  background-color: $beforeFocus !important;
+}
+.el-notification {
+  border-radius: 4px !important;
+  border: 1px solid $thirdColor !important;
+  background-color: $mainColor !important;
+  .el-notification__title {
+    color: $afterFocus;
+  }
+  .el-notification__content {
+    div {
+      color: $beforeFocus;
+      a {
+        cursor: pointer;
+        color: $deepBlue;
+        &:hover {
+          color: $primary;
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}

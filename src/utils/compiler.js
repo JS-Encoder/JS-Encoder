@@ -1,56 +1,44 @@
 /**
  * 将预处理语言编译成html，css和javascript
  */
-import loadjs from 'loadjs'
 
+import Loader from './loader'
+const publicPath = process.env.BASE_URL
 const cdn = {
-  typeScript: 'https://cdn.jsdelivr.net/npm/browserified-typescript@0.3.0/index.js'
+  typeScript: 'https://cdn.jsdelivr.net/npm/browserified-typescript@0.3.0/index.js',
+  coffeeScript: 'https://cdn.jsdelivr.net/npm/coffeescript@2.5.1/lib/coffeescript-browser-compiler-legacy/coffeescript.js'
 }
+const loader = new Loader()
 
-class LoadFiles {
-  constructor() {
-    this.map = {}
-  }
-  set (k, v) {
-    this.map[k] = v
-  }
-  get (k) {
-    return this.map[k]
-  }
-}
-
-const loadFiles = new LoadFiles()
-
-function asyncLoad (resources, name) {
+/**
+ * 将script插入head以引入外部js
+ * @param string source 文件路径
+ */
+async function createScript (source) {
+  const head = document.getElementsByTagName('head')[0]
+  const script = document.createElement('script')
+  script.type = 'text/javascript'
+  script.src = source
+  head.appendChild(script)
   return new Promise((resolve, reject) => {
-    if (loadjs.isDefined(name)) {
+    script.onload = () => {
       resolve()
-    } else {
-      loadjs(resources, name, {
-        success () {
-          resolve()
-        },
-        error () {
-          reject(new Error('network error'))
-        }
-      })
     }
   })
 }
-
-async function compileMarkDown (code) {
+async function compileMarkdown (code) {
   let highlightJS, marked
-  if (!loadFiles.get('highlight')) {
+  if (!loader.get('highlight')) {
     highlightJS = await import('highlight.js')
-    loadFiles.set('highlight', highlightJS)
+    loader.set('highlight', highlightJS)
   } else {
-    highlightJS = loadFiles.get('highlight')
+    highlightJS = loader.get('highlight')
   }
-  if (!loadFiles.get('markdown')) {
-    marked = await import('marked')
-    loadFiles.set('markdown', marked)
+  if (!loader.get('markdown')) {
+    marked = require('marked')
+    loader.set('markdown', marked)
   } else {
-    marked = loadFiles.get('markdown')
+    marked = loader.get('markdown')
   }
   marked.setOptions({
     renderer: new marked.Renderer(),
@@ -68,52 +56,63 @@ async function compileMarkDown (code) {
   })
   return marked(code)
 }
-
+function compilePug (code) {
+  let pug
+  if (!loader.get('pug')) {
+    pug = require('pug')
+    loader.set('pug', pug)
+  } else {
+    pug = loader.get('pug')
+  }
+  return pug.compile(code)({})
+}
 async function compileSass (code) {
   // scss&sass
-  if (!loadFiles.get('sass')) {
-    const Sass = await require('../../static/js/sass')
-    Sass.setWorkerUrl('static/js/sass.worker.js')
-    loadFiles.set('sass', Sass)
+  let sass
+  if (!loader.get('sass')) {
+    sass = require('../../public/js/compiler/sass')
+    sass.setWorkerUrl(`${publicPath}js/compiler/sass.worker.js`)
+    loader.set('sass', sass)
+  } else {
+    sass = loader.get('sass')
   }
-
-  const defSass = loadFiles.get('sass')
-  const sass = new defSass()
   return new Promise((resolve, reject) => {
-
-    sass.compile(code, result => {
+    new sass().compile(code, result => {
       if (result.status === 0) resolve(result.text)
-      else {
-        resolve(code)
-      }
+      else resolve(code)
     })
   })
 }
-
 async function compileLess (code) {
-  if (!loadFiles.get('less')) {
-    const less = await import('less')
-    loadFiles.set('less', less)
+  let less
+  if (!loader.get('less')) {
+    less = await import('less')
+    loader.set('less', less)
+  } else {
+    less = loader.get('less')
   }
-  const defLess = loadFiles.get('less')
-  return defLess.render(code)
+  return less.render(code)
 }
-
 async function compileStylus (code) {
-  if (!loadjs.isDefined('stylus')) {
-    await asyncLoad('../../static/js/stylus.js', 'stylus')
+  if (!loader.get('stylus')) {
+    // 将stylus.js添加到head中
+    const source = `${publicPath}js/compiler/stylus.js`
+    await createScript(source).then(() => {
+      loader.set('stylus', true)
+    })
   }
   return new Promise((resolve, reject) => {
-    window.stylus.render(code, { filename: 'foo.styl' }, (err, css) => {
+    stylus.render(code, { filename: 'foo.styl' }, (err, css) => {
       if (err) return reject(err)
       resolve(css)
     })
   })
 }
-
 async function compileTypeScript (code) {
-  if (!loadjs.isDefined('typeScript')) {
-    await asyncLoad(cdn.typeScript, 'typeScript')
+  if (!loader.get('typeScript')) {
+    await createScript(cdn.typeScript).then(() => {
+      loader.set('typeScript', true)
+    })
   }
   const res = window.typescript.transpileModule(code, {
     fileName: '/foo.ts',
@@ -124,19 +123,81 @@ async function compileTypeScript (code) {
   })
   return res.outputText
 }
-
 async function compileCoffeeScript (code) {
-  if (!loadjs.isDefined('coffeeScript')) {
-    await asyncLoad('../../static/js/coffeescript.js', 'coffeeScript')
+  if (!loader.get('coffeeScript')) {
+    await createScript(cdn.coffeeScript).then(() => {
+      loader.set('coffeeScript', true)
+    })
+    // const source = `${publicPath}js/compiler/coffeescript.js`
+    // script.src = await createScript(source).then(() => {
+    //   loader.set('coffeescript', true)
+    // })
   }
   return window.CoffeeScript.compile(code)
 }
-
+async function compileHTML (code, prep) {
+  switch (prep) {
+    case 'Markdown':
+      await compileMarkdown(code).then(res => {
+        code = res
+      }).catch(err => {
+        console.log(err)
+      })
+      break
+    case 'Pug':
+      code = compilePug(code)
+      break
+  }
+  return code
+}
+async function compileCSS (code, prep) {
+  switch (prep) {
+    case 'Less':
+      await compileLess(code).then(res => {
+        code = res.css
+      }).catch(err => {
+        console.log(err)
+      })
+      break
+    case 'Sass':
+    case 'Scss':
+      await compileSass(code).then(res => {
+        code = res
+      }).catch(err => {
+        console.log(err)
+      })
+      break
+    case 'Stylus':
+      await compileStylus(code).then(res => {
+        code = res
+      }).catch(err => {
+        console.log(err)
+      })
+      break
+  }
+  return code
+}
+async function compileJS (code, prep) {
+  switch (prep) {
+    case 'TypeScript':
+      await compileTypeScript(code).then(res => {
+        code = res
+      }).catch(err => {
+        console.log(err)
+      })
+      break
+    case 'CoffeeScript':
+      await compileCoffeeScript(code).then(res => {
+        code = res
+      }).catch(err => {
+        console.log(err)
+      })
+      break
+  }
+  return code
+}
 export {
-  compileMarkDown,
-  compileSass,
-  compileLess,
-  compileStylus,
-  compileTypeScript,
-  compileCoffeeScript
+  compileHTML,
+  compileCSS,
+  compileJS
 }

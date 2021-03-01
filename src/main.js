@@ -1,52 +1,48 @@
 import Vue from 'vue'
-import App from './App'
-import router from './router'
-import element from './utils/getElementUi'
-import global from './utils/global'
+import App from './App.vue'
+import store from './store'
+import VueI18n from 'vue-i18n'
+import element from './utils/getElementUI'
 import { codemirror } from 'vue-codemirror'
-import '../static/css/codemirror.css'
-import '../static/css/monokai.css'
-import '../static/css/style.css'
-import '../static/css/show-hint.css'
-import '../static/css/public.css'
-import '../static/css/foldgutter.css'
-import '../static/css/dialog.css'
-import store from './vuex/store'
+
+// theme
+import './assets/css/codemirror.css'
+import './assets/css/show-hint.css'
+import './assets/css/foldgutter.css'
+import './assets/css/codemirror-dialog.css'
+import '../public/css/font.css'
+import './assets/themes/default.css'
 
 Vue.config.productionTip = true
-window.Global = global
 
-Vue.use(codemirror)
-Vue.use(element)
+// plugins
+Vue.use(element).use(codemirror).use(VueI18n)
+const i18n = new VueI18n({
+  locale: 'zh',
+  messages: {
+    zh: require('./language/zh'),
+    en: require('./language/en'),
+  },
+})
 
-/* eslint-disable no-new */
+// Get state from sessionStorage when page onload
+const jsEcdStore = sessionStorage.getItem('jsEcdStore')
+if (jsEcdStore !== null) {
+  const oldState = JSON.parse(jsEcdStore)
+  oldState.visibleDialog = ''
+  store.replaceState(oldState)
+}
+
+// Create Vue instance must be after replace state
 new Vue({
-  el: '#app',
   store,
-  router,
-  components: { App },
-  template: '<App/>'
-})
+  i18n,
+  render: (h) => h(App),
+}).$mount('#app')
 
-//自定义指令:聚焦元素
-Vue.directive('focus', {
-  inserted(el) {
-    el.focus()
-  }
-})
-
-// 页面刷新前将state存入sessionStorage
+// Store state in sessionStorage before page refresh
 window.onbeforeunload = () => {
   store.commit('updateShowBg', false)
   store.commit('updateCurrentDialog', '')
   sessionStorage.setItem('jsEcdStore', JSON.stringify(store.state))
 }
-
-console.log(
-  '     ██╗███████╗      ███████╗███╗   ██╗ ██████╗ ██████╗ ██████╗ ███████╗██████╗ ' + '\n' +
-  '     ██║██╔════╝      ██╔════╝████╗  ██║██╔════╝██╔═══██╗██╔══██╗██╔════╝██╔══██╗' + '\n' +
-  '     ██║███████╗█████╗█████╗  ██╔██╗ ██║██║     ██║   ██║██║  ██║█████╗  ██████╔╝' + '\n' +
-  '██   ██║╚════██║╚════╝██╔══╝  ██║╚██╗██║██║     ██║   ██║██║  ██║██╔══╝  ██╔══██╗' + '\n' +
-  '╚█████╔╝███████║      ███████╗██║ ╚████║╚██████╗╚██████╔╝██████╔╝███████╗██║  ██║' + '\n' +
-  '╚════╝ ╚══════╝      ╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝ '
-)

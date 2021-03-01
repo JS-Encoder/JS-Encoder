@@ -1,40 +1,59 @@
 <template>
-  <div id="jsEncoderConsole" ref="resize">
-    <div class="console-tab flex flex-ai noselect">
-      <i class="icon iconfont icon-console"></i>
-      <span>console</span>
-      <div class="resize-box flex flex-ai" @mousedown="boxMouseDown">
+  <div id="console">
+    <div class="console-tab borbox flex flex-ai noselect">
+      <div class="title">
+        <i class="icon iconfont icon-console"></i>
+        <span>Console</span>
+      </div>
+      <div class="resize flex flex-ai" @mousedown="resize">
         <i class="icon iconfont icon-resize"></i>
       </div>
-      <div class="console-options">
-        <div @click.stop class="filter-options flex flex-ai flex-jcc" :class="isFilterShow?'filter-options-active':''">
-          <el-checkbox-group v-model="passOptions" @change="changeFilterList">
-            <el-checkbox class="el-checkbox" v-for="opt in filterOptions" :label="opt" :key="opt" size="mini">{{opt}}
-            </el-checkbox>
-          </el-checkbox-group>
+      <div class="options flex">
+        <div :title="consoleLang.tools.filters">
+          <el-dropdown class="filter-dropdown" trigger="click" :hide-on-click="false">
+            <i class="icon iconfont icon-filter1"></i>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item v-for="(item, index) in filterList" :key="index" class="flex flex-ai"
+                style="font-family:Consolas, Monaco" :class="filter[item]?'active-dropdown-item':''"
+                @click.native="filter[item]=!filter[item]">
+                <span class="flex-1">{{item}}</span>
+                <i class="el-icon-check" v-show="filter[item]"></i>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
-        <i class="icon iconfont icon-filter1" title="filter" @click.stop="openFilter"></i>
-        <i class="icon iconfont icon-recyclebin" title="clear" @click="clearConsole"></i>
+        <div :title="consoleLang.tools.settings" @click="closeSettings">
+          <i class="icon iconfont icon-config1" :class="settingsVisible?'active-opt':''"></i>
+        </div>
+        <div :title="consoleLang.tools.recycle" @click="clearLogs">
+          <i class="icon iconfont icon-recycle"></i>
+        </div>
+        <div :title="consoleLang.tools.minimal" @click="minimalConsole">
+          <i class="icon iconfont icon-zuixiaohua"></i>
+        </div>
       </div>
     </div>
-    <div class="console-body" id="console" ref="console">
-      <div class="CodeMirror cm-s-monokai">
+    <div class="console-body flex flex-clo">
+      <div class="cm-list flex-1 CodeMirror cm-s-default" ref="consoleList" v-show="!settingsVisible">
         <div v-for="(item, index) in consoleInfo" :key="index" class="log-list">
-          <div v-if="item.type==='log' || item.type==='dir'" v-show="isFilter(item.type)" class="log flex flex-ai">
-            <i class="icon iconfont icon-shuchu"></i>
+          <div v-if="item.type==='log'|| item.type==='dir'" v-show="filter.Log" class="log flex flex-ai">
+            <i class="icon iconfont icon-lfmonth"></i>
             <pre v-for="(value, index) in item.logs" :key="index" v-html="value" class="CodeMirror-line"></pre>
           </div>
-          <div v-if="item.type==='mixed'" class="mixed flex flex-ai">
-            <i class="icon iconfont icon-shuchu"></i>
-            <codemirror :options="cmOptions" :value="item.content" class="code-log" ref="codeArea"></codemirror>
+          <div v-if="item.type==='mix'" class="mix flex flex-ai">
+            <i class="icon iconfont icon-lfmonth"></i>
+            <codemirror :options="codeOptions" v-show="settings.highlight" v-once :value="item.content"
+              class="code-log">
+            </codemirror>
+            <div class="code-log" v-show="!settings.highlight" v-once>{{item.content}}</div>
           </div>
-          <div v-if="item.type==='info'" v-show="isFilter(item.type)" class="info flex flex-ai">
+          <div v-if="item.type==='info'" v-show="filter.Info" class="info flex flex-ai">
             <i class="icon iconfont icon-info"></i>
             <pre class="CodeMirror-line flex">
               <span class="content">{{item.content}}</span>
             </pre>
           </div>
-          <div v-if="item.type==='system-error'" v-show="isFilter('error')" class="system-error flex flex-ai">
+          <div v-if="item.type==='system-error'" v-show="filter.Error" class="system-error flex flex-ai">
             <i class="icon iconfont icon-error1"></i>
             <pre class="CodeMirror-line flex">
               <span class="content">{{item.content}}</span>
@@ -42,334 +61,407 @@
               <span class="col">col: {{item.col}}</span>
             </pre>
           </div>
-          <div v-if="item.type==='error'" v-show="isFilter(item.type)" class="error flex flex-ai">
+          <div v-if="item.type==='error'" v-show="filter.Error" class="error flex flex-ai">
             <i class="icon iconfont icon-error1"></i>
             <pre class="CodeMirror-line flex">
               <span class="content">{{item.content}}</span>
             </pre>
           </div>
-          <div v-if="item.type==='warn'" v-show="isFilter(item.type)" class="warn flex flex-ai">
+          <div v-if="item.type==='warn'" v-show="filter.Warning" class="warn flex flex-ai">
             <i class="icon iconfont icon-warn1"></i>
             <pre class="CodeMirror-line flex">
               <span class="content">{{item.content}}</span>
             </pre>
           </div>
           <div v-if="item.type==='print'" class="print flex flex-ai">
-            <i class="icon iconfont icon-shuru"></i>
+            <i class="icon iconfont icon-lfmonth"></i>
             <pre class="CodeMirror-line flex" v-html="item.logs[0]">
               <span class="content">{{item.content}}</span>
             </pre>
           </div>
-          <div v-if="item.type==='mixedPrint'" class="mixed-print flex flex-ai">
-            <i class="icon iconfont icon-shuru"></i>
-            <codemirror :options="cmOptions" :value="item.content" class="code-log" ref="codeArea"></codemirror>
+          <div v-if="item.type==='mixPrint'" class="mix-print flex flex-ai">
+            <i class="icon iconfont icon-lfmonth"></i>
+            <codemirror :options="codeOptions" v-show="settings.highlight" v-once :value="item.content"
+              class="code-log">
+            </codemirror>
+            <div class="code-log" v-show="!settings.highlight" v-once>{{item.content}}</div>
           </div>
         </div>
       </div>
-      <div class="textarea-box flex flex-ai">
+      <div class="settings borbox flex-1 flex flex-clo" v-show="settingsVisible">
+        <el-checkbox v-model="settings.clear">{{consoleLang.settings.clear.title}}</el-checkbox>
+        <span class="describe">{{consoleLang.settings.clear.describe}}</span>
+        <el-checkbox v-model="settings.highlight">{{consoleLang.settings.highlight.title}}</el-checkbox>
+        <span class="describe">{{consoleLang.settings.highlight.describe}}</span>
+      </div>
+      <div class="textarea-box borbox flex flex-ai flex-sh">
         <i class="icon iconfont icon-lfmonth print-icon"></i>
-        <textarea rows="1" ref="commandArea" autoHeight="true" data-min-rows="1" @keydown="checkKeyPress($event)"
-          v-model="consoleMessage"></textarea>
+        <codemirror :options="cmdOptions" :value="consoleMsg" @keydown.native="handleCmd" v-model="consoleMsg"
+          class="cmd-codemirror" ref="cmdArea">
+        </codemirror>
+        <el-button size="mini" class="flex-sh run-btn" :class="consoleMsg?'pmy-btn':'disable-btn'" @click="exeCmd">Run
+        </el-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import consoleTool from '@/utils/consoleTool'
+import { mapState, mapMutations } from 'vuex'
+import IframeConsole from '@utils/console'
 import { codemirror } from 'vue-codemirror'
-import getEditor from '@/utils/codeEditor'
-import iframeConsole from '@/utils/console'
 export default {
   data() {
     return {
-      temporaryCommand: '',
-      cmOptions: {},
-      consoleMessage: '',
-      filterOptions: ['log', 'info', 'warn', 'error'],
-      passOptions: ['log', 'info', 'warn', 'error'],
-      historyCmd: [],
-      currentConsoleCmd: 0
+      filterList: ['Info', 'Log', 'Warning', 'Error'],
+      filter: {
+        Info: true,
+        Log: true,
+        Warning: true,
+        Error: true,
+      },
+      tmpCommand: '',
+      consoleMsg: '',
+      settingsVisible: false,
+      settings: {
+        clear: true,
+        highlight: true,
+      },
+      historyCmd: [''],
+      currentCmdIndex: 0,
+      codeOptions: {},
+      cmdOptions: {},
+      preCursorPos: {
+        line: 0,
+        ch: 0,
+      },
     }
   },
-  watch: {
-    consoleMessage(newVal) {
-      const historyCmd = this.historyCmd
-      const len = historyCmd.length
-      historyCmd.splice(len - 1, 1, newVal)
-    }
+  created() {
+    this.settings = this.consoleSettings
+    this.initOptions()
+  },
+  mounted() {
+    setTimeout(() => {
+      const codeArea = this.$refs.cmdArea
+      codeArea.refresh()
+    }, 3200)
   },
   computed: {
-    ...mapState({
-      consoleInfo: 'consoleInfo',
-      isFilterShow: 'isFilterShow'
-    })
+    ...mapState([
+      'iframeHeight',
+      'consoleHeight',
+      'consoleSettings',
+      'consoleInfo',
+    ]),
+    consoleLang() {
+      return this.$t('console')
+    },
+  },
+  watch: {
+    currentCmdIndex(newIndex) {
+      this.consoleMsg = this.historyCmd[newIndex]
+      this.$refs.cmdArea.codemirror.setCursor({ line: 0, ch: 0 })
+    },
   },
   methods: {
-    isFilter(str) {
-      // 判断该类型日志是否被过滤
-      if (this.passOptions.indexOf(str) > -1) return true
-      return false
-    },
-    boxMouseDown(e) {
-      // 拖拉console栏改变代码窗口和console的高度
-      const store = this.$store
-      const state = store.state
-      const commit = store.commit
-      // 在iframe上面显示遮罩层，否则会影响窗口拖拉
-      commit('updateIframeScreen', true)
-      // 显示iframe的高度
-      commit('updateShowIframeHeight', true)
+    ...mapMutations([
+      'handleIframeH',
+      'handleConsoleH',
+      'handleIframeScreenVisible',
+      'handleIframeHVisible',
+      'handleConsoleSettings',
+      'handleConsoleInfo',
+    ]),
+    resize(e) {
+      /**
+       * Drag the divide line of console to change the height of iframe and console
+       * The screen is must be displayed when draggling, because mousedown event is undefined in iframe, drag will be stopped when mouse enter the iframe
+       */
+      this.handleIframeScreenVisible(true)
+      this.handleIframeHVisible(true)
       const starY = e.clientY
-      const consoleSize = state.consoleSize
-      const codeAreaHeight = state.codeAreaHeight
-      const wholeSize = codeAreaHeight + consoleSize
-      document.onmousemove = ev => {
+      const consoleH = this.consoleHeight
+      const iframeH = this.iframeHeight
+      const viewH = consoleH + iframeH
+      document.onmousemove = (ev) => {
         const iEvent = ev || event
-        const finSize = consoleSize - iEvent.clientY + starY
-        if (finSize > 25 && wholeSize - finSize > 0) {
-          commit('updateConsoleSize', finSize)
-          commit('updateCodeAreaHeight', wholeSize - finSize)
+        const finH = consoleH - iEvent.clientY + starY
+        if (finH > 25 && viewH - finH > 0) {
+          this.handleConsoleH(finH)
+          this.handleIframeH(viewH - finH)
         }
         document.onmouseup = () => {
+          this.handleIframeScreenVisible(false)
+          this.handleIframeHVisible(false)
+          document.onmouseup = null
           document.onmousemove = null
-          commit('updateIframeScreen', false)
-          commit('updateShowIframeHeight', false)
         }
       }
     },
-    checkKeyPress(e) {
-      // 禁用控制台回车事件
-      const et = e || window.event
-      const keycode = et.charCode || et.keyCode
-      const commandArea = this.$refs.commandArea
-      const consoleMessage = this.consoleMessage ? this.consoleMessage : ''
-      /**
-       * 监听策略
-       * 回车时将命令发送给iframe执行并清空textarea(textarea为空时不做操作)
-       * 方向键上(当焦点在0处)显示上一个历史命令，直到最早的历史命令
-       * 方向键下(当焦点在最后)显示下一个历史命令，直到最后一个历史命令，再次按下方向键显示原来的textarea
-       */
-      switch (keycode) {
-        case 13: {
-          // enter
-          if (window.event) {
-            window.event.returnValue = false
-          } else {
-            e.preventDefault()
-          }
-          if (this.consoleMessage) {
-            this.sendConsoleCode()
-            this.consoleMessage = ''
-            this.historyCmd.push('')
-            this.currentConsoleCmd = this.historyCmd.length - 1
-          }
-          break
-        }
+    minimalConsole() {
+      const consoleH = this.consoleHeight
+      const iframeH = this.iframeHeight
+      const viewH = consoleH + iframeH
+      this.handleConsoleH(25)
+      this.handleIframeH(viewH - 25)
+    },
+    scrollToBottom() {
+      const logList = this.$refs.consoleList.querySelectorAll('.log-list')
+      logList[logList.length - 1].scrollIntoView(false)
+    },
+    closeSettings() {
+      this.handleConsoleSettings(this.settings)
+      this.settingsVisible = !this.settingsVisible
+    },
+    initOptions() {
+      const codeOptions = {
+        mode: 'text/javascript',
+        readOnly: 'nocursor',
+        matchBrackets: false,
+        scrollPastEnd: false,
+        scrollbarStyle: 'null',
+        lineWrapping: true,
+        foldGutter: true,
+        gutters: ['CodeMirror-foldgutter'],
+      }
+      this.codeOptions = codeOptions
+      const cmdOptions = {
+        mode: 'text/javascript',
+        lineWrapping: true,
+      }
+      this.cmdOptions = cmdOptions
+    },
+    handleCmd(e) {
+      const key = e.keyCode
+      const cm = this.$refs.cmdArea.codemirror
+      switch (key) {
         case 38: {
-          // up
-          const cursorPos = this.getCursorPosition(commandArea)
-          if (cursorPos !== 0) return
-          const cmd = this.handleHistoryCmd(-1)
-          if (cmd) this.consoleMessage = cmd
+          const { line, ch } = cm.getCursor()
+          if (line === 0 && ch === 0) {
+            if (this.currentCmdIndex >= 1) this.currentCmdIndex--
+          }
           break
         }
         case 40: {
-          // down
-          const cursorPos = this.getCursorPosition(commandArea)
-          if (cursorPos > consoleMessage.length) return
-          const cmd = this.handleHistoryCmd(1)
-          if (cmd || cmd === '') this.consoleMessage = cmd
+          const outside = cm.getCursor().outside
+          if (outside === 1) {
+            if (this.currentCmdIndex < this.historyCmd.length - 1)
+              this.currentCmdIndex++
+          }
           break
         }
       }
     },
-    getCursorPosition(commandArea) {
-      // 获取光标在textarea中的位置
-      let cursorPos = 0
-      if (document.selection) {
-        const sel = document.selection.createRange() // 创建选定区域
-        sel.moveStart('character', -commandArea.value.length) // 移动开始点到最左边位置
-        cursorPos = sel.text.length
-      } else if (
-        commandArea.selectionStart ||
-        commandArea.selectionStart == '0'
-      ) {
-        cursorPos = commandArea.selectionStart
+    exeCmd() {
+      const cmd = this.consoleMsg
+      if (cmd) {
+        const list = this.historyCmd
+        new IframeConsole().exeCmd(cmd)
+        this.consoleMsg = ''
+        list.pop()
+        list.push(cmd)
+        list.push('')
+        if (this.currentCmdIndex !== list.length - 2) {
+          this.currentCmdIndex = list.length - 1
+        } else {
+          this.currentCmdIndex++
+        }
+        // The reason of use nextTick is vue cannot render the view immediately when command is executed
+        this.$nextTick(() => {
+          this.scrollToBottom()
+        })
       }
-      return cursorPos
     },
-    handleHistoryCmd(order) {
-      /**
-       * 处理console历史命令
-       * 根据order的值判断寻找上一个历史还是下一个
-       * 如果已经到了最后一个历史命令，寻找下一个历史命令就直接返回consoleMessage
-       * 如果已经到了第一个历史命令，寻找上一个历史命令就直接返回第一个历史命令
-       */
-      const list = this.historyCmd
-      const newIndex = this.currentConsoleCmd + order + 1
-      const history = list[newIndex]
-      if (history || history === '') this.currentConsoleCmd += order
-      return history ? history : ''
+    clearLogs() {
+      new IframeConsole().clear()
+      this.handleConsoleInfo([])
     },
-    sendConsoleCode() {
-      const cmd = this.consoleMessage
-      new iframeConsole().executeCommand(cmd)
-    },
-    clearConsole() {
-      new iframeConsole().setConsoleInfo('')
-      this.$store.commit('updateConsoleInfo', [])
-    },
-    openFilter() {
-      const commit = this.$store.commit
-      commit('updateIsFilterShow', true)
-      commit('updateIframeScreen', true)
-    },
-    changeFilterList(newVal) {
-      this.$store.commit('updateFilterList', newVal)
-    },
-    initCmOpt() {
-      this.cmOptions = getEditor('JavaScript')
-      this.cmOptions.mode = 'text/javascript'
-      this.cmOptions.lineNumbers = false
-      this.cmOptions.readOnly = 'nocursor'
-    }
-  },
-  mounted() {
-    const consoleH = this.$refs.resize.offsetHeight
-    this.$store.commit('updateConsoleSize', 150)
-    this.initCmOpt()
   },
   components: {
-    codemirror
-  }
+    codemirror,
+  },
 }
 </script>
 
 <style lang="scss" scoped>
-#jsEncoderConsole {
-  @include setWAndH(100%, 100%);
-  min-height: 20px;
+/deep/.CodeMirror {
+  .CodeMirror-gutter-elt {
+    left: 1px !important;
+  }
+}
+.cmd-codemirror {
+  width: calc(100% - 80px);
+  height: auto;
+  /deep/.CodeMirror {
+    width: 100%;
+    height: auto;
+    max-height: 90px;
+    font-size: 14px;
+    font-family: $codeFont;
+    ::-webkit-scrollbar {
+      outline: none;
+      width: 6px;
+      height: 6px;
+      background-color: $mainColor;
+    }
+    ::-webkit-scrollbar-track {
+      background-color: $mainColor;
+    }
+    ::-webkit-scrollbar-thumb {
+      background-color: $thirdColor;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      outline: none;
+      background-color: rgba(80, 80, 80, 1);
+    }
+    .CodeMirror-vscrollbar {
+      border: none;
+    }
+    .CodeMirror-scroll {
+      height: auto;
+      max-height: 90px;
+    }
+  }
+}
+/deep/.el-checkbox {
+  .el-checkbox__label {
+    color: $afterFocus !important;
+  }
+}
+/deep/.el-textarea {
+  .el-textarea__inner {
+    &::-webkit-scrollbar {
+      outline: none;
+      width: 10px;
+      height: 4px;
+      background-color: $mainColor;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: $mainColor;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: $thirdColor;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      outline: none;
+      background-color: rgba(80, 80, 80, 1);
+    }
+  }
+}
+.el-dropdown-menu {
+  width: 120px !important;
+}
+.el-dropdown-menu__item {
+  background-color: $thirdColor !important;
+}
+.active-dropdown-item {
+  background-color: $deep !important;
+  color: $afterFocus !important;
+}
+#console {
+  width: 100%;
+  height: 100%;
+  min-height: 25px;
   .console-tab {
-    @include setWAndH(100%, 25px);
-    background-color: $primaryHued;
-    color: $afterFocus;
-    box-sizing: border-box;
-    padding-left: 20px;
+    height: 25px;
+    background-color: $secondColor;
+    color: $beforeFocus;
+    padding-left: 15px;
     position: relative;
-    & > i {
-      font-size: 15px;
-      margin-right: 5px;
+    font-family: $codeFont;
+    border-left: 1px solid $mainColor;
+    .title {
+      i {
+        font-size: 14px;
+        margin-right: 5px;
+      }
+      span {
+        font-size: 14px;
+        margin-left: 5px;
+      }
     }
-    & > span {
-      font-size: 14px;
-      margin-left: 5px;
-    }
-    .resize-box {
+    .resize {
       height: 100%;
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translateX(-50%) translateY(-50%);
-      color: gray;
       cursor: n-resize;
+      @include positionMiddle();
       @include setTransition(all, 0.3s, ease);
-      & > i {
+      i {
         font-size: 8px;
       }
       &:hover {
         color: $afterFocus;
       }
     }
-    .console-options {
+    .options {
       position: absolute;
-      right: 10px;
-      .filter-options {
-        @include setWAndH(280px, 35px);
-        position: absolute;
-        background-color: #333333;
-        border-radius: 5px;
-        z-index: 999;
-        right: 0;
-        top: -20px;
-        @include setTransition(all, 0.3s, ease);
-        box-shadow: 0px 0px 5px 0px $dominantHue;
-        visibility: hidden;
-        transform: scale(0.5);
-        transform-origin: bottom right;
-        opacity: 0;
-        .el-checkbox {
-          font-size: 12px;
-          color: $afterFocus;
+      right: 0px;
+      & > div {
+        height: 100%;
+        width: 30px;
+        i {
+          color: $beforeFocus;
+          cursor: pointer;
+          &:hover {
+            color: $afterFocus;
+          }
         }
-      }
-      .filter-options-active {
-        transform: scale(1);
-        visibility: visible;
-        opacity: 1;
-        top: -45px;
-      }
-      & > i {
-        color: gray;
-        @include setTransition(all, 0.3s, ease);
-        cursor: pointer;
-        margin-left: 10px;
-        &:hover {
-          color: $afterFocus;
+        .active-opt {
+          color: $primary;
         }
       }
     }
   }
   .console-body {
-    @include setWAndH(100%, calc(100% - 25px));
-    overflow: auto;
-    .textarea-box {
-      @include setWAndH(100%, auto);
-      border-top: 2px solid $primaryHued;
-      border-bottom: 2px solid $primaryHued;
-      box-sizing: border-box;
-      textarea {
-        @include setWAndH(100%, auto);
-        white-space: pre-line;
-        box-sizing: border-box;
-        border: none;
-        display: table-cell;
-        vertical-align: middle;
-        line-height: 22px;
-        resize: none;
-        color: $afterFocus;
-        background: $dominantHue;
-        outline: none;
-        overflow: hidden;
-      }
-      & > i {
-        color: #ae81ff;
-        bottom: 6px;
-        left: 2px;
-      }
-    }
-    & > .CodeMirror {
-      @include setWAndH(100%, calc(100% - 30px) !important);
+    height: calc(100% - 25px);
+    .cm-list {
       overflow: auto;
+      &::-webkit-scrollbar {
+        outline: none;
+        width: 10px;
+        height: 4px;
+        background-color: $mainColor;
+      }
+      &::-webkit-scrollbar-track {
+        background-color: $mainColor;
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: $thirdColor;
+      }
+      &::-webkit-scrollbar-thumb:hover {
+        outline: none;
+        background-color: rgba(80, 80, 80, 1);
+      }
+      font-family: $codeFont;
       .log-list {
-        font-size: 13px;
+        font-size: 12px;
         .log,
         .system-error,
         .error,
         .warn,
-        .mixed,
+        .mix,
         .info,
         .print,
-        .mixed-print {
+        .mix-print {
           box-sizing: border-box;
           padding: 0 10px;
           min-height: 25px;
+          /deep/.vue-codemirror {
+            width: 100%;
+            .CodeMirror {
+              height: auto;
+              .CodeMirror-scroll {
+                position: static;
+              }
+            }
+          }
+          i {
+            font-size: 12px;
+            margin-right: 10px;
+          }
           span::selection {
             background-color: $describe;
-          }
-          span {
-            // white-space: pre-wrap !important;
           }
         }
         .system-error,
@@ -382,9 +474,10 @@ export default {
             margin-right: 10px;
           }
           pre {
-            @include setWAndH(100%);
+            width: 100%;
             .content {
-              @include setWAndH(100%, 100%);
+              width: 100%;
+              height: 100%;
               word-wrap: break-word;
               white-space: normal;
               color: #ef6066;
@@ -394,16 +487,14 @@ export default {
           }
         }
         .log,
-        .mixed {
-          @include setWAndH(100%);
-          border-bottom: 1px solid $primaryHued;
-          & > .icon-shuchu {
+        .mix {
+          width: 100%;
+          height: auto;
+          border-bottom: 1px solid $thirdColor;
+          & > .icon-lfmonth {
             color: $describe;
-            font-size: 12px;
-            margin-right: 10px;
           }
           pre {
-            // @include setWAndH(100%);
             white-space: pre-wrap;
             .cm-string {
               white-space: pre;
@@ -412,20 +503,17 @@ export default {
             }
           }
         }
-        .mixed {
+        .mix {
           .code-log {
             background-color: #fff !important;
           }
         }
         .info {
-          @include setWAndH(100%);
-          border-bottom: 1px solid #2a53cd;
-          background-color: #202d39;
+          width: 100%;
+          border-bottom: 1px solid $deepBlue;
           color: #aad0f3;
           & > .icon-info {
-            color: #2a53cd;
-            font-size: 12px;
-            margin-right: 10px;
+            color: $deepBlue;
           }
         }
         .system-error {
@@ -442,48 +530,78 @@ export default {
           background-color: #332b00;
           border-bottom: 1px solid #665500;
           pre {
-            @include setWAndH(100%);
+            width: 100%;
             .content {
-              @include setWAndH(100%, 100%);
+              width: 100%;
+              height: 100%;
               word-wrap: break-word;
               white-space: normal;
-              color: #dfc185;
+              color: $orange;
               display: block;
               margin-right: 10px;
             }
           }
           & > .icon-warn1 {
-            color: #f5bd00;
-            font-size: 12px;
-            margin-right: 10px;
+            color: $orange;
           }
         }
         .print,
-        .mixed-print {
-          border-bottom: 1px solid $beforeFocus;
-          & > .icon-shuru {
+        .mix-print {
+          border-bottom: 1px solid $describe;
+          & > .icon-lfmonth {
             color: $beforeFocus;
-            font-size: 12px;
-            margin-right: 10px;
+            transform: rotate(180deg);
           }
         }
       }
     }
+    .settings {
+      padding: 0 15px;
+      overflow: auto;
+      font-family: $codeFont;
+      &::-webkit-scrollbar {
+        outline: none;
+        width: 10px;
+        height: 4px;
+        background-color: $mainColor;
+      }
+      &::-webkit-scrollbar-track {
+        background-color: $mainColor;
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: $thirdColor;
+      }
+      &::-webkit-scrollbar-thumb:hover {
+        outline: none;
+        background-color: rgba(80, 80, 80, 1);
+      }
+      .el-checkbox {
+        margin: 15px 0 5px 0;
+      }
+    }
+    .textarea-box {
+      border-top: 2px solid $secondColor;
+      border-bottom: 2px solid $secondColor;
+      .print-icon {
+        color: $primary;
+        margin-left: 5px;
+      }
+      /deep/.el-textarea {
+        width: 100%;
+        .el-textarea__inner {
+          height: 100%;
+          background-color: transparent !important;
+          border: none !important;
+          padding-left: 10px;
+          font-family: $codeFont;
+        }
+      }
+      .run-btn {
+        font-family: $codeFont;
+        border-radius: 0px;
+        margin-left: 5px;
+      }
+    }
   }
-}
-.js-encoder-console-string {
-  color: #c39162;
-}
-.js-encoder-console-boolean {
-  color: #ae81ff;
-}
-.js-encoder-console-symbol {
-  color: #dd0a20;
-}
-.js-encoder-console-null {
-  color: #ae81ff;
-}
-.js-encoder-console-undefined {
-  color: #333333;
 }
 </style>

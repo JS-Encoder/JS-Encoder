@@ -1,12 +1,8 @@
 <template>
-  <div id="markdownTools" class="flex flex-clo flex-jcc">
-    <div class="menu-mg flex flex-clo flex-jcc" :class="isMDToolsOpen?'menu-mg-active':''"
-      @click="isMDToolsOpen=!isMDToolsOpen">
-      <i class="icon iconfont icon-tuichu"></i>
-    </div>
-    <div class="tools-list flex flex-sh" :class="isMDToolsOpen?'tools-list-open':''">
-      <div v-for="(tool,index) in toolsList" :key="index" class="tool flex flex-jcc flex-ai flex-sh"
-        @click="judgeToolsCmd(tool.name)">
+  <div id="markdownTools" class="borbox">
+    <div class="tools-list flex flex-sh">
+      <div v-for="(tool,index) in toolsList" :key="index" class="tool borbox flex flex-jcc flex-ai flex-sh"
+        @click="handleToolsCmd(tool.name)">
         <i class="icon iconfont" :class="tool.class" v-if="tool.name!=='title'"></i>
         <el-dropdown v-if="tool.name==='title'" class="dropdown-menu flex flex-ai flex-jcc" placement="top-start"
           trigger="click">
@@ -26,12 +22,12 @@
 import markdownTools from '@/utils/markdownTools'
 export default {
   props: {
-    cm: Object,
+    getCodeMirror: Function,
     getIframeBody: Function
   },
   data() {
     return {
-      isMDToolsOpen: true,
+      toolbarVisible: true,
       toolsList: [
         {
           class: 'icon-jiacu',
@@ -78,7 +74,7 @@ export default {
           name: 'line'
         },
         {
-          class:'icon-pdf',
+          class: 'icon-pdf',
           name: 'pdf'
         }
       ]
@@ -86,128 +82,89 @@ export default {
   },
   methods: {
     addTitle(level) {
-      const cm = this.cm
-      markdownTools.addTitle(cm, level)
+      const cm = this.$props.getCodeMirror(0)
+      markdownTools.handleTitle(cm, level)
     },
-    judgeToolsCmd(toolName) {
-      const cm = this.cm
-      // 判断每个选项执行什么方法
+    handleToolsCmd(toolName) {
+      const cm = this.$props.getCodeMirror(0)
       switch (toolName) {
         case 'bold':
-          markdownTools.changeTextStyle(cm, '**')
+          markdownTools.handleTextStyle(cm, '**')
           break
         case 'italic':
-          markdownTools.changeTextStyle(cm, '*')
+          markdownTools.handleTextStyle(cm, '*')
           break
         case 'delete':
-          markdownTools.changeTextStyle(cm, '~~')
+          markdownTools.handleTextStyle(cm, '~~')
           break
         case 'code':
-          markdownTools.changeTextStyle(cm, '`')
+          markdownTools.handleTextStyle(cm, '`')
           break
         case 'link':
-          markdownTools.addLink(cm)
+          markdownTools.handleLink(cm)
           break
         case 'picture':
-          markdownTools.addLink(cm, true)
+          markdownTools.handleLink(cm, true)
           break
         case 'line':
-          markdownTools.addLine(cm)
+          markdownTools.handleLine(cm)
           break
         case 'quote':
-          markdownTools.addList(cm, '> ')
+          markdownTools.handleUnorderedList(cm, '> ')
           break
         case 'ul':
-          markdownTools.addList(cm, '- ')
+          markdownTools.handleUnorderedList(cm, '- ')
           break
         case 'ol':
-          markdownTools.addOrderList(cm)
+          markdownTools.handleOrderList(cm)
           break
         case 'pdf':
           const element = this.$props.getIframeBody()
           markdownTools.htmlToPDF(element)
           break
-        case 'title':
-          return
+        default:
+          return void 0
       }
     }
   }
 }
 </script>
-<style lang="scss" src="./componentStyle/markdownTools.scss" scoped></style>
+
 <style lang="scss" scoped>
-.dropdown-menu {
-  @include setWAndH(100%, 100%);
+/deep/.el-dropdown {
   color: $beforeFocus;
   &:hover {
-    background-color: $deepColor;
+    background-color: $deep;
     color: $afterFocus;
   }
   i {
     outline: none;
   }
 }
-.el-dropdown-menu {
-  background-color: $primaryHued;
-  border: none;
-  color: $beforeFocus;
-  overflow: hidden;
-  font-size: 14px;
-  outline: none;
-  min-width: 50px;
-  & >>> .el-dropdown-menu__item {
-    outline: none;
-    text-align: center;
-    line-height: 30px;
-    @include setTransition(all, 0.3s, ease);
-    &:hover {
-      background-color: $deepColor;
-      color: $afterFocus;
-    }
-  }
-}
 #markdownTools {
-  height: 100%;
-  transition: all 0.3s ease;
+  width: 100%;
+  height: 30px;
   cursor: pointer;
-  box-sizing: border-box;
-  padding: 0 5px;
   position: relative;
-  .menu-mg {
-    color: $beforeFocus;
-    transition: all 0.3s ease;
-    &:hover {
-      color: $afterFocus;
-    }
-  }
-  .menu-mg-active {
-    transform: rotate(180deg);
-  }
   .tools-list {
-    @include setWAndH(0, 100%);
+    width: 100%;
     height: 100%;
-    position: absolute;
-    left: 100%;
     color: $beforeFocus;
-    transition: all 0.3s ease;
     overflow: hidden;
+    background-color: $secondColor;
+    border-top: 1px solid $deep;
     .tool {
-      @include setWAndH(40px, 100%);
-      background-color: $primaryHued;
-      transition: all 0.3s ease;
-      box-sizing: border-box;
-      border-left: 2px solid $deepColor;
+      width: 40px;
+      height: 100%;
+      border-right: 1px solid $deep;
       &:hover {
-        background-color: $deepColor;
+        background-color: $deep;
         color: $afterFocus;
       }
       i {
         font-size: 20px;
       }
     }
-  }
-  .tools-list-open {
-    width: 480px;
   }
 }
 </style>

@@ -1,212 +1,258 @@
 <template>
-  <div id="editor" class="flex">
-    <div class="bg" v-if="showBg" @click.stop="closeBg"></div>
-    <Sidebar class="sidebar" :class="sidebarStatus?'sidebar-active':''" v-if="refresh"></Sidebar>
-    <div class="fold-sidebar" :class="sidebarStatus?'fold-sidebar-active':''">
-      <i class="icon iconfont icon-close" v-show="sidebarStatus" @click.stop="showSidebar(false)"></i>
-      <i class="icon iconfont icon-menu" v-show="!sidebarStatus" @click.stop="showSidebar(true)"></i>
-    </div>
-    <MainBody></MainBody>
-    <div class="slide-user-info" :class="showSlideUserMenu ? 'slide-user-info-show' : ''">
-      <SlideUserMenu v-if="showSlideUserMenu"></SlideUserMenu>
-    </div>
-    <transition name="dialog-fade">
-      <div class="dialog-box" v-if="currentDialog !== ''">
-        <Dialog :dialogName="currentDialog"></Dialog>
-      </div>
-    </transition>
+  <div id="editor">
+    <codemirror :style="fontStyle" :options="codeOptions" :value="code" v-model="code"
+      @cursorActivity="cursorPosChanged" class="code" :class="mdToolbarVisible&&index===0?'md-active':''"
+      ref="codeArea">
+    </codemirror>
   </div>
 </template>
 
 <script>
-import Sidebar from './sidebar'
-import MainBody from './mainbody'
-import SlideUserMenu from './slideUserMenu'
-import { getUrlParams } from '@/utils/handleUrl'
-import { post, get } from '@/utils/request'
-import handleCookie from '@/utils/handleCookie'
-import Dialog from './dialog'
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
+import { codemirror } from 'vue-codemirror'
+import cmConfig from '@utils/editorOptions'
+import { judgeMode, modeStyleList } from '@utils/judgeMode'
+import { debounce } from '@utils/tools'
+import { changeFormatOptions } from '@utils/codeFormatter'
 export default {
-  components: {
-    Sidebar,
-    MainBody,
-    SlideUserMenu,
-    Dialog
+  props: {
+    codeMode: String,
+    index: Number,
+    showCodeArea: Boolean,
   },
   data() {
     return {
-      refresh: true
+      codeOptions: {},
+      code: '',
+      lintList: ['HTML', 'CSS', 'JavaScript'], // Current languages which has lint function
     }
+  },
+  created() {
+    this.initEditor()
+    this.code = this.codeContent
   },
   mounted() {
-    // 获取用户跳转到github进行注册之后会跳转回来，进行用户信息获取
-    this.getUserInfo()
+    const cm = this.getCodeMirror()
+    if (judgeMode(this.codeMode) !== 'HTML') {
+      cm.on('inputRead', this.autoComplete)
+    }
+    setTimeout(() => {
+      if (this.showCodeArea) {
+        const codeArea = this.$refs.codeArea
+        codeArea.refresh()
+        codeArea.codemirror.focus()
+      }
+    }, 3100)
   },
   computed: {
-    ...mapState({
-      showBg: 'showBg',
-      showSlideUserMenu: 'showSlideUserMenu',
-      currentDialog: 'currentDialog',
-      language: 'language',
-      loginStatus: 'loginStatus',
-      sidebarStatus: 'sidebarStatus'
-    })
+    ...mapState([
+      'instanceCode',
+      'instanceSetting',
+      'mdToolbarVisible',
+      'currentTab',
+    ]),
+    fontStyle() {
+      const { fontFamily, fontSize } = this.instanceSetting
+      return {
+        fontFamily,
+        fontSize: `${fontSize}px`,
+      }
+    },
+    codeContent() {
+      const mode = judgeMode(this.codeMode)
+      return this.instanceCode[mode]
+    },
   },
   watch: {
-    language() {
-      // 重新渲染组件
-      this.refresh = false
-      this.$nextTick(() => {
-        this.refresh = true
+    codeMode(newMode) {
+      const codeOptions = this.codeOptions
+      codeOptions.mode = modeStyleList[newMode]
+      codeOptions.lint = this.getLintOpts(newMode)
+    },
+    showCodeArea(newState) {
+      // Make the current display editor get focus
+      if (newState) {
+        const codeArea = this.$refs.codeArea
+        codeArea.refresh()
+        codeArea.codemirror.focus()
+      }
+    },
+    currentTab() {
+      // Update cursor position of footer when the current tab changed
+      if (!this.showCodeArea) return void 0
+      const cm = this.getCodeMirror()
+      this.cursorPosChanged(cm)
+    },
+    'instanceSetting.autoComplete'(newState) {
+      // Monitor input event of editor and provide hint function
+      const cm = this.getCodeMirror()
+      if (newState && judgeMode(this.codeMode) !== 'HTML') {
+        cm.on('inputRead', this.autoComplete)
+      } else {
+        cm.off('inputRead', this.autoComplete)
+      }
+    },
+    'instanceSetting.tabIndent'(newState) {
+      // Use Tab instead of spaces
+      this.codeOptions.indentWithTabs = newState
+    },
+    'instanceSetting.indentSpaces'(newState) {
+      // The number of indent spaces
+      const codeOptions = this.codeOptions
+      codeOptions.tabSize = newState
+      codeOptions.indentUnit = newState
+      changeFormatOptions({
+        attr: 'indent_size',
+        val: newState,
       })
-    }
+    },
+    'instanceSetting.lineWrap'(newState) {
+      this.codeOptions.lineWrapping = newState
+    },
+    'instanceSetting.lint'(newState) {
+      this.codeOptions.lint = newState && this.getLintOpts(this.codeMode)
+    },
   },
   methods: {
-    showSidebar(status) {
-      // 改变侧边栏状态
-      const commit = this.$store.commit
-      commit('updateSidebarStatus', status)
+    ...mapMutations(['handleInstanceCode']),
+    initEditor() {
+      // Initialize the code and configuration of editor
+      const instanceCode = this.instanceCode
+      const codeMode = this.codeMode
+      const mode = judgeMode(codeMode)
+      this.codeOptions = cmConfig(mode)
+      const codeOptions = this.codeOptions
+      codeOptions.mode = modeStyleList[codeMode]
+      codeOptions.lint = this.getLintOpts(codeMode)
+      this.code = instanceCode[mode]
+      // Observer will be triggered when the editor initialized, so it needs to be define after waiting for initialization is complete.
+      this.watchCode = this.$watch(
+        'code',
+        debounce(function (code) {
+          // Debounce, update state after the code changed
+          const mode = judgeMode(this.codeMode)
+          this.handleInstanceCode({ mode, code })
+          if (this.instanceSetting.autoExecute) this.$emit('runCode')
+        }, 500)
+      )
     },
-    closeBg() {
-      const commit = this.$store.commit
-      commit('updateShowBg', false)
-      commit('updateShowSlideUserMenu', false)
-      commit('updateCurrentDialog', '')
+    getCodeMirror() {
+      return this.$refs.codeArea.codemirror
     },
-    async getCode() {
-      /**
-       * 判断环境以使用不同的方式截取参数
-       * 获取code参数，开发模式下去除尾部的#/
-       * 如果没有code参数，直接返回
-       */
-      const href = window.location.href
-      let url = ''
-      let paramObj = {}
-      let userInfo = {}
-      url = href.substr(0, href.indexOf('#/'))
-      paramObj = getUrlParams(url)
-
-      if (!paramObj.code) return 'NO CODE'
-
-      // 向后台发送code，后台请求用户信息
-      await get('/jsEncoder/login/loginGithub', {
-        params: {
-          code: paramObj.code
+    autoComplete(cm, changeObj) {
+      // There is no need to show hint when type is comment or when input characters are non-English
+      if (cm.state.completionActive) return void 0
+      const token = cm.getTokenAt(cm.getCursor())
+      if (token.type && token.type !== 'comment') {
+        if (/^[a-zA-Z]/.test(changeObj.text[0])) {
+          cm.showHint()
         }
-      })
-        .then(res => {
-          userInfo = res
-        })
-        .catch(err => {
-          console.log(err)
-        })
-      return userInfo
-    },
-    getUserInfo() {
-      const commit = this.$store.commit
-      // 查看用户登录状态，如果已登录就不需要进行用户信息获取
-      if (this.loginStatus) return void 0
-      // 如果url中没有带参数，也不能获取用户信息
-      if (window.location.href.indexOf('?') < 0) {
-        // 显示欢迎弹窗
-        const jsEcdStore = sessionStorage.getItem('jsEcdStore')
-        const id = handleCookie.getCookieValue('_id')
-        if (!id && !jsEcdStore) {
-          commit('updateShowBg', true)
-          commit('updateCurrentDialog', 'welcome')
-        }
-        return void 0
       }
-      commit('updateShowPageLoader', true)
-      this.getCode().then(res => {
-        if (res === 'NO CODE') return void 0
-        if (!Object.keys(res).length) {
-          // 提示登陆失败
-          this.$notify({
-            message: this.language === 'zh' ? '登陆失败' : 'Login Failed',
-            position: 'bottom-right',
-            iconClass: 'icon iconfont icon-error1 error-icon',
-            duration: 3000
-          })
-          commit('updateShowPageLoader', false)
-          return void 0
+    },
+    getLintOpts(codeMode) {
+      let lint = false
+      if (this.lintList.includes(codeMode)) {
+        switch (codeMode) {
+          case 'JavaScript': {
+            lint = {
+              esversion: 10,
+            }
+            break
+          }
+          default: {
+            lint = true
+          }
         }
-        handleCookie.setCookie('_id', res._id, 30)
-        commit('updateLoginStatus', true)
-        commit('updateUserInfo', res)
-        // 跳转到用户界面
-        commit('updateShowPageLoader', false)
-        this.$router.push({
-          path: '/profile'
-        })
-      })
-    }
-  }
+      }
+      return this.instanceSetting.lint && lint
+    },
+    cursorPosChanged(cm) {
+      /**
+       * Monitor the change of cursor position, judge whether any text was selected or not
+       * If multiple paragraphs of text was selected, calculate the number and length of paragraphs
+       * If only one paragraph was selected, calculate the length of paragraph and get position of cursor
+       * If no paragraph was selected, only get position of cursor
+       */
+      if (cm.somethingSelected()) {
+        const selectArr = cm.listSelections()
+        const selections = selectArr.length
+        const selectVal = cm.getSelection()
+        let selected = 0
+        if (selections > 1) {
+          // In the situation of multiple paragraphs of text was selected
+          // getSelection will add a enter character at tail of per paragraph, therefore, the ultimate length should exclude that.
+          selected = selectVal.length - selections + 1
+          this.$emit('cursorPosChanged', {
+            selections,
+            selected,
+          })
+        } else {
+          selected = selectVal.length
+          this.$emit('cursorPosChanged', {
+            ...this.getCursorPos(cm),
+            selected,
+          })
+        }
+      } else {
+        this.$emit('cursorPosChanged', this.getCursorPos(cm))
+      }
+    },
+    getCursorPos(cm) {
+      const cursor = cm.getCursor()
+      let { ch: col, line: ln } = cursor
+      col++
+      ln++
+      return { col, ln }
+    },
+  },
+  components: {
+    codemirror,
+  },
 }
 </script>
-<style lang="scss" src="./componentStyle/editor.scss" scoped></style>
+
 <style lang="scss" scoped>
-.dialog-fade-enter-active,
-.dialog-fade-leave-active {
-  @include setTransition(all, 0.3s, ease);
+/deep/.code {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  ::-webkit-scrollbar {
+    outline: none;
+    width: 12px;
+    height: 12px;
+    background-color: transparent;
+    @include setTransition(all, 0.3s, ease);
+  }
+  ::-webkit-scrollbar-track {
+    background-color: rgba(30, 30, 30, 0);
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(80, 80, 80, 0.3);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    outline: none;
+    background-color: rgba(80, 80, 80, 0.7);
+  }
+  .CodeMirror {
+    height: calc(100vh - 91px) !important;
+    resize: none;
+    outline: none;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+  }
+  .CodeMirror-scroll {
+    height: 100%;
+    overflow-y: hidden;
+  }
 }
-.dialog-fade-enter,
-.dialog-fade-leave-active {
-  opacity: 0;
-  transform: scale(0);
-  visibility: hidden;
+/deep/.md-active {
+  .CodeMirror {
+    height: calc(100vh - 121px) !important;
+  }
 }
 #editor {
-  @include setWAndH(100%, 100%);
-  position: relative;
-  .bg {
-    position: absolute;
-    z-index: 999;
-    @include setWAndH(100%, 100%);
-    @include setTransition(all, 0.3s, ease);
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-  .fold-sidebar {
-    display: none;
-    @include setWAndH(30px, 30px);
-    background-color: $dominantHue;
-    border-radius: 5px;
-    cursor: pointer;
-    & > i {
-      color: $beforeFocus;
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-    }
-  }
-  .slide-user-info {
-    @include setWAndH(300px, 100%);
-    @include setTransition(all, 0.3s, ease);
-    position: absolute;
-    background-color: $dominantHue;
-    z-index: 1000;
-    top: 0;
-    left: 100%;
-  }
-  .slide-user-info-show {
-    box-shadow: 0 0 5px 0 #000000;
-    left: calc(100% - 300px);
-  }
-  .dialog-box {
-    @include setWAndH(500px);
-    max-height: 500px;
-    overflow: auto;
-    left: calc(50% - 250px);
-    top: 100px;
-    position: absolute;
-    z-index: 1000;
-    background-color: $primaryHued;
-    border-radius: 5px;
-    box-shadow: 0 0 5px 0 $deepColor;
-    box-sizing: border-box;
-    padding: 0 10px 10px 10px;
-  }
+  width: 100%;
+  height: calc(100% - 30px);
 }
 </style>
