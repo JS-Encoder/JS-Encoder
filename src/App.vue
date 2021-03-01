@@ -1,188 +1,154 @@
 <template>
-  <div id="app" @click="closeDialog">
-    <router-view />
-    <PageLoader class="page-loader" :content="content" v-if="showPageLoader"></PageLoader>
+  <div id="app">
+    <div v-show="!loaded" class="loader flex flex-jcc">
+      <div class="loader-content flex flex-clo flex-ai">
+        <PageLoader class="page-loader"></PageLoader>
+        <span class="tip">{{ loadLang.init }}</span>
+      </div>
+    </div>
+    <Instance></Instance>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import * as zh from './common/lang/zh'
-import * as en from './common/lang/en'
-import reqUserInfo from '@/utils/requestUserInfo'
-import handleCookie from '@/utils/handleCookie'
-import judgeBrowserTAndV from '@/utils/checkBrowser'
-import PageLoader from './components/pageLoader'
+import { mapState, mapMutations } from 'vuex'
+import PageLoader from '@components/PageLoader.vue'
+import Instance from '@views/Instance.vue'
 export default {
   name: 'App',
+  components: {
+    PageLoader,
+    Instance,
+  },
   data() {
     return {
+      loaded: false,
+      clientWidth: window.innerWidth,
       clientHeight: document.body.clientHeight,
-      clientWidth: document.body.clientWidth,
-      content: 'Logging in via github, please wait a moment...'
     }
   },
   mounted() {
-    // 首先检测浏览器类型
-    const browserInfo = judgeBrowserTAndV()
-
-    if (browserInfo.type !== 'chrome' || !/^8/.test(browserInfo.version)) {
-      // 提醒用户更换浏览器
-      this.$message({
-        showClose: true,
-        message: window.Global.language.browserTip,
-        type: 'error',
-        duration: 0
-      })
-    }
-
-    // 初始化账户
-    this.initAccount()
-    // 缓存窗口尺寸
-    window.onresize = () => {
-      const ele = document.documentElement
-      this.clientHeight = ele.clientHeight
-      this.clientWidth = ele.clientWidth
-    }
-  },
-  components: {
-    PageLoader
+    setTimeout(() => {
+      const { clientHeight: clientH, clientWidth: clientW } = document.body
+      // The height of iframe is equal to client height subtract header and console height
+      const iframeH = clientH - this.consoleHeight - 41 - 30
+      this.handleIframeH(iframeH)
+      // Divide the editor and iframe widths equally
+      // Need to subtract the width of left sidebar and cutting line
+      const avgW = (clientW - 41 - 4) / 2
+      this.handleIframeW(avgW)
+      this.handleEditorW(avgW)
+      // Monitor the width and height of browser's visible area
+      window.onresize = () => {
+        this.clientWidth = window.innerWidth
+        this.clientHeight = document.documentElement.clientHeight
+      }
+      // Hidden the page loader animation
+      this.loaded = true
+    }, 3000)
   },
   computed: {
-    ...mapState({
-      language: 'language',
-      currentSecOpt: 'currentSecOpt',
-      iframeScreen: 'iframeScreen',
-      isFilterShow: 'isFilterShow',
-      consoleSize: 'consoleSize',
-      codeAreaHeight: 'codeAreaHeight',
-      codeAreaWidth: 'codeAreaWidth',
-      iframeWidth: 'iframeWidth',
-      showPageLoader: 'showPageLoader'
-    })
+    ...mapState([
+      'iframeHeight',
+      'consoleHeight',
+      'editorWidth',
+      'iframeWidth',
+    ]),
+    loadLang() {
+      return this.$t('instance').loader
+    },
   },
   watch: {
-    language(newLang) {
-      const lang = newLang === 'zh' ? zh : en
-      window.Global.language = lang
+    clientWidth(newW, oldW) {
+      // Change the editor and iframe widths when the browser's visible are width changed
+      // The width of them cannot be less than 100px, if any one reaches the minimal width, only change the other one's width
+      const editorW = this.editorWidth
+      const iframeW = this.iframeWidth
+      const gapW = newW - oldW
+      if (editorW <= 100 && iframeW <= 100 && gapW < 0) {
+        return void 0
+      }
+      if (editorW <= 100 && gapW < 0) {
+        this.handleIframeW(iframeW + gapW)
+        return void 0
+      } else if (iframeW <= 100 && gapW < 0) {
+        this.handleEditorW(editorW + gapW)
+        return void 0
+      }
+      const avgW = gapW / 2
+      this.handleIframeW(iframeW + avgW)
+      this.handleEditorW(editorW + avgW)
     },
-    clientHeight(newVal, oldVal) {
-      /**
-       * 浏览器可视窗口高度改变时同时改变console和代码窗口大小
-       * 改变策略：高度减小时等比缩小两个窗口高度，console不能小于25，代码窗口不小于100，有任何一个窗口达到最小值，那么只减少另一个窗口的高度
-       */
-      const commit = this.$store.commit
-      const consoleSize = this.consoleSize
-      const codeAreaHeight = this.codeAreaHeight
-      const resizeHeight = newVal - oldVal
-      if (consoleSize <= 25 && codeAreaHeight <= 100 && resizeHeight < 0) {
+    clientHeight(newH, oldH) {
+      // Change the iframe and console heights when the browser's visible area height changed
+      // The height of console and iframe cannot be less than 25px and 100px, if any one reaches the minimal width, only change the other one's width
+      const iframeH = this.iframeHeight
+      const consoleH = this.consoleHeight
+      const gapH = newH - oldH
+      if (consoleH <= 25 && iframeH <= 100 && gapH < 0) {
         return void 0
       }
-      if (consoleSize <= 25 && resizeHeight < 0) {
-        commit('updateCodeAreaHeight', codeAreaHeight + resizeHeight)
+      if (consoleH <= 25 && gapH < 0) {
+        this.handleIframeH(iframeH + gapH)
         return void 0
-      } else if (codeAreaHeight <= 100 && resizeHeight < 0) {
-        commit('updateConsoleSize', consoleSize + resizeHeight)
+      } else if (iframeH <= 100 && gapH < 0) {
+        this.handleConsoleH(consoleH + gapH)
         return void 0
       }
-      commit('updateCodeAreaHeight', codeAreaHeight + resizeHeight / 2)
-      commit('updateConsoleSize', consoleSize + resizeHeight / 2)
+      const avgH = gapH / 2
+      this.handleIframeH(iframeH + avgH)
+      this.handleConsoleH(consoleH + avgH)
     },
-    clientWidth(newVal, oldVal) {
-      /**
-       * 浏览器可视窗口宽度改变时同时改变编辑器和iframe窗口宽度
-       * 宽度减小时同时等比缩小两个窗口宽度，两个窗口宽度都不能小于100，有任何一个窗口达到最小值，那么只减少另一个窗口的宽度
-       */
-      const { commit, state } = this.$store
-      let codeAreaWidth = this.codeAreaWidth
-      let iframeWidth = this.iframeWidth
-      const resizeWidth = newVal - oldVal
-
-      if (codeAreaWidth <= 100 && iframeWidth <= 100 && resizeWidth < 0) {
-        return void 0
-      }
-      if (codeAreaWidth <= 100 && resizeWidth < 0) {
-        commit('updateIframeWidth', iframeWidth + resizeWidth)
-        return void 0
-      } else if (iframeWidth <= 100 && resizeWidth < 0) {
-        commit('updateCodeAreaWidth', codeAreaWidth + resizeWidth)
-        return void 0
-      }
-      commit('updateClientWidth', newVal)
-      commit('updateCodeAreaWidth', codeAreaWidth + resizeWidth / 2)
-      commit('updateIframeWidth', iframeWidth + resizeWidth / 2)
-    }
   },
   methods: {
-    closeDialog() {
-      // 关掉其他窗口
-      const commit = this.$store.commit
-      if (this.currentSecOpt !== '') {
-        commit('updateCurrentSecOpt', '')
-        if (this.iframeScreen) commit('updateIframeScreen', false)
-      }
-      if (this.isFilterShow) {
-        commit('updateIsFilterShow', false)
-        commit('updateIframeScreen', false)
-      }
-    },
-    initAccount() {
-      /**
-       * 初始化账户
-       * 判断用户是否登陆，已经登陆就直接返回
-       * 如果本地存在_id字段，就向后台请求用户信息，否则跳转到编辑界面
-       */
-      const isLogin = this.$store.state.loginStatus
-      if (isLogin) return void 0
-      const _id = handleCookie.getCookieValue('_id')
-      if (!_id) return void 0
-      this.getUserInfoById(_id)
-    },
-    getUserInfoById(_id) {
-      /**
-       * 如果用户存在，跳转到用户信息界面
-       * 如果用户不存在，跳转到编辑界面
-       */
-      const commit = this.$store.commit
-      reqUserInfo.getUserInfo(_id).then(res => {
-        if (Object.keys(res).length !== 0) {
-          commit('updateLoginStatus', true)
-          commit('updateUserInfo', res)
-          if (this.$route.name === 'editor') {
-            this.$router.push({
-              name: 'profile',
-              params: {
-                id: res.name
-              },
-              replace: true
-            })
-          }
-        } else {
-          this.$notify({
-            message: this.language === 'zh' ? '登陆失败' : 'Login Failed',
-            position: 'bottom-right',
-            iconClass: 'icon iconfont icon-error1 error-icon',
-            duration: 3000
-          })
-          commit('updateShowPageLoader', false)
-          return void 0
-        }
-      })
-    }
-  }
+    ...mapMutations([
+      'handleIframeH',
+      'handleIframeW',
+      'handleEditorW',
+      'handleConsoleH',
+    ]),
+  },
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+@include scrollBar();
+@include keyframes(bgc-fade) {
+  0%,
+  100% {
+    background-color: $thirdColor;
+  }
+  50% {
+    background-color: $deep;
+  }
+}
 #app {
-  @include setWAndH(100%, 100%);
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
+    Microsoft YaHei, SimSun, sans-serif;
+  width: 100%;
+  height: 100%;
+  overflow-y: hidden;
   position: relative;
-  font-family: $josefinSans;
-  background-color: $dominantHue;
-  .page-loader {
+  .loader {
+    width: 100%;
+    height: 100%;
+    background-color: $mainColor;
     position: absolute;
+    left: 0;
     top: 0;
-    z-index: 2000;
+    z-index: 100;
+    @include animation(bgc-fade, 3s, 0s, ease, infinite);
+    .loader-content {
+      margin-top: 100px;
+      .page-loader {
+        width: 250px;
+        height: 200px;
+      }
+      .tip {
+        font-size: 16px;
+        color: $afterFocus;
+      }
+    }
   }
 }
 </style>

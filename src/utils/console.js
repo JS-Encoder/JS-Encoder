@@ -1,6 +1,14 @@
-import consoleTool from './consoleTool'
-import * as judge from './judgeType'
-import { formatJavaScript } from './prettyFormat'
+import { judgeBaseArray, judgeType, judgeWindow, JSONStringify, stringifyDOM } from './tools'
+import { formatJavaScript } from './codeFormatter'
+
+const highlightMap = {
+  string: 'cm-string',
+  number: 'cm-number',
+  boolean: 'cm-atom',
+  symbol: 'cm-variable',
+  null: 'cm-none',
+  undefined: 'cm-none',
+}
 
 export default class Console {
   constructor(iframe) {
@@ -8,130 +16,62 @@ export default class Console {
       this.window = iframe.contentWindow
       this.console = this.window.console
       this.consoleInfo = []
-      this.consoleMethods = []
-      this.ableMethods = []
-      this.timerName = new Map()
+      this.timerMap = new Map()
       this.init()
       Console.instance = this
     }
     return Console.instance
   }
   /**
-   * 执行console手动输入指令
-   * 由于console手动输入指令都是字符串形式，所以要先判断该命令是否会报错，加一层try catch
-   * 首先将命令原样输出
-   * 然后在iframe内执行命令
-   * 最后输出命令的返回值
-   * @param String cmd
+   * eval函数是不安全的
+   * 为iframe.window添加一个可执行命令的方法exeJSEncoderConsoleCmd，旨在替代eval
+   * 初始化控制台各个可用方法
    */
-  executeCommand (cmd) {
-    let returnVal
-    this.console.log(cmd)
-    try {
-      returnVal = this.window.eval(cmd)
-    } catch (e) {
-      this.consoleInfo.push({
-        type: 'error',
-        content: e
-      })
-      return
-    }
-    const finLog = this.printLog({
-      type: 'print',
-      content: [returnVal]
-    })
-    finLog.type === 'mixed' && (finLog.type = 'mixedPrint')
-    this.consoleInfo.push(finLog)
-  }
-  /**
-   * @param Element iframe 重新载入过后的iframe
-   */
-  refreshConsole (iframe) {
-    // 因为执行代码时需要先将iframe重新载入，重新载入iframe需要重新做一次constructor中的操作
-    this.window = iframe.contentWindow
-    this.console = this.window.console
-    this.timerName = new Map()
-    this.init()
-  }
-  /**
-   * 获取所有日志
-   * @return consoleInfo
-   */
-  getConsoleInfo () {
-    return this.consoleInfo
-  }
-  /**
-   * @param Array content 日志内容
-   * 设置日志内容
-   */
-  setConsoleInfo (content) {
-    const consoleInfo = this.consoleInfo
-    consoleInfo.splice(0, consoleInfo.length, content)
-    consoleInfo.pop()
-  }
-  /**
-   * 判断该方法是否可用
-   * @param String methodStr
-   * @return Boolean
-   */
-  judgeMethodsAllowed (methodStr) {
-    return this.ableMethods.indexOf(methodStr) > -1 ? true : false
-  }
-  /**
-   * 初始化控制台
-   */
-  init () {
+  init() {
     this.consoleMethods = ['log', 'info', 'warn', 'error', 'dir', 'debug', 'time', 'timeLog', 'timeEnd', 'clear']
     this.ableMethods = ['log', 'dir', 'info', 'warn', 'error']
     const consoleInfo = this.consoleInfo
     const iframeConsole = this.console
-    this.window.onerror = (msg, _, row, col) => {// 重写window的onerror事件
-      consoleInfo.push({//生成错误日志
-        type: 'system-error',
-        content: msg,
-        row,
-        col
-      })
-      return false
-    }
-    this.consoleMethods.forEach(item => {// 重写console的一些方法
+    // this.window.exeJSEncoderConsoleCmd = cmd => Function(`return (${cmd})`)()
+    this.consoleMethods.forEach((item) => {
       iframeConsole[item] = (...arg) => {
-        console[item](...arg)// 在浏览器控制台打印日志
+        console[item](...arg) // 在浏览器控制台打印日志
         switch (item) {
-          // console.time,console.timeEnd,console.timeLog都只接收第一个参数
           case 'time':
-            this.setTimer(arg[0])//设置计时器
+            this.setTimer(arg[0])
             break
           case 'timeLog':
           case 'timeEnd': {
-            const time = this.calcTime(arg[0])//计算时差
-            const finContent = time ? this.renderNumber(time) : this.renderUndefined(time)
-            consoleInfo.push({//生成日志
+            const time = this.calcTime(arg[0])
+            const domClass = time ? highlightMap.number : highlightMap.undefined
+            const finContent = `<span class="${domClass}">${time}</span>`
+            consoleInfo.push({
               type: 'log',
-              logs: [finContent]
+              logs: [finContent],
             })
             break
           }
-          case 'clear': {//清空console日志
-            this.setConsoleInfo('')
+          case 'clear': {
+            this.clear()
             break
           }
           default: {
             // 先判断参数中是否含有global或window
             let haveLargeOb = false
-            arg.forEach(item => {
-              if (consoleTool.judgeWindow(item)) {//日志内容是否过大
-                consoleInfo.push({//生成警告日志
+            arg.forEach((item) => {
+              if (judgeWindow(item)) {
+                consoleInfo.push({
                   type: 'error',
-                  content: 'Sorry, this log was too large for our console. You might need to use the browser console instead.'
+                  content:
+                    'Sorry, this log was too large for our console. You might need to use the browser console instead.',
                 })
                 haveLargeOb = true
               }
             })
-            if (haveLargeOb) return
-            const finLog = this.printLog({//生成日志
+            if (haveLargeOb) return void 0
+            const finLog = this.print({
               type: item,
-              content: arg
+              content: arg,
             })
             consoleInfo.push(finLog)
           }
@@ -140,48 +80,113 @@ export default class Console {
     })
   }
   /**
-   * 设置计时器
-   * @param String name 计时器名称
+   * 清除控制台所有日志
    */
-  setTimer (name) {
-    // 如果该计时器已存在就不做操作
-    const timerName = this.timerName
-    if (timerName.get(name)) return void 0
-    timerName.set(name, performance.now())
+  clear() {
+    const consoleInfo = this.consoleInfo
+    consoleInfo.splice(0, consoleInfo.length, '')
+    consoleInfo.pop()
   }
   /**
-   * 计算时间
-   * @param String name 计时器名称
+   * 获取日志列表
+   */
+  getLogs() {
+    return this.consoleInfo
+  }
+  /**
+   * 刷新控制台，因为执行代码时需要先将iframe重新载入，重新载入iframe需要重新做一次constructor中的操作
+   */
+  refresh(iframe) {
+    this.window = iframe.contentWindow
+    this.console = this.window.console
+    this.timerMap = new Map()
+    this.init()
+  }
+  /**
+   * 执行console手动输入指令
+   * 由于console手动输入指令都是字符串形式，所以要先判断该命令是否会报错，加一层try catch
+   * 首先将命令原样输出
+   * 然后在iframe内执行命令
+   * 最后输出命令的返回值
+   * @param {string} cmd
+   */
+  exeCmd(cmd) {
+    let result
+    this.console.log(cmd)
+    try {
+      // if (/^(let|const)+( )/.test(cmd)) {
+      //   result = this.window.eval(cmd)
+      // } else {
+      //   result = this.window.exeJSEncoderConsoleCmd(cmd)
+      // }
+      if (cmd === 'window') {
+        this.consoleInfo.push({
+          type: 'error',
+          content: 'Sorry, this log was too large for our console. You might need to use the browser console instead.',
+        })
+        return void 0
+      }
+      result = this.window.eval(`let x=(${cmd});x`)
+    } catch (err) {
+      try {
+        this.window.eval(cmd)
+      } catch (err) {
+        this.consoleInfo.push({
+          type: 'error',
+          content: err,
+        })
+        return void 0
+      }
+    }
+    const log = this.print({
+      type: 'print',
+      content: [result],
+    })
+    log.type === 'mix' && (log.type = 'mixPrint')
+    this.consoleInfo.push(log)
+  }
+  /**
+   * 设置计时器，如果该计时器已存在就不做操作
+   * @param string name 计时器名称
+   */
+  setTimer() {
+    const timerMap = this.timerMap
+    if (timerMap.get(name)) return void 0
+    timerMap.set(name, performance.now())
+  }
+  /**
+   * @param string name 计时器名称
+   */
+  getTimer(name) {
+    const time = this.calcTime(name)
+    this.timerMap.delete(name)
+    return time
+  }
+  /**
+   * 计算时间，如果不存在该计时器，返回undefined
+   * @param string name 计时器名称
    * @return time 时间差
    */
-  calcTime (name) {
-    // 如果不存在该计时器，返回undefined
-    const time = this.timerName.get(name)
+  calcTime(name) {
+    const time = this.timerMap.get(name)
     if (!time) return void 0
     return `${name}: ${performance.now() - time} ms`
   }
   /**
-   * @param String name 计时器名称
+   * 生成日志
+   * 如果该方法并不支持，发出警告
+   * 内容判断是否为基本数组（所有元素都是基本类型的数组），如果不是基本类型数组，就定为mix类型，放到codeMirror组件中
+   * @param {object} item
+   * @param {string} type 日志类型  log|info|debug|error|warn 必要！
+   * @param {array} content 日志内容
+   * @return {object} finLog 最终显示在页面上的日志信息
    */
-  getTimer (name) {
-    const time = this.calcTime(name)
-    this.timerName.delete(name)
-    return time
-  }
-  /**
-   * 将日志打印到日志显示窗口
-   * @param Object item
-   * @param String type 日志类型  log|info|debug|error|warn 必要！
-   * @param Array content 日志内容
-   * @return finLog 最终显示在页面上的日志html
-   */
-  printLog (item) {
-    const type = item.type
-    let content = item.content
-    if (!this.judgeMethodsAllowed(type) && type !== 'print') {
+  print(item) {
+    let { type, content } = item
+    if (!(this.ableMethods.indexOf(type) >= 0) && type !== 'print') {
       return {
         type: 'warn',
-        content: `console.${type} is not a function`
+        content: `console.${type} is not supported in this console, please use the browser console for debugging!`,
       }
     }
     let finLog = {}
@@ -189,131 +194,96 @@ export default class Console {
       case 'log':
       case 'dir':
       case 'print':
-        // 先判断是否为基本数组（所有元素都是基本类型的数组），如果不是基本类型数组，就定为mixed类型，放到codeMirror组件中
-        if (!consoleTool.judgeBaseArray(content)) {
-          content = formatJavaScript(this.switchContentToString(content))
+        if (!judgeBaseArray(content)) {
+          content = formatJavaScript(this.contentToString(content))
           finLog = {
-            type: 'mixed',
-            content
+            type: 'mix',
+            content,
           }
         } else {
           finLog = {
-            type, logs: this.log(content)
+            type,
+            logs: this.log(content),
           }
         }
         break
       case 'info':
       case 'warn':
       case 'error': {
-        content = formatJavaScript(this.switchContentToString(content))
+        content = formatJavaScript(this.contentToString(content))
         finLog = {
-          type, content
+          type,
+          content,
         }
       }
     }
     return finLog
   }
-  switchContentToString (content) {
-    // 由于error和warn与log的显示样式不同，需要做不同处理，直接将content的内容转化为字符串
-    let finStr = ''
+  /**
+   * 将log内容转换成字符串
+   * 由于error和warn与log的显示样式不同，需要做不同处理，直接将content的内容转化为字符串
+   * @param array content
+   */
+  contentToString(content) {
+    let result = ''
     const length = content.length
     const afterStr = ' '
     content.forEach((item, index) => {
-      let type = judge.judgeType(item)
+      let type = judgeType(item)
       if (/^HTML/.test(type) && type !== 'HTMLCollection') type = 'dom'
       switch (type) {
-        case null:
+        case 'null':
         case 'undefined':
         case 'symbol':
         case 'number':
         case 'boolean':
         case 'function':
-          finStr = finStr + String(item)
-          if (index !== length - 1) finStr = finStr + afterStr
+          result += String(item)
+          if (index !== length - 1) result += afterStr
           break
         case 'string':
-          finStr = `${finStr}"${String(item)}"`
-          if (index !== length - 1) finStr = finStr + afterStr
+          result = `${result}"${String(item)}"`
+          if (index !== length - 1) result += afterStr
+          break
+        case 'String':
+        case 'Number':
+        case 'Boolean':
+          if (type === 'String') item = `"${item}"`
+          result = `${result}${type}{${item}}`
+          if (index !== length - 1) result += afterStr
           break
         case 'Array':
         case 'Map':
         case 'Object':
-          finStr = finStr + consoleTool.JSONStringify(item) + afterStr
+          result = result + JSONStringify(item) + afterStr
           break
         case 'dom':
-          finStr = finStr + consoleTool.stringifyDOM(item)
+          result = result + stringifyDOM(item)
           break
         case 'HTMLCollection':
-          for (let i = 0;i < item.length;i++) {
-            finStr = finStr + consoleTool.stringifyDOM(item[i]) + '\n'
+          for (let i = 0; i < item.length; i++) {
+            result = result + stringifyDOM(item[i]) + '\n'
           }
           break
-        default:
       }
     })
-    return finStr
+    return result
   }
   /**
    * 生成带有log的html字符串
    * @param Array content 输出内容
    * @return finLog 最终显示在页面上的日志
    */
-  log (content) {
-    const finLog = []
+  log(content) {
+    const result = []
     if (!content.length) return ''
-    content.forEach(item => {
-      const type = judge.judgeType(item)
-      let html = ''
-      switch (type) {
-        case 'string':
-          html = this.renderString(item)
-          break
-        case 'number':
-          html = this.renderNumber(item)
-          break
-        case 'boolean':
-          html = this.renderBoolean(item)
-          break
-        case 'symbol':
-          html = this.renderSymbol(item)
-          break
-        case null:
-          html = this.renderNull(item)
-          break
-        case 'undefined':
-          html = this.renderUndefined(item)
-          break
-      }
-      finLog.push(html)
+    content.forEach((item) => {
+      const type = judgeType(item)
+      if (type === 'symbol') item = String(item)
+      const domClass = highlightMap[type]
+      const html = `<span class="${domClass}">${item}</span>`
+      result.push(html)
     })
-    return finLog
-  }
-  /**
-   * @param Boolean bool
-   * @param Symbol sym
-   * @param Null nul
-   * @param Undefined und
-   * @param String str 
-   * @param Number num
-   * @return String html string
-   */
-  renderString (str) {
-    return `<span class="cm-string">"${str}"</span>`
-  }
-  renderNumber (num) {
-    return `<span class="cm-number">${num}</span>`
-  }
-  renderBoolean (bool) {
-    return `<span class="cm-atom">${bool}</span>`
-  }
-  renderSymbol (sym) {
-    sym = String(sym)
-    return `<span class="cm-variable">${sym}</span>`
-  }
-  renderNull (nul) {
-    return `<span style="color: #6a6a6a">${nul}</span>`
-  }
-  renderUndefined (und) {
-    return `<span style="color: #6a6a6a">${und}</span>`
+    return result
   }
 }
