@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import store from './store'
 import VueI18n from 'vue-i18n'
-import element from './utils/getElementUI'
+import element from '@utils/getElementUI'
 import { codemirror } from 'vue-codemirror'
 
 // theme
@@ -13,7 +13,7 @@ import './assets/css/codemirror-dialog.css'
 import '../public/css/font.css'
 import './assets/themes/default.css'
 
-Vue.config.productionTip = true
+Vue.config.productionTip = false
 
 // plugins
 Vue.use(element).use(codemirror).use(VueI18n)
