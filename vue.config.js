@@ -1,6 +1,7 @@
 const path = require('path')
 const resolve = (dir) => path.join(__dirname, dir)
 const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV)
+
 module.exports = {
   publicPath: IS_PROD ? process.env.VUE_APP_PUBLIC_PATH : './', // 默认'/'，部署应用包时的基本 URL
   // outputDir: process.env.outputDir || 'dist', // 'dist', 生产环境构建文件的目录
@@ -39,7 +40,6 @@ module.exports = {
       .set('@components', resolve('src/components'))
       .set('@views', resolve('src/views'))
       .set('@store', resolve('src/store'))
-      .set('@static', resolve('src/static'))
       .set('@utils', resolve('src/utils'))
   },
   css: {
