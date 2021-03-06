@@ -3,7 +3,7 @@
   right: 13px;
   background: inherit;
   z-index: 15;
-  padding: 4px 10px;
+  padding: 4px 10px 4px 5px;
   overflow: hidden;
   color: #bfbfbf;
   box-shadow: 0 3px 5px #111111;
@@ -11,7 +11,7 @@
 }
 
 .dialog-opened {
-  padding-top: 30px;
+  padding-top: 55px;
   box-sizing: border-box;
 }
 
@@ -30,6 +30,7 @@
   box-sizing: border-box;
   color: #bfbfbf;
   font-family: inherit;
+  font-size: 12px;
 }
 
 .CodeMirror-dialog input:focus {
@@ -58,6 +59,10 @@
   align-items: center;
 }
 
+.CodeMirror-dialog .js-encoder-replace-container{
+  display: none;
+}
+
 .CodeMirror-dialog .js-encoder-search-container span {
   font-size: 12px;
   margin-right: 5px;
@@ -73,16 +78,39 @@
   justify-content: center;
 }
 
-.CodeMirror-dialog .js-encoder-search-container i:hover {
+.CodeMirror-dialog .js-encoder-replace-container i {
+  display: inline-flex;
+  font-size: 14px;
+  width: 22px;
+  cursor: pointer;
+  padding: 3px 0;
+  justify-content: center;
+}
+
+.CodeMirror-dialog .js-encoder-search-container i:hover,
+.CodeMirror-dialog .js-encoder-replace-container i:hover {
   background-color: #333333;
 }
 
-.CodeMirror-dialog .js-encoder-search-container .i-disable:hover {
+.CodeMirror-dialog .js-encoder-search-container .i-disable:hover,
+.CodeMirror-dialog .js-encoder-replace-container .i-disable:hover {
   background-color: transparent;
 }
 
-.CodeMirror-dialog .js-encoder-search-container .i-disable {
+.CodeMirror-dialog .js-encoder-search-container .i-disable,
+.CodeMirror-dialog .js-encoder-replace-container .i-disable {
   pointer-events: none;
   cursor: default;
   color: #333333;
+}
+
+.CodeMirror-dialog .js-encoder-replace-container {
+  margin-top: 4px;
+}
+
+.CodeMirror-dialog .js-encoder-fold-icon>i {
+  font-size: 12px;
+  display: inline-block;
+  transform: rotate(-90deg);
+  cursor: pointer;
 }

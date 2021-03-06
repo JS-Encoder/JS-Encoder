@@ -540,11 +540,11 @@ div.CodeMirror-dragcursors {
 }
 
 .cm-searching {
-  background-color: #6e4b3b;
+  background-color: #6e4b3b !important;
 }
 
 .cm-current-searching-match {
-  background-color: rgba(255, 215, 0, 0.6) !important;
+  background-color: rgba(255, 215, 0, 0.4) !important;
 }
 
 /* Used to force a border model for a node */
