@@ -120,7 +120,7 @@ CodeMirror.hint.javascript = (cm) => {
  * 配置编辑器功能及选项
  * @param string mode 语言
  */
-function codemirrorConfig(mode = '') {
+function codemirrorConfig (mode = '') {
   const codeOptions = {
     tabSize: 2, // tab缩进数
     mode: '', // 语言
@@ -148,6 +148,7 @@ function codemirrorConfig(mode = '') {
     currentMatchIndex: null, // 当前突出搜索匹配字符列表中的第几个，非原生属性
     currentMatchMarker: null, // 当前突出搜索匹配字符的marker，非原生属性
     closeDialog: null, // 用来关闭搜索框的方法，非原生属性
+    showReplace: false, // 是否显示replace 
     highlightSelectionMatches: {
       showToken: true,
       annotateScrollbar: true,
@@ -199,7 +200,7 @@ function codemirrorConfig(mode = '') {
          * 如果当前光标所在编辑窗口为html，进行emmet扩展
          * 如果都不满足，按下tab触发自动补全（智能提示）
          */
-        function indent() {
+        function indent () {
           const spaces = Array(cm.getOption('indentUnit') + 1).join(' ')
           cm.replaceSelection(spaces, 'end', '+input')
         }
@@ -216,7 +217,7 @@ function codemirrorConfig(mode = '') {
             const value = cm.getLine(line) // 获取当前行文本
             const front = value[ch - 1] // 获取光标前一字符
             switch (
-              front // 为空格，tab或其他特定字符
+            front // 为空格，tab或其他特定字符
             ) {
               case '\t':
               case '<':
@@ -252,19 +253,43 @@ function codemirrorConfig(mode = '') {
         }
         const searchDiv = document.createElement('div')
         searchDiv.innerHTML = `
-        <div class="noselect">
-          <div class="js-encoder-search-container" id="JSEncoderSearchContainer">
-            <input id="JSEncoderSearchInput" type="text" value="" placeholder="search" autocomplete="off">
-            <span id="JSEncoderMatchNum">No results</span>
-            <i class="icon iconfont icon-shangla i-disable" title="Previous match" id="JSEncoderPreviousMatch"></i>
-            <i class="icon iconfont icon-xiala i-disable" title="Next match" id="JSEncoderNextMatch"></i>
-            <i class="icon iconfont icon-close2" title="Close" id="JSEncoderClose"></i>
+        <div class="js-encoder-search noselect flex flex-ai">
+          <div class="js-encoder-fold-icon" id="JSEncoderFoldIcon">
+            <i class="icon iconfont icon-xiala"></i>
+          </div>
+          <div class="js-encoder-container">
+            <div class="js-encoder-search-container" id="JSEncoderSearchContainer">
+              <input id="JSEncoderSearchInput" type="text" value="" placeholder="Search" autocomplete="off">
+              <span id="JSEncoderMatchNum">No results</span>
+              <i class="icon iconfont icon-shangla i-disable" title="Previous match" id="JSEncoderPreviousMatch"></i>
+              <i class="icon iconfont icon-xiala i-disable" title="Next match" id="JSEncoderNextMatch"></i>
+              <i class="icon iconfont icon-close2" title="Close" id="JSEncoderClose"></i>
+            </div>
+            <div class="js-encoder-replace-container" id="JSEncoderReplaceContainer">
+              <input id="JSEncoderReplaceInput" type="text" value="" placeholder="Replace" autocomplete="off"/>
+              <i class="icon iconfont icon-replace i-disable" title="Replace" id="JSEncoderReplace"></i>
+              <i class="icon iconfont icon-replace-all i-disable" title="Replace all" id="JSEncoderReplaceAll"></i>
+            </div>
           </div>
         </div>`
+        const foldI = searchDiv.querySelector('#JSEncoderFoldIcon')
+        const replaceDiv = searchDiv.querySelector('#JSEncoderReplaceContainer')
         const preI = searchDiv.querySelector('#JSEncoderPreviousMatch')
         const nextI = searchDiv.querySelector('#JSEncoderNextMatch')
+        const repI = searchDiv.querySelector('#JSEncoderReplace')
+        const repAllI = searchDiv.querySelector('#JSEncoderReplaceAll')
         const closeI = searchDiv.querySelector('#JSEncoderClose')
         const searchInput = searchDiv.querySelector('#JSEncoderSearchInput')
+        const replaceInput = searchDiv.querySelector('#JSEncoderReplaceInput')
+        const matchSpan = searchDiv.querySelector('#JSEncoderMatchNum')
+        foldI.onclick = () => {
+          const showReplace = cm.getOption('showReplace')
+          const transform = showReplace ? 'rotate(-90deg)' : 'rotate(0deg)'
+          const display = showReplace ? 'none' : 'block'
+          foldI.querySelector('.icon-xiala').style.transform = transform
+          replaceDiv.style.display = display
+          cm.setOption('showReplace', !showReplace)
+        }
         preI.onclick = () => {
           // 向上寻找结果
           const searchMarkList = cm.getOption('searchMarkList')
@@ -279,7 +304,6 @@ function codemirrorConfig(mode = '') {
             className: 'cm-current-searching-match',
           })
           cm.setOption('currentMatchMarker', marker)
-          const matchSpan = searchDiv.querySelector('#JSEncoderMatchNum')
           matchSpan.innerText = `${currentMatchIndex} of ${searchMarkList.length}`
         }
         nextI.onclick = () => {
@@ -296,18 +320,140 @@ function codemirrorConfig(mode = '') {
             className: 'cm-current-searching-match',
           })
           cm.setOption('currentMatchMarker', marker)
-          const matchSpan = searchDiv.querySelector('#JSEncoderMatchNum')
           matchSpan.innerText = `${currentMatchIndex} of ${searchMarkList.length}`
         }
+        repI.onclick = () => {
+          /**
+           * 获取mark列表
+           * 替换当前选中的文本，默认为第一个mark
+           * 清空侧边栏的高亮显示，清除markList的高亮
+           * 重新搜索搜索框内的匹配文本
+           * 如果搜索到了就将匹配项全部高亮
+           * 将currentMatchIndex置为currentMatchIndex+偏移量，如果replace的文本匹配搜索框内的文本，偏移量为匹配数-1，否则置为-1
+           * 如果currentMatchIndex+偏移量=-1，将currentMatchIndex置为0
+           * 获取mark列表中下一个mark的位置并高亮，下一个位置对应currentMatchIndex+1
+           * 如果currentMatchIndex+1超过mark列表中mark的数量，就置为0
+           */
+          const replaceText = replaceInput.value
+          const searchText = searchInput.value
+          const oldMarkList = cm.getOption('searchMarkList')
+          let currentMatchIndex = cm.getOption('currentMatchIndex')
+          currentMatchIndex === 0 && ++currentMatchIndex
+          const { from, to } = oldMarkList[currentMatchIndex - 1].find()
+          cm.replaceRange(replaceText, from, to)
+          const annotate = cm.getOption('searchAnnotate')
+          if (annotate !== null) {
+            annotate.clear()
+            cm.setOption('searchAnnotate', null)
+          }
+          oldMarkList.forEach((marker) => {
+            const find = marker.find()
+            find && marker.clear(find)
+          })
+          const regexp = new RegExp(escapeRegExp(searchText), 'ig')
+          const cursor = cm.getSearchCursor(regexp, { line: 0, ch: 0 }, {})
+          const newMarkList = []
+          if (cursor.find(false)) {
+            let from, to
+            do {
+              from = cursor.from()
+              to = cursor.to()
+              const marker = cm.markText(from, to, {
+                className: 'cm-searching',
+              })
+              newMarkList.push(marker)
+            } while (cursor.findNext())
+            cm.setOption('searchMarkList', newMarkList)
+            const annotate = cm.showMatchesOnScrollbar(regexp, regexp, {
+              className: 'CodeMirror-search-match',
+            })
+            cm.setOption('searchAnnotate', annotate)
+          } else {
+            setNoResults()
+            return void 0
+          }
+          const matchNum = replaceText.match(regexp)?.length
+          const offset = matchNum || 0
+          if (currentMatchIndex + offset > newMarkList.length) {
+            matchSpan.innerText = `${1} of ${newMarkList.length}`
+            currentMatchIndex = 1
+          } else {
+            matchSpan.innerText = `${currentMatchIndex + offset} of ${newMarkList.length}`
+            currentMatchIndex += offset
+          }
+          cm.setOption('currentMatchIndex', currentMatchIndex)
+          let currentMarker = cm.getOption('currentMatchMarker')
+          currentMarker?.clear()
+          const { from: newFrom, to: newTo } = newMarkList[currentMatchIndex - 1].find()
+          currentMarker = cm.markText(newFrom, newTo, {
+            className: 'cm-current-searching-match',
+          })
+          cm.setOption('currentMatchMarker', currentMarker)
+        }
+        repAllI.onclick = () => {
+          // 获取mark列表
+          // 遍历列表replace全部
+          // 清空所有scrollbar的高亮
+          // 查询匹配列表
+          // 重置mark列表
+          const replaceText = replaceInput.value
+          const searchText = searchInput.value
+          let searchMarkList = cm.getOption('searchMarkList')
+          searchMarkList.forEach((marker) => {
+            const { from, to } = marker.find()
+            cm.replaceRange(replaceText, from, to)
+          })
+          const annotate = cm.getOption('searchAnnotate')
+          if (annotate !== null) {
+            annotate.clear()
+            cm.setOption('searchAnnotate', null)
+          }
+          const regexp = new RegExp(escapeRegExp(searchText), 'ig')
+          const cursor = cm.getSearchCursor(regexp, { line: 0, ch: 0 }, {})
+          if (cursor.find(false)) {
+            const markList = []
+            let from, to
+            do {
+              from = cursor.from()
+              to = cursor.to()
+              const marker = cm.markText(from, to, {
+                className: 'cm-searching',
+              })
+              markList.push(marker)
+            } while (cursor.findNext())
+            cm.setOption('searchMarkList', markList)
+            cm.setOption('currentMatchIndex', 0)
+            matchSpan.innerText = `${0} of ${markList.length}`
+            const annotate = cm.showMatchesOnScrollbar(regexp, regexp, {
+              className: 'CodeMirror-search-match',
+            })
+            cm.setOption('searchAnnotate', annotate)
+          } else {
+            setNoResults()
+          }
+        }
         closeI.onclick = () => {
-          // 关闭搜索框
+          // 关闭搜索框并清除部分关联选项以减少内存占用
           cm.getOption('closeDialog')()
           cm.setOption('closeDialog', null)
+          cm.setOption('searchAnnotate', null)
+          cm.setOption('currentMatchIndex', null)
+          cm.setOption('currentMatchMarker', null)
+          cm.setOption('searchMarkList', [])
+          cm.setOption('showReplace', false)
         }
         // 不支持多行匹配，因此在选中多行的时候不会将选中文本置于搜索框内
         let searchStr = cm.getSelection()
         if (/\n/.test(searchStr)) searchStr = ''
-        const search = (value) => {
+        function setNoResults () {
+          matchSpan.innerText = 'No results'
+          preI.classList.add('i-disable')
+          nextI.classList.add('i-disable')
+          repI.classList.add('i-disable')
+          repAllI.classList.add('i-disable')
+          cm.setOption('currentMatchIndex', null)
+        }
+        function search (value) {
           /**
            * 每次输入时判断searchMarkList和searchAnnotate中是否有值，有就清除上一次查询产生的mark和annotate的背景高亮
            * 查询搜索框内的值，若有匹配结果，则调用markText高亮背景并将相关信息存入searchMarkList以便清除
@@ -324,13 +470,6 @@ function codemirrorConfig(mode = '') {
           if (annotate !== null) {
             annotate.clear()
             cm.setOption('searchAnnotate', null)
-          }
-          const matchSpan = searchDiv.querySelector('#JSEncoderMatchNum')
-          const setNoResults = () => {
-            matchSpan.innerText = 'No results'
-            preI.classList.add('i-disable')
-            nextI.classList.add('i-disable')
-            cm.setOption('currentMatchIndex', null)
           }
           if (value) {
             const regexp = new RegExp(escapeRegExp(value), 'ig')
@@ -352,6 +491,8 @@ function codemirrorConfig(mode = '') {
               matchSpan.innerText = `${0} of ${searchMarkList.length}`
               preI.classList.remove('i-disable')
               nextI.classList.remove('i-disable')
+              repI.classList.remove('i-disable')
+              repAllI.classList.remove('i-disable')
               const annotate = cm.showMatchesOnScrollbar(regexp, regexp, {
                 className: 'CodeMirror-search-match',
               })
@@ -366,7 +507,7 @@ function codemirrorConfig(mode = '') {
           if (marker) marker.clear()
           cm.setOption('currentMatchMarker', null)
         }
-        const closeDialog = cm.openDialog(searchDiv, () => {}, {
+        const closeDialog = cm.openDialog(searchDiv, () => { }, {
           closeOnEnter: false, // 回车不会关闭窗口
           closeOnBlur: false, // 失去焦点不会关闭窗口
           onInput: (e) => {
@@ -388,16 +529,17 @@ function codemirrorConfig(mode = '') {
             const marker = cm.getOption('currentMatchMarker')
             if (marker) marker.clear()
             cm.setOption('currentMatchMarker', null)
+            cm.setOption('closeDialog', null)
           },
         })
         // openDialog方法虽然提供了oninput事件，但是我还需要在value改变的情况下就执行搜索，于是需要监听value的改变
         Object.defineProperty(searchInput, '_value', {
           configurable: true,
-          set: function(value) {
+          set: function (value) {
             this.value = value
             search(value)
           },
-          get: function() {
+          get: function () {
             return this.value
           },
         })
