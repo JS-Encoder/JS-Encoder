@@ -36,8 +36,13 @@ export default {
       // Divide the editor and iframe widths equally
       // Need to subtract the width of left sidebar and cutting line
       const avgW = (clientW - 41 - 4) / 2
-      this.handleIframeW(avgW)
-      this.handleEditorW(avgW)
+      if (avgW % 1 !== 0) {
+        this.handleIframeW(Math.floor(avgW))
+        this.handleEditorW(avgW + 1)
+      } else {
+        this.handleIframeW(avgW)
+        this.handleEditorW(avgW)
+      }
       // Monitor the width and height of browser's visible area
       window.onresize = () => {
         this.clientWidth = window.innerWidth
