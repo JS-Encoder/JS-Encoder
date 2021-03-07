@@ -42,8 +42,8 @@
           </div>
           <div v-if="item.type==='mix'" class="mix flex flex-ai">
             <i class="icon iconfont icon-lfmonth"></i>
-            <codemirror :options="codeOptions" v-show="settings.highlight" v-once :value="item.content"
-              class="code-log">
+            <codemirror :options="codeOptions" @hook:mounted="cmMounted(index)" v-show="settings.highlight" v-once
+              :value="item.content" class="code-log" :ref="`logArea${index}`">
             </codemirror>
             <div class="code-log" v-show="!settings.highlight" v-once>{{item.content}}</div>
           </div>
@@ -81,8 +81,8 @@
           </div>
           <div v-if="item.type==='mixPrint'" class="mix-print flex flex-ai">
             <i class="icon iconfont icon-lfmonth"></i>
-            <codemirror :options="codeOptions" v-show="settings.highlight" v-once :value="item.content"
-              class="code-log">
+            <codemirror :options="codeOptions" @hook:mounted="cmMounted(index)" v-show="settings.highlight" v-once
+              :value="item.content" class="code-log" :ref="`logArea${index}`">
             </codemirror>
             <div class="code-log" v-show="!settings.highlight" v-once>{{item.content}}</div>
           </div>
@@ -276,6 +276,10 @@ export default {
     clearLogs() {
       new IframeConsole().clear()
       this.handleConsoleInfo([])
+    },
+    cmMounted(index) {
+      // The codemirror instances of console will be fold after the instance was mounted
+      this.$refs[`logArea${index}`][0].codemirror.execCommand('foldAll')
     },
   },
   components: {
