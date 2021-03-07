@@ -19,7 +19,7 @@
           <div class="view-area flex flex-clo" :style="{width:`${iframeWidth}px`}">
             <ViewTabBar @fullScreen="changeFullScreenState" @runCode="runCode"></ViewTabBar>
             <div class="iframe-box" :style="{ height: `${iframeHeight}px` }" :class="iframeFullScreen?'full-screen':''">
-              <div class="iframe-screen" v-show="iframeScreenVisible"></div>
+              <div class="iframe-screen noselect" v-show="iframeScreenVisible"></div>
               <FullScreenBar :getIframeBody="getIframeBody" @runCode="runCode" v-show="iframeFullScreen"
                 @exitFullScreen="changeFullScreenState"></FullScreenBar>
               <iframe
@@ -27,7 +27,7 @@
                 frameborder="0" id="iframe" name="iframe" ref="iframeBox"
                 sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts"
                 scrolling="yes" allowfullscreen="true" :src="`${publicPath}html/instance.html`"></iframe>
-              <div class="iframe-width" v-show="showIframeWidth">{{iframeWidth}}px</div>
+              <div class="iframe-width noselect" v-show="showIframeWidth">{{iframeWidth}}px</div>
             </div>
             <div class="console-box" :style="{ height: `${consoleHeight}px` }">
               <Console></Console>
@@ -111,8 +111,7 @@ export default {
       new ShortcutHandler().install()
       // Initialize console and execute the code once
       new IframeConsole(this.$refs.iframeBox)
-      this.runCode().then((logs) => {
-        this.consoleInfo = logs
+      this.runCode().then(() => {
         this.iframeInit = true
       })
     })
@@ -152,6 +151,7 @@ export default {
       'handleIframeWVisible',
       'handleEditorW',
       'handleConsoleInfo',
+      'handleConsoleInfoCount',
     ]),
     viewResize(e) {
       // Drag the dividing line with mouse to change the width of iframe and editor
@@ -240,6 +240,9 @@ export default {
       setTimeout(async () => {
         const handler = new IframeHandler(iframe)
         await handler.insertCode({ HTMLCode, CSSCode, JSCode }, links, isMD)
+        const logs = docConsole.getLogs()
+        this.calcConsoleInfoCount(logs)
+        this.consoleInfo = logs
         iframe.contentWindow.onerror = (msg, _, row, col) => {
           docConsole.consoleInfo.push({
             type: 'system-error',
@@ -252,8 +255,6 @@ export default {
         if (isMD) this.initSyncScroll(iframe)
         this.isCompiling = false
       }, daley)
-      // Get the logs of console and return
-      return docConsole.getLogs()
     },
     initSyncScroll(iframe) {
       // Initialize the sync scroll for markdown
@@ -274,6 +275,19 @@ export default {
     },
     cursorPosChanged(pos) {
       this.cursorPos = pos
+    },
+    calcConsoleInfoCount(consoleInfo) {
+      const consoleInfoCount = { error: 0, warn: 0, info: 0 }
+      for (let item of consoleInfo) {
+        const type = item.type
+        switch (item.type) {
+          case 'error':
+          case 'warn':
+          case 'info':
+            consoleInfoCount[type]++
+        }
+      }
+      this.handleConsoleInfoCount(consoleInfoCount)
     },
   },
 }

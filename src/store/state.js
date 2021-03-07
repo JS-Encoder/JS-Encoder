@@ -37,4 +37,9 @@ export default {
     highlight: true,
   },
   consoleInfo: [],
+  consoleInfoCount: {
+    error: 0,
+    warn: 0,
+    info: 0
+  }
 }

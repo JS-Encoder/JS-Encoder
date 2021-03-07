@@ -17,17 +17,17 @@ class IframeHandler {
    * @param {object} links 外部链接集合
    * @param {boolean} isMD 是否为markdown模式
    */
-  async insertCode(code, links, isMD) {
+  async insertCode (code, links, isMD) {
     const { HTMLCode, CSSCode, JSCode } = code
     const { cssLinks, JSLinks } = links
     const iDoc = this.iframe.contentWindow.document
     let extCss = '',
       extJS = ''
-    for (let i = 0, k = cssLinks.length; i < k; i++) {
+    for (let i = 0, k = cssLinks.length;i < k;i++) {
       const linkStr = `<link href="${cssLinks[i]}" rel="stylesheet">\n`
       extCss += linkStr
     }
-    for (let i = 0, k = JSLinks.length; i < k; i++) {
+    for (let i = 0, k = JSLinks.length;i < k;i++) {
       const linkStr = `<script src="${JSLinks[i]}"></script>\n`
       extJS += linkStr
     }
@@ -50,19 +50,24 @@ class IframeHandler {
     </html>
     `)
     iDoc.close()
-    this.iframe.onload = () => {
-      if (isMD) {
-        this.renderMathFormula()
-        this.renderFlowchart()
+
+    return new Promise((resolve) => {
+      this.iframe.onload = () => {
+        console.log('loaded')
+        if (isMD) {
+          this.renderMathFormula()
+          this.renderFlowchart()
+        }
+        this.insertScript(JSCode)
+        resolve()
       }
-      this.insertScript(JSCode)
-    }
+    })
   }
   /**
    * 向iframe中插入script标签
    * @param string JSCode
    */
-  async insertScript(JSCode) {
+  async insertScript (JSCode) {
     const doc = this.iframe.contentWindow.document
     const script = doc.createElement('script')
     script.text = JSCode
@@ -71,7 +76,7 @@ class IframeHandler {
   /**
    * 渲染markdown中的数学公式
    */
-  async renderMathFormula() {
+  async renderMathFormula () {
     const iBody = this.iframe.contentWindow.document.body
     let KaTeX
     if (!loader.get('KaTeX')) {
@@ -93,10 +98,10 @@ class IframeHandler {
   /**
    * 渲染markdown中的流程图
    */
-  renderFlowchart() {
+  renderFlowchart () {
     const iframeWindow = this.iframe.contentWindow
     const flows = iframeWindow.document.querySelectorAll('.language-flow')
-    for (let i = 0, k = flows.length; i < k; i++) {
+    for (let i = 0, k = flows.length;i < k;i++) {
       const currentFlow = flows[i]
       const pre = currentFlow.parentNode
       const chartBox = document.createElement('div')
@@ -106,7 +111,7 @@ class IframeHandler {
       iframeWindow.flowchart.parse(code).drawSVG(`flow${i}`)
     }
   }
-  clearIframe() {
+  clearIframe () {
     IframeHandler.instance = null
   }
 }

@@ -27,7 +27,7 @@ export default class Console {
    * 为iframe.window添加一个可执行命令的方法exeJSEncoderConsoleCmd，旨在替代eval
    * 初始化控制台各个可用方法
    */
-  init() {
+  init () {
     this.consoleMethods = ['log', 'info', 'warn', 'error', 'dir', 'debug', 'time', 'timeLog', 'timeEnd', 'clear']
     this.ableMethods = ['log', 'dir', 'info', 'warn', 'error']
     const consoleInfo = this.consoleInfo
@@ -82,7 +82,7 @@ export default class Console {
   /**
    * 清除控制台所有日志
    */
-  clear() {
+  clear () {
     const consoleInfo = this.consoleInfo
     consoleInfo.splice(0, consoleInfo.length, '')
     consoleInfo.pop()
@@ -90,13 +90,13 @@ export default class Console {
   /**
    * 获取日志列表
    */
-  getLogs() {
+  getLogs () {
     return this.consoleInfo
   }
   /**
    * 刷新控制台，因为执行代码时需要先将iframe重新载入，重新载入iframe需要重新做一次constructor中的操作
    */
-  refresh(iframe) {
+  refresh (iframe) {
     this.window = iframe.contentWindow
     this.console = this.window.console
     this.timerMap = new Map()
@@ -110,7 +110,7 @@ export default class Console {
    * 最后输出命令的返回值
    * @param {string} cmd
    */
-  exeCmd(cmd) {
+  exeCmd (cmd) {
     let result
     this.console.log(cmd)
     try {
@@ -119,11 +119,12 @@ export default class Console {
       // } else {
       //   result = this.window.exeJSEncoderConsoleCmd(cmd)
       // }
-      if (cmd === 'window') {
+      if (cmd === 'window' || cmd === 'console') {
         this.consoleInfo.push({
           type: 'error',
           content: 'Sorry, this log was too large for our console. You might need to use the browser console instead.',
         })
+        console.log(this.window.eval(cmd))
         return void 0
       }
       result = this.window.eval(`let x=(${cmd});x`)
@@ -138,6 +139,7 @@ export default class Console {
         return void 0
       }
     }
+    console.log(result)
     const log = this.print({
       type: 'print',
       content: [result],
@@ -149,7 +151,7 @@ export default class Console {
    * 设置计时器，如果该计时器已存在就不做操作
    * @param string name 计时器名称
    */
-  setTimer() {
+  setTimer () {
     const timerMap = this.timerMap
     if (timerMap.get(name)) return void 0
     timerMap.set(name, performance.now())
@@ -157,7 +159,7 @@ export default class Console {
   /**
    * @param string name 计时器名称
    */
-  getTimer(name) {
+  getTimer (name) {
     const time = this.calcTime(name)
     this.timerMap.delete(name)
     return time
@@ -167,7 +169,7 @@ export default class Console {
    * @param string name 计时器名称
    * @return time 时间差
    */
-  calcTime(name) {
+  calcTime (name) {
     const time = this.timerMap.get(name)
     if (!time) return void 0
     return `${name}: ${performance.now() - time} ms`
@@ -181,7 +183,7 @@ export default class Console {
    * @param {array} content 日志内容
    * @return {object} finLog 最终显示在页面上的日志信息
    */
-  print(item) {
+  print (item) {
     let { type, content } = item
     if (!(this.ableMethods.indexOf(type) >= 0) && type !== 'print') {
       return {
@@ -224,7 +226,7 @@ export default class Console {
    * 由于error和warn与log的显示样式不同，需要做不同处理，直接将content的内容转化为字符串
    * @param array content
    */
-  contentToString(content) {
+  contentToString (content) {
     let result = ''
     const length = content.length
     const afterStr = ' '
@@ -261,7 +263,7 @@ export default class Console {
           result = result + stringifyDOM(item)
           break
         case 'HTMLCollection':
-          for (let i = 0; i < item.length; i++) {
+          for (let i = 0;i < item.length;i++) {
             result = result + stringifyDOM(item[i]) + '\n'
           }
           break
@@ -274,7 +276,7 @@ export default class Console {
    * @param Array content 输出内容
    * @return finLog 最终显示在页面上的日志
    */
-  log(content) {
+  log (content) {
     const result = []
     if (!content.length) return ''
     content.forEach((item) => {

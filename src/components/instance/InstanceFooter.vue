@@ -13,6 +13,11 @@
     <div class="flex flex-sh spaces flex-ai">
       <span>Spaces: {{instanceSetting.indentSpaces}}</span>
     </div>
+    <div class="console-info-count flex flex-ai">
+      <span><i class="icon iconfont icon-error"></i>{{consoleInfoCount.error}}</span>
+      <span><i class="icon iconfont icon-warn"></i>{{consoleInfoCount.warn}}</span>
+      <span><i class="icon iconfont icon-info1"></i>{{consoleInfoCount.info}}</span>
+    </div>
   </div>
 </template>
 <script>
@@ -25,8 +30,8 @@ export default {
   data() {
     return {}
   },
-  computed:{
-    ...mapState(['instanceSetting'])
+  computed: {
+    ...mapState(['instanceSetting', 'consoleInfoCount']),
   },
   methods: {},
   components: {},
@@ -49,8 +54,20 @@ export default {
       padding-left: 5px;
     }
   }
-  .cursor-pos,.spaces{
-    padding-right: 10px;
+  .cursor-pos,
+  .spaces {
+    padding-right: 15px;
+  }
+  .console-info-count {
+    span {
+      display: inline-flex;
+      align-items: center;
+      padding-right: 5px;
+      i {
+        font-size: 14px;
+        padding-right: 2px;
+      }
+    }
   }
 }
 </style>

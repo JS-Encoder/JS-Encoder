@@ -63,5 +63,8 @@ export default {
   },
   handleConsoleInfo: (state, logs) => {
     state.consoleInfo = logs
+  },
+  handleConsoleInfoCount: (state, count) => {
+    state.consoleInfoCount = count
   }
 }
