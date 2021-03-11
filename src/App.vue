@@ -37,8 +37,9 @@ export default {
       // Need to subtract the width of left sidebar and cutting line
       const avgW = (clientW - 41 - 4) / 2
       if (avgW % 1 !== 0) {
-        this.handleIframeW(Math.floor(avgW))
-        this.handleEditorW(avgW + 1)
+        const floorAvg = Math.floor(avgW)
+        this.handleIframeW(floorAvg)
+        this.handleEditorW(floorAvg + 1)
       } else {
         this.handleIframeW(avgW)
         this.handleEditorW(avgW)

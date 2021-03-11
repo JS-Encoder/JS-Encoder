@@ -45,6 +45,9 @@
     &:focus {
       border-color: $primary;
     }
+    &::-webkit-input-placeholder {
+      color: $describe;
+    }
   }
   & > .el-input-group__prepend {
     background-color: $thirdColor;
@@ -69,6 +72,9 @@
     &:hover,
     &:focus {
       border-color: $primary;
+    }
+    &::-webkit-input-placeholder {
+      color: $describe;
     }
   }
   & > .el-input__count {
