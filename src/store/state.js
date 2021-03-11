@@ -19,6 +19,7 @@ export default {
     indentSpaces: 2,
     fontFamily: 'Consolas',
     fontSize: 14,
+    headTags: ''
   },
   instanceExtLinks: {
     cssLinks: [],
