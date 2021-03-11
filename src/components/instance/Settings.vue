@@ -26,7 +26,7 @@
       <span class="title">{{settingsLang.indent.title}}</span>
       <el-checkbox v-model="settings.tabIndent">{{settingsLang.indent.tabIndent}}</el-checkbox>
       <span class="title">{{settingsLang.indent.indentSpaces}}: {{settings.indentSpaces}}</span>
-      <el-slider :min="0" :max="8" :step="2" show-stops v-model="settings.indentSpaces"></el-slider>
+      <el-slider :min="0" :max="8" :step="2" :show-tooltip="false" v-model="settings.indentSpaces"></el-slider>
     </div>
     <div class="fonts">
       <span class="title">{{settingsLang.fonts.title}}</span>
@@ -43,6 +43,12 @@
           <span class="unit">(px)</span>
         </div>
       </div>
+    </div>
+    <div class="head-tags">
+      <span class="title">{{settingsLang.headTags.title}}</span>
+      <el-input class="head-tags-input" type="textarea" :rows="3" :placeholder="settingsLang.headTags.describe"
+        v-model="settings.headTags">
+      </el-input>
     </div>
   </el-dialog>
 </template>
@@ -64,6 +70,7 @@ export default {
         indentSpaces: 2,
         fontFamily: 'Consolas',
         fontSize: 14,
+        headTags: '',
       },
       fontList,
     }
@@ -146,11 +153,25 @@ export default {
   .font-size {
     margin-top: 10px;
     .title {
+      color: $beforeFocus;
       width: 100px;
     }
     .unit {
       margin-left: 5px;
       color: $beforeFocus;
+    }
+  }
+}
+.head-tags {
+  margin-top: 10px;
+  font-weight: 600;
+  .title {
+    color: $afterFocus;
+  }
+  /deep/.head-tags-input {
+    margin-top: 10px;
+    .el-textarea__inner {
+      font-family: $codeFont;
     }
   }
 }
