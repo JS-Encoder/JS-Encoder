@@ -239,7 +239,13 @@ export default {
       })
       setTimeout(async () => {
         const handler = new IframeHandler(iframe)
-        await handler.insertCode({ HTMLCode, CSSCode, JSCode }, links, isMD)
+        const headTags = this.instanceSetting.headTags
+        await handler.insertCode(
+          { HTMLCode, CSSCode, JSCode },
+          links,
+          isMD,
+          headTags
+        )
         const logs = docConsole.getLogs()
         this.calcConsoleInfoCount(logs)
         this.consoleInfo = logs

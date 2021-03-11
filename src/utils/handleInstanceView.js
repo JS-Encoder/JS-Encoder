@@ -16,8 +16,9 @@ class IframeHandler {
    * @param {object} code 代码集合
    * @param {object} links 外部链接集合
    * @param {boolean} isMD 是否为markdown模式
+   * @param {string} headTags 需要添加在头部的标签字符串
    */
-  async insertCode (code, links, isMD) {
+  async insertCode (code, links, isMD, headTags) {
     const { HTMLCode, CSSCode, JSCode } = code
     const { cssLinks, JSLinks } = links
     const iDoc = this.iframe.contentWindow.document
@@ -36,11 +37,12 @@ class IframeHandler {
     <!DOCTYPE html>
     <html lang="en">
     <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    ${headTags}
     ${extCss}
     ${extJS}
     <title></title>
-    <meta charset="UTF-8">
     <style>
     ${CSSCode}
     </style>
@@ -53,7 +55,6 @@ class IframeHandler {
 
     return new Promise((resolve) => {
       this.iframe.onload = () => {
-        console.log('loaded')
         if (isMD) {
           this.renderMathFormula()
           this.renderFlowchart()

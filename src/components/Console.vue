@@ -172,6 +172,7 @@ export default {
       'handleIframeHVisible',
       'handleConsoleSettings',
       'handleConsoleInfo',
+      'handleConsoleInfoCount',
     ]),
     resize(e) {
       /**
@@ -276,6 +277,11 @@ export default {
     clearLogs() {
       new IframeConsole().clear()
       this.handleConsoleInfo([])
+      this.handleConsoleInfoCount({
+        error: 0,
+        warn: 0,
+        info: 0,
+      })
     },
     cmMounted(index) {
       // The codemirror instances of console will be fold after the instance was mounted

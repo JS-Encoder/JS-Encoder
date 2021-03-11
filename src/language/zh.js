@@ -88,6 +88,10 @@ module.exports = {
         fontFamily: '字体名',
         fontSize: '字体大小',
       },
+      headTags: {
+        title: '头部标签',
+        describe: '输入你想在 <head> 中添加的标签如 <meta...>'
+      }
     },
     download: {
       title: '文件下载',

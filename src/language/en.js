@@ -71,6 +71,10 @@ module.exports = {
         fontFamily: 'Font family',
         fontSize: 'Font size',
       },
+      headTags: {
+        title: 'Tags of <head>',
+        describe: 'Type the tags you want to add to <head> like <meta...>'
+      }
     },
     download: {
       title: 'File Download',
