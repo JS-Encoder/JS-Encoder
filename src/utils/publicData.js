@@ -12,21 +12,16 @@ module.exports = {
   limitMimeType: ['html', 'css', 'js', 'md', 'pug', 'sass', 'scss', 'less', 'styl', 'ts', 'coffee'],
   // 代码字体
   fontList: [
-    {
-      name: 'Consolas',
-    },
-    {
-      name: 'Monaco',
-    },
-    {
-      name: 'Courier New',
-    },
-    {
-      name: 'Fira Code',
-    },
-    {
-      name: 'Hack',
-    },
+    'Consolas',
+    'Monaco',
+    'Courier Prime',
+    'JetBrains Mono',
+    'Fira Code',
+    'Hack',
+    'Source Code Pro',
+    'Space Mono',
+    'IBM Plex Mono',
+    'Inconsolata'
   ],
   // 不同语言对应的icon
   iconMap: {

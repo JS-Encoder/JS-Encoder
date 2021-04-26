@@ -33,7 +33,7 @@
       <div class="font-family flex flex-ai">
         <span class="title flex-sh">{{settingsLang.fonts.fontFamily}}</span>
         <el-select v-model="settings.fontFamily">
-          <el-option v-for="font in fontList" :key="font.name" :label="font.name" :value="font.name"></el-option>
+          <el-option v-for="font in fontList" :key="font" :label="font" :value="font"></el-option>
         </el-select>
       </div>
       <div class="font-size flex flex-ai">

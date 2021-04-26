@@ -18,7 +18,7 @@ class IframeHandler {
    * @param {boolean} isMD 是否为markdown模式
    * @param {string} headTags 需要添加在头部的标签字符串
    */
-  async insertCode (code, links, isMD, headTags) {
+  async insertCode (code, links, isMD, headTags = '') {
     const { HTMLCode, CSSCode, JSCode } = code
     const { cssLinks, JSLinks } = links
     const iDoc = this.iframe.contentWindow.document
