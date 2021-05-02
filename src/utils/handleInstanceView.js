@@ -52,15 +52,15 @@ class IframeHandler {
     </html>
     `)
     iDoc.close()
-
     return new Promise((resolve) => {
       this.iframe.onload = () => {
         if (isMD) {
           this.renderMathFormula()
           this.renderFlowchart()
         }
-        this.insertScript(JSCode)
-        resolve()
+        resolve(() => {
+          this.insertScript(JSCode)
+        })
       }
     })
   }
@@ -68,7 +68,7 @@ class IframeHandler {
    * 向iframe中插入script标签
    * @param string JSCode
    */
-  async insertScript (JSCode) {
+  insertScript (JSCode) {
     const doc = this.iframe.contentWindow.document
     const script = doc.createElement('script')
     script.text = JSCode
