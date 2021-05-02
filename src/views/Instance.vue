@@ -5,29 +5,55 @@
       <div class="main-body flex">
         <Sidebar class="flex-sh"></Sidebar>
         <div class="flex flex-1 area">
-          <div class="code-area flex flex-clo" :style="{width:`${editorWidth}px`}">
+          <div class="code-area flex flex-clo" :style="{ width: `${editorWidth}px` }">
             <EditorTabBar></EditorTabBar>
-            <MarkdownTools :getCodeMirror="getCodeMirror" :getIframeBody="getIframeBody"
-              v-if="mdToolbarVisible&&currentTab==='Markdown'">
+            <MarkdownTools
+              :getCodeMirror="getCodeMirror"
+              :getIframeBody="getIframeBody"
+              v-if="mdToolbarVisible && currentTab === 'Markdown'"
+            >
             </MarkdownTools>
-            <Editor @runCode="runCode" :ref="'editor'+index" class="flex-1" v-for="(item, index) in  preprocessor"
-              :key="index" :codeMode="item" :index="index" @cursorPosChanged="cursorPosChanged"
-              :showCodeArea="item===currentTab" v-show="item===currentTab">
+            <Editor
+              @runCode="runCode"
+              :ref="'editor' + index"
+              class="flex-1"
+              v-for="(item, index) in preprocessor"
+              :key="index"
+              :codeMode="item"
+              :index="index"
+              @cursorPosChanged="cursorPosChanged"
+              :showCodeArea="item === currentTab"
+              v-show="item === currentTab"
+            >
             </Editor>
           </div>
           <div v-if="resizeVisible" class="resize borbox" @mousedown="viewResize"></div>
-          <div class="view-area flex flex-clo" :style="{width:`${iframeWidth}px`}">
+          <div class="view-area flex flex-clo" :style="{ width: `${iframeWidth}px` }">
             <ViewTabBar @fullScreen="changeFullScreenState" @runCode="runCode"></ViewTabBar>
-            <div class="iframe-box" :style="{ height: `${iframeHeight}px` }" :class="iframeFullScreen?'full-screen':''">
+            <div
+              class="iframe-box"
+              :style="{ height: `${iframeHeight}px` }"
+              :class="iframeFullScreen ? 'full-screen' : ''"
+            >
               <div class="iframe-screen noselect" v-show="iframeScreenVisible"></div>
-              <FullScreenBar :getIframeBody="getIframeBody" @runCode="runCode" v-show="iframeFullScreen"
-                @exitFullScreen="changeFullScreenState"></FullScreenBar>
+              <FullScreenBar
+                :getIframeBody="getIframeBody"
+                @runCode="runCode"
+                v-show="iframeFullScreen"
+                @exitFullScreen="changeFullScreenState"
+              ></FullScreenBar>
               <iframe
                 allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media"
-                frameborder="0" id="iframe" name="iframe" ref="iframeBox"
+                frameborder="0"
+                id="iframe"
+                name="iframe"
+                ref="iframeBox"
                 sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts"
-                scrolling="yes" allowfullscreen="true" :src="`${publicPath}html/instance.html`"></iframe>
-              <div class="iframe-width noselect" v-show="showIframeWidth">{{iframeWidth}}px</div>
+                scrolling="yes"
+                allowfullscreen="true"
+                :src="`${publicPath}html/instance.html`"
+              ></iframe>
+              <div class="iframe-width noselect" v-show="showIframeWidth">{{ iframeWidth }}px</div>
             </div>
             <div class="console-box" :style="{ height: `${consoleHeight}px` }">
               <Console></Console>
@@ -105,6 +131,7 @@ export default {
     MarkdownTools,
   },
   mounted() {
+    console.log('nihao')
     this.$nextTick(() => {
       this.isChildrenMounted = true
       // Initialize the shortcut key
@@ -201,17 +228,17 @@ export default {
       if (!isMD) {
         if (this.iframeInit) {
           // Reload is essential because the old javascript code has effective for iframe
-          iframe.contentWindow.location.reload(true)
+          iframe.src += ''
+          // 使用reload重载似乎在新版chrome和edge中会加载外部的vueApp，因此使用src代替
+          // iframe.contentWindow.location.reload()
           const consoleSettings = this.consoleSettings
           if (consoleSettings.clear) {
             docConsole.clear()
             this.handleConsoleInfo([])
           }
-          await new Promise((resolve, _) => {
+          await new Promise((resolve) => {
             iframe.onload = () => {
-              if (!isMD) {
-                docConsole.refresh(iframe)
-              }
+              docConsole.refresh(iframe)
               iframe.onload = null
               resolve()
             }
@@ -225,10 +252,7 @@ export default {
         })
       } else {
         // Load the highlight and KaTeX when the preprocessor is markdown
-        links.cssLinks = [
-          '../css/markdown-style.css',
-          'https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css',
-        ]
+        links.cssLinks = ['../css/markdown-style.css', 'https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css']
         links.JSLinks = [
           'https://cdn.bootcdn.net/ajax/libs/raphael/2.3.0/raphael.min.js',
           'https://cdn.bootcdn.net/ajax/libs/flowchart/1.15.0/flowchart.min.js',
@@ -240,24 +264,21 @@ export default {
       setTimeout(async () => {
         const handler = new IframeHandler(iframe)
         const headTags = this.instanceSetting.headTags
-        await handler.insertCode(
-          { HTMLCode, CSSCode, JSCode },
-          links,
-          isMD,
-          headTags
-        )
+        await handler.insertCode({ HTMLCode, CSSCode, JSCode }, links, isMD, headTags).then((callback) => {
+          iframe.contentWindow.onerror = (msg, _, row, col) => {
+            docConsole.consoleInfo.push({
+              type: 'system-error',
+              content: msg,
+              row,
+              col,
+            })
+            return void 0
+          }
+          callback()
+        })
         const logs = docConsole.getLogs()
         this.calcConsoleInfoCount(logs)
         this.consoleInfo = logs
-        iframe.contentWindow.onerror = (msg, _, row, col) => {
-          docConsole.consoleInfo.push({
-            type: 'system-error',
-            content: msg,
-            row,
-            col,
-          })
-          return void 0
-        }
         if (isMD) this.initSyncScroll(iframe)
         this.isCompiling = false
       }, daley)
@@ -272,9 +293,7 @@ export default {
     },
     getCodeMirror(index) {
       // Get the instance of cm after the child components mounted successful
-      return this.isChildrenMounted
-        ? this.$refs[`editor${index}`][index].getCodeMirror()
-        : void 0
+      return this.isChildrenMounted ? this.$refs[`editor${index}`][index].getCodeMirror() : void 0
     },
     getIframeBody() {
       return this.$refs.iframeBox
