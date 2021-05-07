@@ -131,7 +131,6 @@ export default {
     MarkdownTools,
   },
   mounted() {
-    console.log('nihao')
     this.$nextTick(() => {
       this.isChildrenMounted = true
       // Initialize the shortcut key
