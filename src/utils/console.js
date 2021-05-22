@@ -151,7 +151,7 @@ export default class Console {
    * 设置计时器，如果该计时器已存在就不做操作
    * @param string name 计时器名称
    */
-  setTimer () {
+  setTimer (name) {
     const timerMap = this.timerMap
     if (timerMap.get(name)) return void 0
     timerMap.set(name, performance.now())
