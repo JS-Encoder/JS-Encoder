@@ -252,7 +252,12 @@ export default {
       } else {
         // Load the highlight and KaTeX when the preprocessor is markdown
         // 为了在github page上成功展示效果，需要在路径前加上/JS-Encoder-Enhance
-        links.cssLinks = ['/css/markdown-style.css', 'https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css']
+        const uriPre =
+          window.location.href === 'https://longgererer.github.io/JS-Encoder-Enhance/' ? '/JS-Encoder-Enhance' : ''
+        links.cssLinks = [
+          `${uriPre}/css/markdown-style.css`,
+          'https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css',
+        ]
         links.JSLinks = [
           'https://cdn.bootcdn.net/ajax/libs/raphael/2.3.0/raphael.min.js',
           'https://cdn.bootcdn.net/ajax/libs/flowchart/1.15.0/flowchart.min.js',
