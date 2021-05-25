@@ -315,6 +315,8 @@ export default {
           case 'warn':
           case 'info':
             consoleInfoCount[type]++
+          case 'system-error':
+            consoleInfoCount.error++
         }
       }
       this.handleConsoleInfoCount(consoleInfoCount)
