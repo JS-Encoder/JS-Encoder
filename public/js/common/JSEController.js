@@ -2,8 +2,8 @@ Object.defineProperty(window, 'JSE', {
   value: {
     InfiniteLoopController: {
       _timeConfig: {
-        maxSumExeTime: 5000, // 每个循环最大累计执行时间
-        maxLoopCount: 10000000 // 循环最大次数
+        maxSumExeTime: 3000, // 每个循环最大累计执行时间
+        maxLoopCount: 1000000 // 循环最大次数
       },
       _loopMap: new Map(),
       _initLoop (loopID) { // 初始化loop
