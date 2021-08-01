@@ -7,52 +7,27 @@
         <div class="flex flex-1 area">
           <div class="code-area flex flex-clo" :style="{ width: `${editorWidth}px` }">
             <EditorTabBar></EditorTabBar>
-            <MarkdownTools
-              :getCodeMirror="getCodeMirror"
-              :getIframeBody="getIframeBody"
-              v-if="mdToolbarVisible && currentTab === 'Markdown'"
-            >
+            <MarkdownTools :getCodeMirror="getCodeMirror" :getIframeBody="getIframeBody"
+              v-if="mdToolbarVisible && currentTab === 'Markdown'">
             </MarkdownTools>
-            <Editor
-              @runCode="runCode"
-              :ref="'editor' + index"
-              class="flex-1"
-              v-for="(item, index) in preprocessor"
-              :key="index"
-              :codeMode="item"
-              :index="index"
-              @cursorPosChanged="cursorPosChanged"
-              :showCodeArea="item === currentTab"
-              v-show="item === currentTab"
-            >
+            <Editor @runCode="runCode" :ref="'editor' + index" class="flex-1" v-for="(item, index) in preprocessor"
+              :key="index" :codeMode="item" :index="index" @cursorPosChanged="cursorPosChanged"
+              :showCodeArea="item === currentTab" v-show="item === currentTab">
             </Editor>
           </div>
           <div v-if="resizeVisible" class="resize borbox" @mousedown="viewResize"></div>
           <div class="view-area flex flex-clo" :style="{ width: `${iframeWidth}px` }">
             <ViewTabBar @fullScreen="changeFullScreenState" @runCode="runCode"></ViewTabBar>
-            <div
-              class="iframe-box"
-              :style="{ height: `${iframeHeight}px` }"
-              :class="iframeFullScreen ? 'full-screen' : ''"
-            >
+            <div class="iframe-box" :style="{ height: `${iframeHeight}px` }"
+              :class="iframeFullScreen ? 'full-screen' : ''">
               <div class="iframe-screen noselect" v-show="iframeScreenVisible"></div>
-              <FullScreenBar
-                :getIframeBody="getIframeBody"
-                @runCode="runCode"
-                v-show="iframeFullScreen"
-                @exitFullScreen="changeFullScreenState"
-              ></FullScreenBar>
+              <FullScreenBar :getIframeBody="getIframeBody" @runCode="runCode" v-show="iframeFullScreen"
+                @exitFullScreen="changeFullScreenState"></FullScreenBar>
               <iframe
                 allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media"
-                frameborder="0"
-                id="iframe"
-                name="iframe"
-                ref="iframeBox"
+                frameborder="0" id="iframe" name="iframe" ref="iframeBox"
                 sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts"
-                scrolling="yes"
-                allowfullscreen="true"
-                :src="`${publicPath}html/instance.html`"
-              ></iframe>
+                scrolling="yes" allowfullscreen="true" :src="`${publicPath}html/instance.html`"></iframe>
               <div class="iframe-width noselect" v-show="showIframeWidth">{{ iframeWidth }}px</div>
             </div>
             <div class="console-box" :style="{ height: `${consoleHeight}px` }">
@@ -97,6 +72,8 @@ import SyncScroll from '@utils/syncScroll'
 import IframeHandler from '@utils/handleInstanceView'
 import IframeConsole from '@utils/console'
 import ShortcutHandler from '@utils/handleShortcut'
+import iframeLinks from '@utils/iframeLinks'
+
 export default {
   data() {
     return {
@@ -251,17 +228,8 @@ export default {
         })
       } else {
         // Load the highlight and KaTeX when the preprocessor is markdown
-        // 为了在github page上成功展示效果，需要在路径前加上/JS-Encoder-Enhance
-        const uriPre =
-          window.location.href === 'https://longgererer.github.io/JS-Encoder-Enhance/' ? '/JS-Encoder-Enhance' : ''
-        links.cssLinks = [
-          `${uriPre}/css/markdown-style.css`,
-          'https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css',
-        ]
-        links.JSLinks = [
-          'https://cdn.bootcdn.net/ajax/libs/raphael/2.3.0/raphael.min.js',
-          'https://cdn.bootcdn.net/ajax/libs/flowchart/1.15.0/flowchart.min.js',
-        ]
+        links.cssLinks = iframeLinks.mdCSS
+        links.JSLinks = iframeLinks.mdJS
       }
       await compileHTML(code.HTML, prep[0]).then((res) => {
         HTMLCode = res
@@ -269,18 +237,20 @@ export default {
       setTimeout(async () => {
         const handler = new IframeHandler(iframe)
         const headTags = this.instanceSetting.headTags
-        await handler.insertCode({ HTMLCode, CSSCode, JSCode }, links, isMD, headTags).then((callback) => {
-          iframe.contentWindow.onerror = (msg, _, row, col) => {
-            docConsole.consoleInfo.push({
-              type: 'system-error',
-              content: msg,
-              row,
-              col,
-            })
-            return void 0
-          }
-          callback()
-        })
+        await handler
+          .insertCode({ HTMLCode, CSSCode, JSCode }, links, isMD, headTags)
+          .then((callback) => {
+            iframe.contentWindow.onerror = (msg, _, row, col) => {
+              docConsole.consoleInfo.push({
+                type: 'system-error',
+                content: msg,
+                row,
+                col,
+              })
+              return void 0
+            }
+            callback()
+          })
         const logs = docConsole.getLogs()
         this.calcConsoleInfoCount(logs)
         this.consoleInfo = logs
@@ -298,7 +268,9 @@ export default {
     },
     getCodeMirror(index) {
       // Get the instance of cm after the child components mounted successful
-      return this.isChildrenMounted ? this.$refs[`editor${index}`][index].getCodeMirror() : void 0
+      return this.isChildrenMounted
+        ? this.$refs[`editor${index}`][index].getCodeMirror()
+        : void 0
     },
     getIframeBody() {
       return this.$refs.iframeBox
