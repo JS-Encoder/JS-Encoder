@@ -73,6 +73,7 @@ import IframeHandler from '@utils/handleInstanceView'
 import IframeConsole from '@utils/console'
 import ShortcutHandler from '@utils/handleShortcut'
 import iframeLinks from '@utils/iframeLinks'
+import handleLoop from '@utils/handleLoop'
 
 export default {
   data() {
@@ -193,8 +194,7 @@ export default {
       const iframe = this.$refs.iframeBox
       const code = this.instanceCode
       const prep = this.preprocessor
-      // Deep copy the external links to avoid the effect state
-      const links = deepCopy(this.instanceExtLinks)
+      let links = {}
       const isMD = this.isMD
       let HTMLCode = '',
         CSSCode = '',
@@ -224,8 +224,13 @@ export default {
           CSSCode = res
         })
         await compileJS(code.JavaScript, prep[2]).then((res) => {
-          JSCode = res
+          // Switch raw JavaScript code to code that prevents infinite loops
+          JSCode = handleLoop(res)
         })
+        // Deep copy the external links to avoid the effect state
+        links = deepCopy(this.instanceExtLinks)
+        // add common js to links
+        links.JSLinks = [...links.JSLinks, ...iframeLinks.commonJS]
       } else {
         // Load the highlight and KaTeX when the preprocessor is markdown
         links.cssLinks = iframeLinks.mdCSS

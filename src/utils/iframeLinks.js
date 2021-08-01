@@ -6,5 +6,8 @@ export default {
   mdJS: [
     'https://cdn.bootcdn.net/ajax/libs/raphael/2.3.0/raphael.min.js',
     'https://cdn.bootcdn.net/ajax/libs/flowchart/1.15.0/flowchart.min.js'
+  ],
+  commonJS: [
+    '/js/common/JSEController.js'
   ]
 }

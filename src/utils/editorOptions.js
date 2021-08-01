@@ -6,6 +6,7 @@
 
 import CodeMirror from 'codemirror'
 import markdownTools from './markdownTools'
+
 // 语言高亮
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/pug/pug'
