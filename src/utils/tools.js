@@ -10,12 +10,12 @@
  * @param {number} delay
  * @return {function}
  */
-function debounce(func, delay) {
+function debounce (func, delay) {
   let timer = null
-  return function(...params) {
+  return function (...params) {
     let self = this
     timer && clearTimeout(timer)
-    timer = setTimeout(function() {
+    timer = setTimeout(function () {
       func.apply(self, params)
     }, delay)
   }
@@ -28,7 +28,7 @@ function debounce(func, delay) {
  * @param {number} delay
  * @return {function}
  */
-function throttle(func, delay) {
+function throttle (func, delay) {
   let start = 0
   return (...params) => {
     let now = new Date().getTime()
@@ -44,7 +44,7 @@ function throttle(func, delay) {
  * @param {array} arr
  * @return {boolean} isBase
  */
-function judgeBaseArray(arr) {
+function judgeBaseArray (arr) {
   let isBase = true
   arr.forEach((item) => {
     const type = judgeType(item)
@@ -67,7 +67,7 @@ function judgeBaseArray(arr) {
  * @param {any} data
  * @return {string} type
  */
-function judgeType(data) {
+function judgeType (data) {
   if (data === null) return 'null'
   const type = typeof data
   if (type === 'object') return judgeObjectType(data)
@@ -78,7 +78,7 @@ function judgeType(data) {
  * @param {object} data
  * @return {string}
  */
-function judgeObjectType(data) {
+function judgeObjectType (data) {
   return Object.prototype.toString.call(data).slice(8, -1)
 }
 /**
@@ -86,7 +86,7 @@ function judgeObjectType(data) {
  * @param {object} strObj
  * @return {string} str
  */
-function JSONStringify(strObj) {
+function JSONStringify (strObj) {
   const type = judgeType(strObj)
   if (type !== 'Object' && type !== 'Array' && type !== 'Map') {
     return JSON.stringify(strObj)
@@ -99,7 +99,7 @@ function JSONStringify(strObj) {
   }
   let str = prefix
   const keys = getObjAllKeys(strObj)
-  for (let i = 0; i < keys.length; i++) {
+  for (let i = 0;i < keys.length;i++) {
     const key = keys[i]
     let value = strObj[key]
     if (type === 'Map') value = strObj.get(key)
@@ -153,7 +153,7 @@ function JSONStringify(strObj) {
  * @param {element} dom
  * @return {string} domStr
  */
-function stringifyDOM(dom) {
+function stringifyDOM (dom) {
   let objE = document.createElement('div')
   objE.appendChild(dom.cloneNode(true))
   const domStr = objE.innerHTML
@@ -165,7 +165,7 @@ function stringifyDOM(dom) {
  * @param {object} obj
  * @return {boolean}
  */
-function judgeWindow(obj) {
+function judgeWindow (obj) {
   const type = judgeType(obj)
   return type === 'global' || type === 'Window' || type === 'DOMWindow'
 }
@@ -174,7 +174,7 @@ function judgeWindow(obj) {
  * @param {object} obj
  * @return {array}
  */
-function getObjAllKeys(obj) {
+function getObjAllKeys (obj) {
   const type = judgeType(obj)
   if (type === 'Map') {
     const arr = []
@@ -201,7 +201,7 @@ function getObjAllKeys(obj) {
  * 复制信息到剪切板
  * @param {string} info
  */
-function copyInfo(info) {
+function copyInfo (info) {
   const input = document.createElement('input')
   input.value = info
   document.body.appendChild(input)
@@ -215,7 +215,7 @@ function copyInfo(info) {
  * @param {object|array} target
  * @return {object|array}
  */
-function deepCopy(target) {
+function deepCopy (target) {
   return JSON.parse(JSON.stringify(target))
 }
 /**
@@ -223,7 +223,7 @@ function deepCopy(target) {
  * @param {string} str 需要转义的字符串
  * @return {string} str
  */
-function escapeRegExp(str) {
+function escapeRegExp (str) {
   const regexp = /[\\^$.*+?()[\]{}|]/g
   return str && new RegExp(regexp.source).test(str) ? str.replace(regexp, '\\$&') : str
 }
@@ -231,7 +231,7 @@ function escapeRegExp(str) {
  * 判断当前操作系统是否为mac或ios
  * @return {boolean}
  */
-function isMac() {
+function isMac () {
   return /macintosh|mac os x/i.test(navigator.userAgent)
 }
 module.exports = {
