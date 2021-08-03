@@ -114,6 +114,7 @@ CodeMirror.hint.javascript = (cm) => {
   const curWord = start != end && curLine.slice(start, end)
   const regex = new RegExp('^' + curWord, 'i')
   const matchList = extraJsKeywords.filter((item) => item.match(regex))
+  if (inner === undefined) return void 0
   inner.list = [...inner.list, ...matchList]
   return inner
 }
