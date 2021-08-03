@@ -254,6 +254,12 @@ export default {
               })
               return void 0
             }
+            iframe.contentWindow.onunhandledrejection = (e) => {
+              docConsole.consoleInfo.push({
+                type: 'error',
+                content: `Unhandled promise rejection: ${e.reason}`
+              })
+            }
             callback()
           })
         const logs = docConsole.getLogs()
