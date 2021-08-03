@@ -28,8 +28,8 @@ export default class Console {
    * 初始化控制台各个可用方法
    */
   init () {
-    this.consoleMethods = ['log', 'info', 'warn', 'error', 'dir', 'debug', 'time', 'timeLog', 'timeEnd', 'clear']
-    this.ableMethods = ['log', 'dir', 'info', 'warn', 'error']
+    this.consoleMethods = ['log', 'info', 'warn', 'error', 'assert', 'dir', 'debug', 'time', 'timeLog', 'timeEnd', 'clear']
+    this.ableMethods = ['log', 'dir', 'info', 'warn', 'error', 'assert']
     const consoleInfo = this.consoleInfo
     const iframeConsole = this.console
     // this.window.exeJSEncoderConsoleCmd = cmd => Function(`return (${cmd})`)()
@@ -53,6 +53,19 @@ export default class Console {
           }
           case 'clear': {
             this.clear()
+            break
+          }
+          case 'assert': {
+            const result = this.window.eval(arg.splice(0, 1)[0])
+            if (!result) {
+              const finLog = this.print({
+                type: 'log',
+                content: arg,
+              })
+              finLog.type = 'error'
+              finLog.content = `Assertion failed: ${finLog.content}`
+              consoleInfo.push(finLog)
+            }
             break
           }
           default: {
