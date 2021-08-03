@@ -27,7 +27,7 @@
 
 ## Preview
 
-~~[open JS-Encoder](https://www.lliiooiill.cn/JSEncoderEnhance/)~~
+[open JS-Encoder](http://jsencoder.lliiooiill.cn/)
 
 ## Describe
 

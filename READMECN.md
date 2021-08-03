@@ -27,7 +27,7 @@
 
 ## 使用
 
-~~[进入 JS-Encoder](https://www.lliiooiill.cn/JSEncoderEnhance)~~
+[进入 JS-Encoder](http://jsencoder.lliiooiill.cn/)
 
 ## 描述
 
