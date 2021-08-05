@@ -20,7 +20,7 @@ function handleLoop (code) {
   // 标记循环时需要插入的代码
   const insertCode = {
     setMonitor: 'window.JSE.InfiniteLoopController._loopMonitor(%d);',
-    delMonitor: ';window.JSE.InfiniteLoopController._delTimer(%d);'
+    delMonitor: ';window.JSE.InfiniteLoopController._delLoop(%d);'
   }
 
   // 遍历AST，找出循环位置
