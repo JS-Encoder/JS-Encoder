@@ -36,12 +36,13 @@ import 'codemirror/addon/lint/html-lint'
 import 'codemirror/addon/lint/javascript-lint.js'
 import 'codemirror/addon/lint/coffeescript-lint'
 import 'codemirror/addon/lint/lint.js'
-// 标签匹配
+// 标签匹配与编辑配置
 import 'codemirror/addon/edit/closetag'
 import 'codemirror/addon/edit/closebrackets'
 import 'codemirror/addon/edit/matchtags'
 import 'codemirror/addon/edit/matchbrackets'
 import 'codemirror/addon/edit/continuelist'
+import 'codemirror/addon/edit/trailingspace'
 // 搜索
 import 'codemirror/addon/search/search'
 import 'codemirror/addon/search/searchcursor'
@@ -151,6 +152,7 @@ function codemirrorConfig (mode = '') {
     currentMatchMarker: null, // 当前突出搜索匹配字符的marker，非原生属性
     closeDialog: null, // 用来关闭搜索框的方法，非原生属性
     showReplace: false, // 是否显示replace 
+    showTrailingSpace: true, // 无意义的空格会添加下滑红线
     highlightSelectionMatches: {
       showToken: true,
       annotateScrollbar: true,
@@ -200,11 +202,11 @@ function codemirrorConfig (mode = '') {
          * 如果当前光标所在编辑窗口为markdown，正常缩进
          * 如果当前行光标左边的一个字符为空或者为tab或空格，进行缩进
          * 如果当前光标所在编辑窗口为html，进行emmet扩展
-         * 如果都不满足，按下tab触发自动补全（智能提示）
+         * // 如果都不满足，按下tab触发自动补全（智能提示）
          */
         function indent () {
-          const spaces = Array(cm.getOption('indentUnit') + 1).join(' ')
-          cm.replaceSelection(spaces, 'end', '+input')
+          // const spaces = Array(cm.getOption('indentUnit') + 1).join(' ')
+          cm.replaceSelection('\t', 'end', '+input')
         }
         if (cm.somethingSelected()) {
           // 光标选中文本
@@ -238,7 +240,8 @@ function codemirrorConfig (mode = '') {
                 console.error(err)
               }
             } else {
-              cm.showHint()
+              indent()
+              // cm.showHint()
             }
           }
         }
