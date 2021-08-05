@@ -9,7 +9,7 @@
   "dependencies": {
     "acorn": "^8.4.1",
     "axios": "^0.19.2",
-    "codemirror": "^5.59.4",
+    "codemirror": "^5.62.2",
     "codemirror-emmet": "^1.0.0",
     "core-js": "^3.6.5",
     "csslint": "^1.0.5",
@@ -37,7 +37,7 @@
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-vuex": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
-    "node-sass": "^4.12.0",
+    "node-sass": "^4.14.1",
     "sass-loader": "^8.0.2",
     "vue-template-compiler": "^2.6.11",
     "babel-plugin-component": "^1.1.1"
