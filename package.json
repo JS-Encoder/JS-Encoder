@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "acorn": "^8.4.1",
+    "acorn-loose": "^8.1.0",
+    "acorn-walk": "^8.1.1",
     "axios": "^0.19.2",
     "codemirror": "^5.62.2",
     "codemirror-emmet": "^1.0.0",
@@ -28,6 +30,7 @@
     "pug": "^3.0.0",
     "qs": "^6.9.4",
     "stylus": "^0.54.8",
+    "tern": "^0.24.3",
     "vue": "^2.6.11",
     "vue-codemirror": "^4.0.6",
     "vue-i18n": "^8.18.2",

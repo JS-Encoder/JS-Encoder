@@ -31,6 +31,14 @@ module.exports = {
       }
     },
   },
+  configureWebpack: config => {
+    config.module.rules.push({
+      /*test: /\.extension$/,*/
+      test: /\.mjs$/,
+      include: /node_modules/,
+      type: 'javascript/auto'
+    })
+  },
   chainWebpack: (config) => {
     config.resolve.alias
       .set('@', resolve('src'))

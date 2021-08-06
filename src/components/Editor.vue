@@ -36,6 +36,11 @@ export default {
     if (judgeMode(this.codeMode) !== 'HTML') {
       cm.on('inputRead', this.autoComplete)
     }
+    if (this.index === 2) {
+      cm.on('cursorActivity', (cm) => {
+        window.ternServer.updateArgHints(cm)
+      })
+    }
     setTimeout(() => {
       if (this.showCodeArea) {
         const codeArea = this.$refs.codeArea

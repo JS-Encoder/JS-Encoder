@@ -58,6 +58,19 @@ import 'codemirror/addon/selection/active-line'
 import 'codemirror/addon/scroll/scrollpastend'
 import 'codemirror/addon/comment/continuecomment'
 import 'codemirror/addon/runmode/colorize'
+// tern代码解析
+import tern from 'tern/lib/tern.js'
+import 'acorn/dist/acorn'
+import 'acorn-loose/dist/acorn-loose'
+import 'acorn-walk/dist/walk'
+import 'tern/lib/signal'
+import 'codemirror/addon/tern/tern'
+import 'tern/lib/comment'
+import 'tern/lib/infer'
+import 'tern/plugin/doc_comment'
+import ternJSON from 'tern/defs/ecmascript.json'
+window.tern = tern
+window.ternServer = new CodeMirror.TernServer({ defs: [ternJSON] })
 // 格式化
 import * as formatter from './codeFormatter'
 // 其他工具
@@ -631,8 +644,19 @@ function codemirrorConfig (mode = '') {
         cm.getOption('mode') === 'text/md-mix' && markdownTools.handleTextStyle(cm, '**')
       },
       [`${runKey}-I`]: (cm) => {
-        // 倾斜
-        cm.getOption('mode') === 'text/md-mix' && markdownTools.handleTextStyle(cm, '*')
+        switch (cm.getOption('mode')) {
+          case 'text/javascript':
+          case 'text/typescript':
+          case 'text/coffeescript':
+            window.ternServer.showType(cm)
+            break
+          case 'text/md-mix':
+            // 倾斜
+            markdownTools.handleTextStyle(cm, '*')
+            break
+          default:
+            break
+        }
       },
       [`${runKey}-D`]: (cm) => {
         // 删除
@@ -659,8 +683,19 @@ function codemirrorConfig (mode = '') {
         cm.getOption('mode') === 'text/md-mix' && markdownTools.handleUnorderedList(cm, '- ')
       },
       [`${runKey}-O`]: (cm) => {
-        // 插入代码
-        cm.getOption('mode') === 'text/md-mix' && markdownTools.handleOrderList(cm)
+        switch (cm.getOption('mode')) {
+          case 'text/javascript':
+          case 'text/typescript':
+          case 'text/coffeescript':
+            window.ternServer.showDocs(cm)
+            break
+          case 'text/md-mix':
+            // 插入有序列表
+            markdownTools.handleOrderList(cm)
+            break
+          default:
+            break
+        }
       },
       [`${runKey}-Shift-Q`]: (cm) => {
         // 插入代码

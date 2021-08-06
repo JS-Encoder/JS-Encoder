@@ -12,6 +12,7 @@ import './assets/css/foldgutter.css'
 import './assets/css/codemirror-dialog.css'
 import '../public/css/font.css'
 import './assets/themes/default.css'
+import 'codemirror/addon/tern/tern.css'
 
 Vue.config.productionTip = false
 
