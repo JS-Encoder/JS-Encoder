@@ -10,6 +10,7 @@ const modeStyleList = {
   Stylus: 'text/x-styl',
   JavaScript: 'text/javascript',
   TypeScript: 'text/typescript',
+  CoffeeScript: 'text/coffeescript',
 }
 
 function judgeMode(edit) {
