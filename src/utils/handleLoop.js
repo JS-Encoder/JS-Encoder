@@ -8,10 +8,17 @@ import estraverse from 'estraverse'
  */
 function handleLoop (code) {
   // 将代码解析成AST
-  let AST = acorn.parse(code, {
-    ecmaVersion: 2022,
-    sourceType: 'script'
-  })
+  let AST = null
+  // 防止因为代码语法错误造成语法解析错误，直接返回源代码
+  try {
+    AST = acorn.parse(code, {
+      ecmaVersion: 2022,
+      sourceType: 'script'
+    })
+  } catch (error) {
+    console.log(error)
+    return code
+  }
 
   // 暂存需要插入代码的位置范围
   const fragments = []
@@ -62,7 +69,7 @@ function handleLoop (code) {
   }).forEach(fragment => {
     code = code.slice(0, fragment.pos) + fragment.str + code.slice(fragment.pos)
   })
-  
+
   return code
 }
 
