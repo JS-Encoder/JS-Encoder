@@ -220,9 +220,7 @@ function codemirrorConfig (mode = '') {
           } else {
             const value = cm.getLine(line) // 获取当前行文本
             const front = value[ch - 1] // 获取光标前一字符
-            switch (
-            front // 为空格，tab或其他特定字符
-            ) {
+            switch (front) { // 为空格，tab或其他特定字符
               case '\t':
               case '<':
               case ' ':
