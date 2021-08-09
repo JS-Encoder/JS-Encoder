@@ -12,7 +12,8 @@ const loader = new Loader()
 
 /**
  * 将script插入head以引入外部js
- * @param string source 文件路径
+ * @param {String} source 文件路径
+ * @returns {Primary}
  */
 async function createScript (source) {
   const head = document.getElementsByTagName('head')[0]
@@ -128,10 +129,6 @@ async function compileCoffeeScript (code) {
     await createScript(cdn.coffeeScript).then(() => {
       loader.set('coffeeScript', true)
     })
-    // const source = `${publicPath}js/compiler/coffeescript.js`
-    // script.src = await createScript(source).then(() => {
-    //   loader.set('coffeescript', true)
-    // })
   }
   return window.CoffeeScript.compile(code)
 }

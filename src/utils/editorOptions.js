@@ -1,4 +1,7 @@
 /**
+ * Configure the Codemirror editor
+ * Add markDown shortcut key
+ * Modified some emmet triggering mechanisms
  * 配置codemirror编辑器
  * 添加markdown快捷键
  * 修改emmet部分触发机制
@@ -88,6 +91,8 @@ const mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault
 const runKey = mac ? 'Cmd' : 'Ctrl'
 
 /**
+ * Defining mixed modes
+ * Add support for LaTeX syntax highlighting to MarkDown
  * 定义混合模式
  * 为markdown添加LaTeX语法高亮支持
  */
@@ -108,7 +113,9 @@ CodeMirror.defineMode('text/md-mix', (config) => {
   }
   return CodeMirror.multiplexingMode(CodeMirror.getMode(config, 'text/x-markdown'), ...options)
 })
+
 /**
+ * Add more keywords for hint
  * 为hint添加更多keywords
  */
 const orig = CodeMirror.hint.javascript
@@ -132,9 +139,11 @@ CodeMirror.hint.javascript = (cm) => {
   inner.list = [...inner.list, ...matchList]
   return inner
 }
+
 /**
+ * Configure editor features and options
  * 配置编辑器功能及选项
- * @param string mode 语言
+ * @param {String} mode 语言
  */
 function codemirrorConfig (mode = '') {
   const codeOptions = {
@@ -179,7 +188,10 @@ function codemirrorConfig (mode = '') {
         cm.foldCode(cm.getCursor())
       },
       'Shift-Alt-F': (cm) => {
-        // 格式化代码
+        /**
+         * Format code
+         * 格式化代码
+         */
         const code = cm.getValue()
         const cursor = cm.getCursor()
         let finCode = ''
@@ -204,7 +216,10 @@ function codemirrorConfig (mode = '') {
     },
   }
   import('codemirror-emmet').then((emmet) => {
-    // 配置html和markdown的emmet
+    /**
+     * Emmet for HTML and MarkDown
+     * 配置html和markdown的emmet
+     */
     emmet.default(CodeMirror)
     codeOptions.extraKeys = {
       ...codeOptions.extraKeys,

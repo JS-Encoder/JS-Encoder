@@ -6,9 +6,9 @@
  * 防抖函数
  * 多次触发事件后，事件处理函数只执行一次，并且是在触发操作结束时执行
  * 对处理函数进行延时操作，若设定的延时到来之前，再次触发事件，则清除上一次的延时操作定时器，重新定时
- * @param {function} func
- * @param {number} delay
- * @return {function}
+ * @param {Function} func
+ * @param {Number} delay
+ * @returns {Function}
  */
 function debounce (func, delay) {
   let timer = null
@@ -20,13 +20,14 @@ function debounce (func, delay) {
     }, delay)
   }
 }
+
 /**
  * 节流函数
  * 触发函数事件后，短时间间隔内无法连续调用，只有上一次函数执行后，过了规定的时间间隔，才能进行下一次的函数调用
  * 对处理函数进行延时操作，通过设定时间片，控制事件函数间断性的触发
- * @param {function} func
- * @param {number} delay
- * @return {function}
+ * @param {Function} func
+ * @param {Number} delay
+ * @returns {Function}
  */
 function throttle (func, delay) {
   let start = 0
@@ -39,10 +40,12 @@ function throttle (func, delay) {
     }
   }
 }
+
 /**
- * 判断数组是否含有的都是基本类型
- * @param {array} arr
- * @return {boolean} isBase
+ * Determine whether all elements of the array are of basic types
+ * 判断数组的所有元素是不是都是基本类型
+ * @param {Array} arr
+ * @returns {Boolean}
  */
 function judgeBaseArray (arr) {
   let isBase = true
@@ -62,10 +65,12 @@ function judgeBaseArray (arr) {
   })
   return isBase
 }
+
 /**
+ * Determine the specific type of data
  * 判断数据的具体类型
- * @param {any} data
- * @return {string} type
+ * @param {Any} data
+ * @returns {String}
  */
 function judgeType (data) {
   if (data === null) return 'null'
@@ -73,18 +78,22 @@ function judgeType (data) {
   if (type === 'object') return judgeObjectType(data)
   return type
 }
+
 /**
+ * Determine the detailed type of the object
  * 判断对象的详细类型
- * @param {object} data
- * @return {string}
+ * @param {Object} data
+ * @returns {String}
  */
 function judgeObjectType (data) {
   return Object.prototype.toString.call(data).slice(8, -1)
 }
+
 /**
+ * Convert the object into a string (topmost key-value pair)
  * 将对象转化成字符串（最顶层的键值对）
- * @param {object} strObj
- * @return {string} str
+ * @param {Object} strObj
+ * @returns {String}
  */
 function JSONStringify (strObj) {
   const type = judgeType(strObj)
@@ -148,10 +157,12 @@ function JSONStringify (strObj) {
   str += suffix
   return str
 }
+
 /**
+ * Convert dom to string
  * 将dom转化为字符串
- * @param {element} dom
- * @return {string} domStr
+ * @param {Element} dom
+ * @returns {String}
  */
 function stringifyDOM (dom) {
   let objE = document.createElement('div')
@@ -160,19 +171,23 @@ function stringifyDOM (dom) {
   objE = dom = null
   return domStr
 }
+
 /**
+ * Determine whether the object is window
  * 判断对象是否为window
- * @param {object} obj
- * @return {boolean}
+ * @param {Object} obj
+ * @returns {Boolean}
  */
 function judgeWindow (obj) {
   const type = judgeType(obj)
   return type === 'global' || type === 'Window' || type === 'DOMWindow'
 }
+
 /**
+ * Get all the keys of the object, including non-enumerable keys
  * 获取对象的所有键，包括不可枚举的键
- * @param {object} obj
- * @return {array}
+ * @param {Object} obj
+ * @returns {Array}
  */
 function getObjAllKeys (obj) {
   const type = judgeType(obj)
@@ -197,9 +212,11 @@ function getObjAllKeys (obj) {
   }
   return Object.getOwnPropertyNames(obj).sort()
 }
+
 /**
+ * Copy information to the clipboard
  * 复制信息到剪切板
- * @param {string} info
+ * @param {String} info
  */
 function copyInfo (info) {
   const input = document.createElement('input')
@@ -209,31 +226,36 @@ function copyInfo (info) {
   document.execCommand('Copy')
   document.body.removeChild(input)
 }
+
 /**
  * 深拷贝
- * 此方法慎用，当对象中包含值为undefined或函数表达式的属性时会自动忽略
- * @param {object|array} target
- * @return {object|array}
+ * 此方法慎用，当对象中包含值为undefined或函数表达式时会自动忽略，还有很多值会转换错误
+ * @param {Object|Array} target
+ * @returns {Object|Array}
  */
 function deepCopy (target) {
   return JSON.parse(JSON.stringify(target))
 }
+
 /**
+ * Escape special characters in strings for use in regular expressions
  * 将字符串中的特殊字符转义，用于正则表达式中
- * @param {string} str 需要转义的字符串
- * @return {string} str
+ * @param {String} str 需要转义的字符串
+ * @returns {String}
  */
 function escapeRegExp (str) {
   const regexp = /[\\^$.*+?()[\]{}|]/g
   return str && new RegExp(regexp.source).test(str) ? str.replace(regexp, '\\$&') : str
 }
+
 /**
  * 判断当前操作系统是否为mac或ios
- * @return {boolean}
+ * @returns {Boolean}
  */
 function isMac () {
   return /macintosh|mac os x/i.test(navigator.userAgent)
 }
+
 module.exports = {
   debounce,
   throttle,

@@ -1,15 +1,20 @@
 /**
+ * Markdown toolbar
+ * Based on codemirror underlying API implementation
  * markdown工具栏处理
  * 基于codemirror底层api实现
  */
 import regExpList from './regExpList'
+
 /**
+ * Insert matching strings such as ~, **, ', etc. into both sides of the selected text to change the style
+ * For code, bold, italic, and hyphen styles
  * 将匹配字符串如：~、**、`等插入选中文本两边以达到改变样式的效果
  * 用于代码，粗体，斜体和中划线样式
- * @param object cm codemirror实例
- * @param string matchStr 匹配字符串
+ * @param {Object} cm codemirror实例
+ * @param {String} matchStr 匹配字符串
  */
-function handleTextStyle(cm, matchStr) {
+function handleTextStyle (cm, matchStr) {
   /**
    * 已经选中文本
    * --- 获取选中的文本和前后光标位置
@@ -31,31 +36,12 @@ function handleTextStyle(cm, matchStr) {
     let { line: aftLine, ch: aftPos } = anchor
     cm.getRange({ line: preLine, ch: prePos - changePos }, head) === matchStr && (preExist = true)
     cm.getRange(anchor, { line: aftLine, ch: aftPos + changePos }) === matchStr && (aftExist = true)
-    // aftExist && cm.replaceRange('', anchor, { line: aftLine, ch: aftPos + changePos })
-    // preExist && cm.replaceRange('', { line: preLine, ch: prePos - changePos }, head)
     let preStr = preExist ? '' : matchStr
     let aftStr = aftExist ? '' : matchStr
     prePos -= preExist ? changePos : 0
     aftPos += aftExist ? changePos : 0
     const selectStr = cm.getSelection()
     cm.replaceRange(`${preStr}${selectStr}${aftStr}`, { line: preLine, ch: prePos }, { line: aftLine, ch: aftPos })
-    // if (!preExist) {
-    //   if (!aftExist) {
-    //     cm.setCursor(anchor)
-    //     cm.replaceSelection(matchStr)
-    //   }
-    //   cm.setCursor(head)
-    //   cm.replaceSelection(matchStr)
-    //   prePos += changePos
-    //   aftPos += aftLine === preLine ? changePos : 0
-    //   cm.setSelection({ line: aftLine, ch: aftPos }, { line: preLine, ch: prePos })
-    // } else if (!aftExist) {
-    //   cm.setCursor({ line: aftLine, ch: aftPos - changePos })
-    //   cm.replaceSelection(matchStr)
-    //   prePos -= changePos
-    //   aftPos -= aftLine === preLine ? changePos : 0
-    //   cm.setSelection({ line: aftLine, ch: aftPos }, { line: preLine, ch: prePos })
-    // }
   } else {
     const cursor = cm.getCursor()
     const { line: curLine, ch: curPos } = cursor
@@ -74,11 +60,13 @@ function handleTextStyle(cm, matchStr) {
   }
   cm.focus()
 }
+
 /**
+ * Adding an Ordered List
  * 添加有序列表
- * @param object cm codemirror实例
+ * @param {Object} cm codemirror实例
  */
-function handleOrderList(cm) {
+function handleOrderList (cm) {
   /**
    * 已经选中文本
    * --- 获取选中的文本和前后光标位置
@@ -102,7 +90,7 @@ function handleOrderList(cm) {
     if (preLine !== aftLine) {
       let preNumber = 0
       let pos = 0
-      for (let i = preLine; i <= aftLine; i++) {
+      for (let i = preLine;i <= aftLine;i++) {
         cm.setCursor({ line: i, ch: 0 })
         const replaceStr = `${++preNumber}. `
         cm.replaceSelection(replaceStr)
@@ -146,11 +134,14 @@ function handleOrderList(cm) {
   }
   cm.focus()
 }
+
 /**
+ * Add references and unordered lists
  * 添加引用和无序列表
- * @param object cm codemirror实例
+ * @param {Object} cm codemirror实例
+ * @param {String} matchStr 匹配字符串
  */
-function handleUnorderedList(cm, matchStr) {
+function handleUnorderedList (cm, matchStr) {
   /**
    * 已经选中文本
    * --- 获取选中的文本和前后光标位置
@@ -171,7 +162,7 @@ function handleUnorderedList(cm, matchStr) {
     let aftLine = anchor.line
     if (preLine !== aftLine) {
       let pos = matchStr.length
-      for (let i = preLine; i <= aftLine; i++) {
+      for (let i = preLine;i <= aftLine;i++) {
         cm.setCursor({ line: i, ch: 0 })
         cm.replaceSelection(matchStr)
         i === aftLine && (pos += cm.getLine(i).length)
@@ -202,11 +193,13 @@ function handleUnorderedList(cm, matchStr) {
   }
   cm.focus()
 }
+
 /**
+ * Add a horizontal or dividing line
  * 添加横线/分割线
- * @param object cm codemirror实例
+ * @param {Object} cm codemirror实例
  */
-function handleLine(cm) {
+function handleLine (cm) {
   /**
    * 已经选中文本
    * --- 获取选中的文本和前后光标位置
@@ -232,12 +225,14 @@ function handleLine(cm) {
   }
   cm.focus()
 }
+
 /**
+ * Add headings at the heading levels H1,H2,H3,H4,H5,H6
  * 根据标题级别H1,H2,H3,H4,H5,H6，添加标题
- * @param object cm codemirror实例
- * @param number level 级别
+ * @param {Object} cm codemirror实例
+ * @param {Number} level 级别
  */
-function handleTitle(cm, level) {
+function handleTitle (cm, level) {
   /**
    * 已经选中文本
    * --- 获取选中的文本和前后光标位置
@@ -251,7 +246,7 @@ function handleTitle(cm, level) {
    * 没有选中文本
    */
   let preAppend = '#'
-  for (let i = 0; i < level - 1; i++) {
+  for (let i = 0;i < level - 1;i++) {
     preAppend += '#'
   }
   preAppend += ' '
@@ -298,12 +293,14 @@ function handleTitle(cm, level) {
   }
   cm.focus()
 }
+
 /**
+ * Insert image or normal link
  * 插入图片或普通链接
- * @param object cm codemirror实例
- * @param boolean isPicture 是否为图片链接
+ * @param {Object} cm codemirror实例
+ * @param {Boolean} isPicture 是否为图片链接
  */
-function handleLink(cm, isPicture = false) {
+function handleLink (cm, isPicture = false) {
   /**
    * 已经选中文本
    * --- 获取选中的文本和前后光标位置
@@ -344,20 +341,25 @@ function handleLink(cm, isPicture = false) {
   }
   cm.focus()
 }
+
 /**
+ * Determine whether the cursor of the selected text is at the beginning or the end of the text
  * 判断选中文本的光标是在文本开头还是结尾
- * @param object selectInfo
+ * @param {Object} selectInfo
+ * @returns {Object}
  */
-function judgePreOrAft(selectInfo) {
+function judgePreOrAft (selectInfo) {
   let { head, anchor } = selectInfo
-  ;(head.line > anchor.line || (head.line === anchor.line && head.ch > anchor.ch)) && ([head, anchor] = [anchor, head])
+    ; (head.line > anchor.line || (head.line === anchor.line && head.ch > anchor.ch)) && ([head, anchor] = [anchor, head])
   return { head, anchor }
 }
+
 /**
+ * Convert html to pdf
  * 将html转换成pdf
- * @param dom iframe
+ * @param {HTMLDocument} iframe
  */
-function htmlToPDF(iframe) {
+function htmlToPDF (iframe) {
   const window = iframe.contentWindow
   window.focus()
   window.print()

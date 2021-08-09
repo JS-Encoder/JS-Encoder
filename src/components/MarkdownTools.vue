@@ -23,7 +23,7 @@ import markdownTools from '@/utils/markdownTools'
 export default {
   props: {
     getCodeMirror: Function,
-    getIframeBody: Function
+    getIframeBody: Function,
   },
   data() {
     return {
@@ -31,53 +31,53 @@ export default {
       toolsList: [
         {
           class: 'icon-jiacu',
-          name: 'bold'
+          name: 'bold',
         },
         {
           class: 'icon-xieti',
-          name: 'italic'
+          name: 'italic',
         },
         {
           class: 'icon-shanchuxian',
-          name: 'delete'
+          name: 'delete',
         },
         {
           class: 'icon-biaoti',
-          name: 'title'
+          name: 'title',
         },
         {
           class: 'icon-lianjie',
-          name: 'link'
+          name: 'link',
         },
         {
           class: 'icon-tupian',
-          name: 'picture'
+          name: 'picture',
         },
         {
           class: 'icon-yinyong',
-          name: 'quote'
+          name: 'quote',
         },
         {
           class: 'icon-html',
-          name: 'code'
+          name: 'code',
         },
         {
           class: 'icon-wuxuliebiao',
-          name: 'ul'
+          name: 'ul',
         },
         {
           class: 'icon-youxuliebiao',
-          name: 'ol'
+          name: 'ol',
         },
         {
           class: 'icon-hengxian',
-          name: 'line'
+          name: 'line',
         },
         {
           class: 'icon-pdf',
-          name: 'pdf'
-        }
-      ]
+          name: 'pdf',
+        },
+      ],
     }
   },
   methods: {
@@ -125,8 +125,8 @@ export default {
         default:
           return void 0
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

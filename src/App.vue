@@ -30,11 +30,17 @@ export default {
   mounted() {
     setTimeout(() => {
       const { clientHeight: clientH, clientWidth: clientW } = document.body
-      // The height of iframe is equal to client height subtract header and console height
+      /**
+       * The height of iframe is equal to client height subtract header and console height
+       * iframe的高度等于整个可见窗口高度减去header和console的高度
+       */
       const iframeH = clientH - this.consoleHeight - 41 - 30
       this.handleIframeH(iframeH)
-      // Divide the editor and iframe widths equally
-      // Need to subtract the width of left sidebar and cutting line
+      /**
+       * Divide the editor and iframe widths equally
+       * Need to subtract the width of left sidebar and cutting line
+       * 将iframe和编辑窗口的宽度等分，需要减去分割线和侧边工具栏的宽度
+       */
       const avgW = (clientW - 41 - 4) / 2
       if (avgW % 1 !== 0) {
         const floorAvg = Math.floor(avgW)
@@ -44,12 +50,14 @@ export default {
         this.handleIframeW(avgW)
         this.handleEditorW(avgW)
       }
-      // Monitor the width and height of browser's visible area
       window.onresize = () => {
         this.clientWidth = window.innerWidth
         this.clientHeight = document.documentElement.clientHeight
       }
-      // Hidden the page loader animation
+      /**
+       * Hidden the page loader animation
+       * 完成后隐藏全页面的加载动画
+       */
       this.loaded = true
     }, 3000)
   },
@@ -66,8 +74,12 @@ export default {
   },
   watch: {
     clientWidth(newW, oldW) {
-      // Change the editor and iframe widths when the browser's visible are width changed
-      // The width of them cannot be less than 100px, if any one reaches the minimal width, only change the other one's width
+      /**
+       * Change the editor and iframe widths when the browser's visible are width changed
+       * The width of them cannot be less than 100px, if any one reaches the minimal width, only change the other one's width
+       * 当可见窗口宽度改变时，更改编辑窗口和iframe的宽度
+       * 但这两个窗口的宽度不小于100px，如果任意一个窗口达到了最小值，只改变另一个窗口的宽度
+       */
       const editorW = this.editorWidth
       const iframeW = this.iframeWidth
       const gapW = newW - oldW
@@ -86,8 +98,12 @@ export default {
       this.handleEditorW(editorW + avgW)
     },
     clientHeight(newH, oldH) {
-      // Change the iframe and console heights when the browser's visible area height changed
-      // The height of console and iframe cannot be less than 25px and 100px, if any one reaches the minimal width, only change the other one's width
+      /**
+       * Change the iframe and console heights when the browser's visible area height changed
+       * The height of console and iframe cannot be less than 25px and 100px, if any one reaches the minimal width, only change the other one's width
+       * 当可见窗口高度改变时，修改iframe和console的宽度
+       * console和iframe的高度不能小于25px和100px，如果任意一个窗口达到了最小值，只改变另一个窗口的高度
+       */
       const iframeH = this.iframeHeight
       const consoleH = this.consoleHeight
       const gapH = newH - oldH

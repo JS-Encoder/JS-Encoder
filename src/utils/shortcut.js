@@ -1,11 +1,15 @@
 /**
+ * Handling shortcut keys
  * 处理快捷键
  */
 
 const shortcut = {
   all_shortcuts: {},
   add (shortcut_combination, callback, filed, opt) {
-    // 默认快捷键配置
+    /**
+     * Default shortcut key configuration
+     * 默认快捷键配置
+     */
     const default_options = {
       type: 'keydown',
       propagate: false,
@@ -24,11 +28,19 @@ const shortcut = {
     if (typeof opt.target == 'string') ele = document.getElementById(opt.target)
     shortcut_combination = shortcut_combination.toLowerCase()
 
-    // 按键按下触发该方法
+    /**
+     * Press the button to trigger the method
+     * 按键按下触发该方法
+     * @param {Event} e 
+     */
     const func = function (e) {
       e = e || window.event
 
-      if (opt['disable_in_input']) { // 焦点在input，textarea中时不会触发快捷键
+      /**
+       * Shortcuts do not fire when the focus is on input, Textarea
+       * 焦点在input，textarea中时不会触发快捷键
+       */
+      if (opt['disable_in_input']) {
         let element
         if (e.target) element = e.target
         else if (e.srcElement) element = e.srcElement
@@ -36,7 +48,10 @@ const shortcut = {
         if (element.tagName == 'INPUT' || element.tagName == 'TEXTAREA') return
       }
 
-      // 找到哪个键被按下
+      /**
+       * Find out which key was pressed
+       * 找到哪个键被按下
+       */
       let code
       if (e.keyCode) code = e.keyCode
       else if (e.which) code = e.which
@@ -47,7 +62,11 @@ const shortcut = {
 
       const keys = shortcut_combination.split("+")
       let kp = 0
-      // 用户按下shift时其对应的大写字符
+
+      /**
+       * The uppercase character that corresponds to shift when the user presses down
+       * 用户按下shift时其对应的大写字符
+       */
       const shift_nums = {
         "`": "~",
         "1": "!",
@@ -69,7 +88,11 @@ const shortcut = {
         "/": "?",
         "\\": "|"
       }
-      // 一些特定字符ASCII码表
+
+      /**
+       * ASCII code table for some specific characters
+       * 一些特定字符ASCII码表
+       */
       const special_keys = {
         'esc': 27,
         'escape': 27,
@@ -171,13 +194,24 @@ const shortcut = {
         modifiers.shift.pressed == modifiers.shift.wanted &&
         modifiers.alt.pressed == modifiers.alt.wanted &&
         modifiers.meta.pressed == modifiers.meta.wanted) {
-        callback.bind(filed)(e) // 在给定范围内执行该回调函数，因为当前的this默认指向window，而回调函数中需要对vueX进行操作
+        /**
+         * Execute the callback function within the given scope
+         * because the current this points to window by default, and the callback function needs to operate on vueX
+         * 在给定范围内执行该回调函数，因为当前的this默认指向window，而回调函数中需要对vueX进行操作
+         */
+        callback.bind(filed)(e)
 
         if (!opt['propagate']) {
-          //e.cancelBubble 兼容ie，禁止事件冒泡
+          /**
+           * e.cancelBubble is compatible with ie, event bubbling is prohibited
+           * e.cancelBubble 兼容ie，禁止事件冒泡
+           */
           e.cancelBubble = true
           e.returnValue = false
-          //e.stopPropagation 兼容火狐
+          /**
+           * e.stopPropagation is compatible with Firefox
+           * e.stopPropagation 兼容火狐
+           */
           if (e.stopPropagation) {
             e.stopPropagation()
             e.preventDefault()
@@ -191,12 +225,15 @@ const shortcut = {
       'target': ele,
       'event': opt['type']
     }
-    // 将函数添加到事件中
     if (ele.addEventListener) ele.addEventListener(opt['type'], func, false)
     else if (ele.attachEvent) ele.attachEvent('on' + opt['type'], func)
     else ele['on' + opt['type']] = func
   },
-  // 删除快捷键（解绑快捷键事件）
+  /**
+   * Delete the shortcut key (unbind the shortcut key event)
+   * 删除快捷键（解绑快捷键事件）
+   * @param {Function} shortcut_combination 
+   */
   remove (shortcut_combination) {
     shortcut_combination = shortcut_combination.toLowerCase()
     const binding = this.all_shortcuts[shortcut_combination]

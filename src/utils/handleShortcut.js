@@ -1,4 +1,5 @@
 /**
+ * Configure the shortcut keys to jump between the CodeMirror editing windows
  * 配置CodeMirror编辑窗口之间相互跳转的快捷键
  */
 

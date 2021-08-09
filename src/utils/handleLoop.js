@@ -2,14 +2,19 @@ const acorn = require('acorn')
 import estraverse from 'estraverse'
 
 /**
+ * This function is used to prevent the infinite loop in the user code from causing the browser page to freeze
  * 该函数用于防止用户代码中的死循环导致浏览器页面卡死
- * @param {string} code 处理前的JS代码
- * @returns {string}
+ * @param {String} code 处理前的JS代码
+ * @returns {String}
  */
 function handleLoop (code) {
-  // 将代码解析成AST
   let AST = null
-  // 防止因为代码语法错误造成语法解析错误，直接返回源代码
+  /**
+   * Parse the code into AST
+   * Prevent grammatical analysis errors caused by code grammatical errors, so directly return to the source code
+   * 将代码解析成AST
+   * 防止因为代码语法错误造成语法解析错误，直接返回源代码
+   */
   try {
     AST = acorn.parse(code, {
       ecmaVersion: 2022,
@@ -20,17 +25,29 @@ function handleLoop (code) {
     return code
   }
 
-  // 暂存需要插入代码的位置范围
+  /**
+   * Temporarily store the range of positions where the code needs to be inserted
+   * 暂存需要插入代码的位置范围
+   */
   const fragments = []
-  // loopID 用于标记循环
+  /**
+   * loopID is used to mark the loop
+   * loopID 用于标记循环
+   */
   let loopID = 1
-  // 标记循环时需要插入的代码
+  /**
+   * Mark the code that needs to be inserted when looping
+   * 标记循环时需要插入的代码
+   */
   const insertCode = {
     setMonitor: 'window.JSE.InfiniteLoopController._loopMonitor(%d);',
     delMonitor: ';window.JSE.InfiniteLoopController._delLoop(%d);'
   }
 
-  // 遍历AST，找出循环位置
+  /**
+   * Traverse the AST to find the loop position
+   * 遍历AST，找出循环位置
+   */
   estraverse.traverse(AST, {
     enter (node) {
       switch (node.type) {
@@ -39,14 +56,18 @@ function handleLoop (code) {
         case 'ForStatement':
         case 'ForInStatement':
         case 'ForOfStatement':
-          // 获取循环体的头和尾
+          /**
+           * Gets the head and tail of the loop body
+           * 获取循环体的头和尾
+           */
           let { start, end } = node.body
           start++
-          // 循环体前后插入的代码
-          // 将动态的loopID替换掉插入代码中的%d
           let pre = insertCode.setMonitor.replace('%d', loopID)
           let aft = ''
-          // 如果循环体没有被{}包裹，而是采用缩进的形式，需要手动添加{}
+          /**
+           * If the body of the loop is not enveloped by {} and is indented, we need to manually add {}
+           * 如果循环体没有被{}包裹，而是采用缩进的形式，需要手动添加{}
+           */
           if (node.body.type !== 'BlockStatement') {
             pre = '{' + pre
             aft = '}'
@@ -63,7 +84,10 @@ function handleLoop (code) {
     }
   })
 
-  // 将代码插入到相应位置中
+  /**
+   * Insert code to corresponding position
+   * 将代码插入到相应位置中
+   */
   fragments.sort((a, b) => {
     return b.pos - a.pos
   }).forEach(fragment => {

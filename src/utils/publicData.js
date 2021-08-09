@@ -1,7 +1,3 @@
-/**
- * 存储一些多个组件共用的公共数据
- */
-
 module.exports = {
   defPrepOpts: {
     HTML: ['HTML', 'Markdown', 'Pug'],

@@ -1,4 +1,3 @@
-/* eslint-disable */
 const modeStyleList = {
   HTML: 'text/html',
   Markdown: 'text/md-mix',
@@ -13,7 +12,7 @@ const modeStyleList = {
   CoffeeScript: 'text/coffeescript',
 }
 
-function judgeMode(edit) {
+function judgeMode (edit) {
   switch (edit) {
     case 'HTML':
     case 'Markdown':
@@ -36,7 +35,7 @@ function judgeMode(edit) {
   }
 }
 
-function judgeExtension(edit) {
+function judgeExtension (edit) {
   switch (edit) {
     case 'html':
     case 'md':

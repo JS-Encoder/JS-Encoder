@@ -26,7 +26,10 @@ const i18n = new VueI18n({
   },
 })
 
-// Get state from sessionStorage when page onload
+/**
+ * Get state from sessionStorage when page onload
+ * 页面加载完之后取出session中储存的配置信息放到VueX中
+ */
 const jsEcdStore = sessionStorage.getItem('jsEcdStore')
 if (jsEcdStore !== null) {
   const oldState = JSON.parse(jsEcdStore)
@@ -34,14 +37,20 @@ if (jsEcdStore !== null) {
   store.replaceState(oldState)
 }
 
-// Create Vue instance must be after replace state
+/**
+ * Create Vue instance must be after replace state
+ * 必须在创建vue实例之前执行replaceState
+ */
 new Vue({
   store,
   i18n,
   render: (h) => h(App),
 }).$mount('#app')
 
-// Store state in sessionStorage before page refresh
+/**
+ * Store state in sessionStorage before page refresh
+ * 在刷新页面之前将VueX存储的信息放入sessionStorage
+ */
 window.onbeforeunload = () => {
   store.commit('updateShowBg', false)
   store.commit('updateCurrentDialog', '')

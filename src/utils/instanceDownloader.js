@@ -5,10 +5,10 @@ import { compileHTML, compileCSS, compileJS } from '@utils/compiler'
 
 export default class InstanceDownloader {
   /**
-   * @param object code 代码集合
-   * @param object links 外部链接
-   * @param array prep 预处理
-   * @param boolean dwPrep 是否下载未编译版本
+   * @param {Object} code 代码集合
+   * @param {Object} links 外部链接
+   * @param {Array} prep 预处理
+   * @param {Boolean} dwPrep 是否下载未编译版本
    */
   constructor(code, links, prep, dwPrep) {
     this.code = code
@@ -16,11 +16,13 @@ export default class InstanceDownloader {
     this.prep = prep
     this.dwPrep = dwPrep
   }
+
   /**
+   * Download file
    * 下载文件
-   * @param string type 文件类型 single|multiple
+   * @param {String} type 文件类型 single|multiple
    */
-  async handle(type) {
+  async handle (type) {
     const { HTML, CSS, JavaScript } = this.code
     const prep = this.prep
     const { cssLinks, JSLinks } = this.links
@@ -39,11 +41,11 @@ export default class InstanceDownloader {
     await compileJS(JavaScript, prep[2]).then((res) => {
       JSCode = res
     })
-    for (let i = 0, k = cssLinks.length; i < k; i++) {
+    for (let i = 0, k = cssLinks.length;i < k;i++) {
       const linkStr = `\t<link href="${cssLinks[i]}" rel="stylesheet">\n`
       extCss += linkStr
     }
-    for (let i = 0, k = JSLinks.length; i < k; i++) {
+    for (let i = 0, k = JSLinks.length;i < k;i++) {
       const linkStr = `\t<script src="${JSLinks[i]}"></script>\n`
       extJS += linkStr
     }
@@ -59,12 +61,14 @@ export default class InstanceDownloader {
       this.multiple({ HTMLCode, CSSCode, JSCode }, { extCss, extJS })
     }
   }
+
   /**
+   * Single file download
    * 单文件下载
-   * @param object code 代码集合
-   * @param object links 外部链接字符串集合
+   * @param {Object} code 代码集合
+   * @param {Object} links 外部链接字符串集合
    */
-  single(code, links) {
+  single (code, links) {
     const { HTMLCode, CSSCode, JSCode } = code
     const { extCss = '', extJS = '' } = links
     const htmlCode = `<!DOCTYPE html>
@@ -88,12 +92,14 @@ export default class InstanceDownloader {
     `
     this.download(htmlCode, 'index.html')
   }
+
   /**
+   * Single file download
    * 多文件(zip)下载
-   * @param object code 代码集合
-   * @param object links 外部链接字符串集合
+   * @param {Object} code 代码集合
+   * @param {Object} links 外部链接字符串集合
    */
-  multiple(code, links) {
+  multiple (code, links) {
     const { HTML, CSS, JavaScript } = this.code
     const { HTMLCode, CSSCode, JSCode } = code
     const { extCss, extJS } = links
@@ -130,12 +136,12 @@ export default class InstanceDownloader {
       saveAs(content, 'JSEncoderCode.zip')
     })
   }
+
   /**
-   * 下载文件
-   * @param string code 代码
-   * @param string name 文件名
+   * @param {String} code 代码
+   * @param {String} name 文件名
    */
-  download(code, name) {
+  download (code, name) {
     const aTag = document.createElement('a') //创建a标签
     let blob = new Blob([code]) // 创建文件流
     aTag.download = name
@@ -143,7 +149,13 @@ export default class InstanceDownloader {
     aTag.click() // 触发a标签点击事件下载文件
     URL.revokeObjectURL(blob)
   }
-  judgePrep() {
+
+  /**
+   * Get the file suffix name corresponding to the preprocessing language
+   * 获取预处理语言所对应的文件后缀名
+   * @returns {Object}
+   */
+  judgePrep () {
     const [HTMLPrep, CSSPrep, JSPrep] = this.prep
     const typeObj = {}
     HTMLPrep !== 'HTML' && (typeObj.html = mimeTypeMap[HTMLPrep])

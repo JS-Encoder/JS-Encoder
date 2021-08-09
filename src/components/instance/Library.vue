@@ -98,7 +98,10 @@ export default {
   methods: {
     ...mapMutations(['handleDialogState', 'handleAllInstanceExtLinks']),
     searchLibs(query, fileType) {
-      // Filter libraries according to name
+      /**
+       * Filter libraries according to name
+       * 根据名字过滤库
+       */
       this.loading = true
       setTimeout(() => {
         let list = fileType === 'css' ? this.cssLibList : this.jsLibList
@@ -118,7 +121,10 @@ export default {
       }, 200)
     },
     loadLibs() {
-      // Request cdnJS to get the name and version of libraries
+      /**
+       * Request cdnJS to get the name and version of libraries
+       * 请求cdnJS获取库的名字和版本
+       */
       get('/cdnJS', {
         params: {
           search: '',

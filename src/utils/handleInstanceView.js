@@ -1,6 +1,8 @@
 import Loader from './loader'
 const loader = new Loader()
+
 /**
+ * Handling the code execution of the instance iframe
  * 处理实例iframe的代码执行
  */
 class IframeHandler {
@@ -11,12 +13,14 @@ class IframeHandler {
     }
     return IframeHandler.instance
   }
+
   /**
+   * Insert code into iframe
    * 向iframe中插入代码
-   * @param {object} code 代码集合
-   * @param {object} links 外部链接集合
-   * @param {boolean} isMD 是否为markdown模式
-   * @param {string} headTags 需要添加在头部的标签字符串
+   * @param {Object} code 代码集合
+   * @param {Object} links 外部链接集合
+   * @param {Boolean} isMD 是否为markdown模式
+   * @param {String} headTags 需要添加在头部的标签字符串
    */
   async insertCode (code, links, isMD, headTags = '') {
     const { HTMLCode, CSSCode, JSCode } = code
@@ -64,9 +68,11 @@ class IframeHandler {
       }
     })
   }
+
   /**
+   * Insert script tag into iframe
    * 向iframe中插入script标签
-   * @param string JSCode
+   * @param {String} JSCode
    */
   insertScript (JSCode) {
     const doc = this.iframe.contentWindow.document
@@ -74,7 +80,9 @@ class IframeHandler {
     script.text = JSCode
     doc.body.appendChild(script)
   }
+
   /**
+   * Render mathematical formulas in markdown
    * 渲染markdown中的数学公式
    */
   async renderMathFormula () {
@@ -96,7 +104,9 @@ class IframeHandler {
       ],
     })
   }
+
   /**
+   * Render the flowchart in markdown
    * 渲染markdown中的流程图
    */
   renderFlowchart () {

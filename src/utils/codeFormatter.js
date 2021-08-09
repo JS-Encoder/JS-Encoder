@@ -1,7 +1,3 @@
-/**
- * 格式化代码
- */
-
 import Loader from './loader'
 
 const formatOptions = {

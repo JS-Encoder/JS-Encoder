@@ -19,11 +19,11 @@
 <script>
 export default {
   props: {
-    getIframeBody: Function
+    getIframeBody: Function,
   },
   data() {
     return {
-      scale: 100
+      scale: 100,
     }
   },
   methods: {
@@ -36,7 +36,7 @@ export default {
       style.transformOrigin = '0 0'
       style.transform = 'scale(1)'
       this.$emit('exitFullScreen', false)
-    }
+    },
   },
   watch: {
     scale(newScale) {
@@ -46,8 +46,8 @@ export default {
       !style.transformOrigin && (style.transformOrigin = 'top left')
       style.width = `calc(100vw/${newScale})`
       style.transform = `scale(${newScale})`
-    }
-  }
+    },
+  },
 }
 </script>
 

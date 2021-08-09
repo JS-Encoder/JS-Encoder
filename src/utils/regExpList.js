@@ -1,5 +1,6 @@
 /**
- * 项目中使用到的正则表达式集合
+ * Set of regular expressions to be used
+ * 使用到的正则表达式集合
  */
 
 module.exports = {

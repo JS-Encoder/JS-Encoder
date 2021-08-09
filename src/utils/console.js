@@ -23,8 +23,6 @@ export default class Console {
     return Console.instance
   }
   /**
-   * eval函数是不安全的
-   * 为iframe.window添加一个可执行命令的方法exeJSEncoderConsoleCmd，旨在替代eval
    * 初始化控制台各个可用方法
    */
   init () {
@@ -102,6 +100,7 @@ export default class Console {
   }
   /**
    * 获取日志列表
+   * @returns {Array}
    */
   getLogs () {
     return this.consoleInfo
@@ -121,7 +120,7 @@ export default class Console {
    * 首先将命令原样输出
    * 然后在iframe内执行命令
    * 最后输出命令的返回值
-   * @param {string} cmd
+   * @param {String} cmd
    */
   exeCmd (cmd) {
     let result
@@ -162,7 +161,7 @@ export default class Console {
   }
   /**
    * 设置计时器，如果该计时器已存在就不做操作
-   * @param string name 计时器名称
+   * @param {String} name 计时器名称
    */
   setTimer (name) {
     const timerMap = this.timerMap
@@ -170,7 +169,8 @@ export default class Console {
     timerMap.set(name, performance.now())
   }
   /**
-   * @param string name 计时器名称
+   * @param {String} name 计时器名称
+   * @returns {Number}
    */
   getTimer (name) {
     const time = this.calcTime(name)
@@ -179,8 +179,8 @@ export default class Console {
   }
   /**
    * 计算时间，如果不存在该计时器，返回undefined
-   * @param string name 计时器名称
-   * @return time 时间差
+   * @param {String} name 计时器名称
+   * @returns {Number} time 时间差
    */
   calcTime (name) {
     const time = this.timerMap.get(name)
@@ -191,10 +191,10 @@ export default class Console {
    * 生成日志
    * 如果该方法并不支持，发出警告
    * 内容判断是否为基本数组（所有元素都是基本类型的数组），如果不是基本类型数组，就定为mix类型，放到codeMirror组件中
-   * @param {object} item
-   * @param {string} type 日志类型  log|info|debug|error|warn 必要！
-   * @param {array} content 日志内容
-   * @return {object} finLog 最终显示在页面上的日志信息
+   * @param {Object} item
+   * @param {String} type 日志类型  log|info|debug|error|warn 必要！
+   * @param {Array} content 日志内容
+   * @returns {Object} finLog 最终显示在页面上的日志信息
    */
   print (item) {
     let { type, content } = item
@@ -237,7 +237,8 @@ export default class Console {
   /**
    * 将log内容转换成字符串
    * 由于error和warn与log的显示样式不同，需要做不同处理，直接将content的内容转化为字符串
-   * @param array content
+   * @param {Array} content
+   * @returns {String}
    */
   contentToString (content) {
     let result = ''
@@ -286,8 +287,8 @@ export default class Console {
   }
   /**
    * 生成带有log的html字符串
-   * @param Array content 输出内容
-   * @return finLog 最终显示在页面上的日志
+   * @param {Array} content 输出内容
+   * @returns {Array} finLog 最终显示在页面上的日志
    */
   log (content) {
     const result = []

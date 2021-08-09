@@ -111,9 +111,15 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.isChildrenMounted = true
-      // Initialize the shortcut key
+      /**
+       * Initialize the shortcut key
+       * 初始化快捷键
+       */
       new ShortcutHandler().install()
-      // Initialize console and execute the code once
+      /**
+       * Initialize console and execute the code once
+       * 一开始就初始化console并执行代码
+       */
       new IframeConsole(this.$refs.iframeBox)
       this.runCode().then(() => {
         this.iframeInit = true
@@ -158,10 +164,20 @@ export default {
       'handleConsoleInfoCount',
     ]),
     viewResize(e) {
-      // Drag the dividing line with mouse to change the width of iframe and editor
-      // Display the mask on iframe, otherwise it will effect mouse drag
+      /**
+       * Drag the dividing line with mouse to change the width of iframe and editor
+       * 用鼠标拖动分割线改变编辑器和预览窗口的宽度
+       */
+
+      /**
+       * Display the mask on iframe, otherwise it will effect mouse drag
+       * 拖动时需要在iframe上显示一个遮罩层，否则鼠标滑动到iframe中会影响拖动事件监听
+       */
       this.handleIframeScreenVisible(true)
-      // Display the current width of iframe
+      /**
+       * Display the current width of iframe
+       * 拖动时显示预览窗口宽度
+       */
       this.handleIframeWVisible(true)
       const starX = e.clientX
       const viewW = this.iframeWidth
@@ -181,7 +197,10 @@ export default {
           document.onmouseup = null
           document.onmousemove = null
           this.showIframeWidth = false
-          // Refresh the codemirror to update editor after drag is over
+          /**
+           * Refresh the codemirror to update editor after drag is over
+           * 在拖动时由于编辑窗口宽度改变，需要刷新codemirror来适应新的宽度
+           */
           const index = this.preprocessor.indexOf(this.currentTab)
           this.getCodeMirror(index).refresh()
         }
@@ -189,7 +208,10 @@ export default {
     },
     async runCode(daley = 0) {
       if (!daley) daley = this.instanceSetting.delayTime
-      // Display the compile load animation at instance footer
+      /**
+       * Display the compile load animation at instance footer
+       * 执行代码时，在底部的信息栏展示loading动画
+       */
       this.isCompiling = true
       const iframe = this.$refs.iframeBox
       const code = this.instanceCode
@@ -200,10 +222,16 @@ export default {
         CSSCode = '',
         JSCode = ''
       const docConsole = new IframeConsole()
-      // No need to reload iframe when execute code at first time or when preprocessor is markdown
+      /**
+       * No need to reload iframe when execute code at first time or when preprocessor is markdown
+       * 在markdown模式下不需要重新引入iframe，因为改变的只是html而已
+       */
       if (!isMD) {
         if (this.iframeInit) {
-          // Reload is essential because the old javascript code has effective for iframe
+          /**
+           * Reload is essential because the old javascript code has effective for iframe
+           * 在非markdown模式下必须重新加载iframe来避免上一次执行的javascript代码影响到新代码的执行结果
+           */
           iframe.src += ''
           // 使用reload重载似乎在新版chrome和edge中会加载外部的vueApp，因此使用src代替
           // iframe.contentWindow.location.reload()
@@ -224,15 +252,27 @@ export default {
           CSSCode = res
         })
         await compileJS(code.JavaScript, prep[2]).then((res) => {
-          // Switch raw JavaScript code to code that prevents infinite loops
+          /**
+           * Switch raw JavaScript code to code that prevents infinite loops
+           * 将JavaScript源代码通过AST在内部插入可以监听并阻止死循环的代码
+           */
           JSCode = handleLoop(res)
         })
-        // Deep copy the external links to avoid the effect state
+        /**
+         * Deep copy the external links to avoid the effect state
+         * 因为接下来可能需要动态修改外部链接，因此这里需要深拷贝一下
+         */
         links = deepCopy(this.instanceExtLinks)
-        // add common js to links
+        /**
+         * add common js to links
+         * 除了用户添加的自定义脚本链接，还有一些公共的内部脚本需要导入
+         */
         links.JSLinks = [...links.JSLinks, ...iframeLinks.commonJS]
       } else {
-        // Load the highlight and KaTeX when the preprocessor is markdown
+        /**
+         * Load the highlight and KaTeX when the preprocessor is markdown
+         * 为markdown加载代码高亮和KaTeX公式转换功能
+         */
         links.cssLinks = iframeLinks.mdCSS
         links.JSLinks = iframeLinks.mdJS
       }
@@ -270,7 +310,10 @@ export default {
       }, daley)
     },
     initSyncScroll(iframe) {
-      // Initialize the sync scroll for markdown
+      /**
+       * Initialize the sync scroll for markdown
+       * 初始化markdown同步滚动功能
+       */
       if (!iframe) iframe = this.$refs.iframeBox
       new SyncScroll(this.getCodeMirror(0), iframe)
     },
@@ -278,7 +321,10 @@ export default {
       this.iframeFullScreen = visible
     },
     getCodeMirror(index) {
-      // Get the instance of cm after the child components mounted successful
+      /**
+       * Get the instance of cm after the child components mounted successful
+       * 
+       */
       return this.isChildrenMounted
         ? this.$refs[`editor${index}`][0].getCodeMirror()
         : void 0

@@ -42,7 +42,7 @@
           </div>
           <div v-if="item.type==='mix'" class="mix flex flex-ai">
             <i class="icon iconfont icon-lfmonth"></i>
-            <codemirror :options="codeOptions" @hook:mounted="cmMounted(index)" v-show="settings.highlight" v-once
+            <codemirror :options="codeOptions" @hook:mounted="cmFold(index)" v-show="settings.highlight" v-once
               :value="item.content" class="code-log" :ref="`logArea${index}`">
             </codemirror>
             <div class="code-log" v-show="!settings.highlight" v-once>{{item.content}}</div>
@@ -81,7 +81,7 @@
           </div>
           <div v-if="item.type==='mixPrint'" class="mix-print flex flex-ai">
             <i class="icon iconfont icon-lfmonth"></i>
-            <codemirror :options="codeOptions" @hook:mounted="cmMounted(index)" v-show="settings.highlight" v-once
+            <codemirror :options="codeOptions" @hook:mounted="cmFold(index)" v-show="settings.highlight" v-once
               :value="item.content" class="code-log" :ref="`logArea${index}`">
             </codemirror>
             <div class="code-log" v-show="!settings.highlight" v-once>{{item.content}}</div>
@@ -178,6 +178,8 @@ export default {
       /**
        * Drag the divide line of console to change the height of iframe and console
        * The screen is must be displayed when draggling, because mousedown event is undefined in iframe, drag will be stopped when mouse enter the iframe
+       * 鼠标拖拉console分隔栏改变console和iframe的高度
+       * 同时要在iframe上显示遮罩层避免鼠标划入iframe中导致事件失效
        */
       this.handleIframeScreenVisible(true)
       this.handleIframeHVisible(true)
@@ -268,7 +270,10 @@ export default {
         } else {
           this.currentCmdIndex++
         }
-        // The reason of use nextTick is vue cannot render the view immediately when command is executed
+        /**
+         * The reason of use nextTick is vue cannot render the view immediately when command is executed
+         * 我们需要等到vue将日志列表渲染完毕后再滚动到最后一条日志
+         */
         this.$nextTick(() => {
           this.scrollToBottom()
         })
@@ -283,8 +288,11 @@ export default {
         info: 0,
       })
     },
-    cmMounted(index) {
-      // The codemirror instances of console will be fold after the instance was mounted
+    cmFold(index) {
+      /**
+       * The codemirror instances of console will be fold after the instance was mounted
+       * console中的codemirror实例代码默认是折叠起来的
+       */
       this.$refs[`logArea${index}`][0].codemirror.execCommand('foldAll')
     },
   },

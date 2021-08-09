@@ -57,7 +57,10 @@ export default {
       'handleCurrentTab',
     ]),
     chooseFile() {
-      // Get files which want to upload and judge the mimetype whether satisfy the condition or not
+      /**
+       * Get files which want to upload and judge the mimetype whether satisfy the condition or not
+       * 判断上传的文件中哪些是符合后缀名要求的
+       */
       const input = this.$refs.fileInput
       const files = input.files
       if (!files.length) return
@@ -73,7 +76,10 @@ export default {
       return fileName.substring(pos + 1)
     },
     delFile(index) {
-      // Clear the input, because if it is not cleared, the change event will not be triggered when the same file is uploaded next time
+      /**
+       * Clear the input, because if it is not cleared, the change event will not be triggered when the same file is uploaded next time
+       * 清除input中上一次传入的文件，因为如果不清除，下次上传同一个文件时不会触发change事件
+       */
       this.fileList.splice(index, 1)
       const input = this.$refs.fileInput
       input.value = ''
@@ -82,6 +88,8 @@ export default {
       /**
        * Upload the file, change the preprocessing language according to the file suffix, and render the content of the file to the editing window
        * After the upload is successful, a prompt will pop up and the uploaded file list will be cleaned up
+       * 上传文件，根据文件后缀更改预处理语言，将文件内容渲染到编辑窗口
+       * 上传成功后会弹出提示并清理上传的文件列表
        */
       try {
         const fileList = this.fileList

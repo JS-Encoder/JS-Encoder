@@ -1,4 +1,5 @@
 /**
+ * Slide the wheel to scroll horizontally
  * 滑动滚轮进行横向滚动
  */
 class WheelDirective {
