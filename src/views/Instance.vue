@@ -280,7 +280,7 @@ export default {
     getCodeMirror(index) {
       // Get the instance of cm after the child components mounted successful
       return this.isChildrenMounted
-        ? this.$refs[`editor${index}`][index].getCodeMirror()
+        ? this.$refs[`editor${index}`][0].getCodeMirror()
         : void 0
     },
     getIframeBody() {
