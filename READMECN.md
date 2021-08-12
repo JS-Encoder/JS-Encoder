@@ -23,7 +23,7 @@
 
 <p align="center">简体中文 | <a href="https://github.com/Longgererer/JS-Encoder/blob/master/READMECN.md">English</a></p>
 
-![1614658567_1_.png](https://i.loli.net/2021/03/02/7U91gDpSOnqkTW3.png)
+![1614658567_1_.png](http://picstore.lliiooiill.cn/1628329983.jpg)
 
 ## 使用
 
