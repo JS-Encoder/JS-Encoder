@@ -3,6 +3,8 @@
  */
 
 import Loader from './loader'
+import { externalLinks } from './cdn'
+
 const publicPath = process.env.BASE_URL
 const cdn = {
   typeScript: 'https://cdn.jsdelivr.net/npm/browserified-typescript@0.3.0/index.js',
@@ -97,8 +99,8 @@ async function compileLess (code) {
 async function compileStylus (code) {
   if (!loader.get('stylus')) {
     // 将stylus.js添加到head中
-    const source = `${publicPath}js/compiler/stylus.js`
-    await createScript(source).then(() => {
+    // const source = `${publicPath}js/compiler/stylus.js`
+    await createScript(externalLinks.stylus).then(() => {
       loader.set('stylus', true)
     })
   }

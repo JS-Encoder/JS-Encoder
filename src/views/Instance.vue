@@ -23,7 +23,7 @@
               <div class="iframe-screen noselect" v-show="iframeScreenVisible"></div>
               <FullScreenBar :getIframeBody="getIframeBody" @runCode="runCode" v-show="iframeFullScreen"
                 @exitFullScreen="changeFullScreenState"></FullScreenBar>
-              <iframe
+              <iframe title="Preview"
                 allow="geolocation; microphone; camera; midi; vr; accelerometer; gyroscope; payment; ambient-light-sensor; encrypted-media"
                 frameborder="0" id="iframe" name="iframe" ref="iframeBox"
                 sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts"
@@ -72,7 +72,7 @@ import SyncScroll from '@utils/syncScroll'
 import IframeHandler from '@utils/handleInstanceView'
 import IframeConsole from '@utils/console'
 import ShortcutHandler from '@utils/handleShortcut'
-import iframeLinks from '@utils/iframeLinks'
+import { iframeLinks } from '@utils/cdn'
 import handleLoop from '@utils/handleLoop'
 
 export default {
@@ -297,7 +297,7 @@ export default {
             iframe.contentWindow.onunhandledrejection = (e) => {
               docConsole.consoleInfo.push({
                 type: 'error',
-                content: `Unhandled promise rejection: ${e.reason}`
+                content: `Unhandled promise rejection: ${e.reason}`,
               })
             }
             callback()
@@ -323,7 +323,7 @@ export default {
     getCodeMirror(index) {
       /**
        * Get the instance of cm after the child components mounted successful
-       * 
+       * 仔codemirror组件挂载完毕，获取其内部方法
        */
       return this.isChildrenMounted
         ? this.$refs[`editor${index}`][0].getCodeMirror()
