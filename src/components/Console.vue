@@ -530,6 +530,12 @@ export default {
           width: 100%;
           border-bottom: 1px solid $deepBlue;
           color: #aad0f3;
+          .content {
+            word-wrap: break-word;
+            white-space: normal;
+            display: block;
+            margin-right: 10px;
+          }
           & > .icon-info {
             color: $deepBlue;
           }
