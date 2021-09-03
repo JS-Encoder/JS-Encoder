@@ -344,6 +344,7 @@ export default {
           case 'warn':
           case 'info':
             consoleInfoCount[type]++
+            break
           case 'system-error':
             consoleInfoCount.error++
         }
