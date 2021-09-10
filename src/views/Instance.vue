@@ -206,8 +206,7 @@ export default {
         }
       }
     },
-    async runCode(daley = 0) {
-      if (!daley) daley = this.instanceSetting.delayTime
+    async runCode() {
       /**
        * Display the compile load animation at instance footer
        * 执行代码时，在底部的信息栏展示loading动画
@@ -307,7 +306,7 @@ export default {
         this.consoleInfo = logs
         if (isMD) this.initSyncScroll(iframe)
         this.isCompiling = false
-      }, daley)
+      }, 200)
     },
     initSyncScroll(iframe) {
       /**
