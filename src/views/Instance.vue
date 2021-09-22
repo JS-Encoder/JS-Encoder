@@ -281,24 +281,31 @@ export default {
       setTimeout(async () => {
         const handler = new IframeHandler(iframe)
         const headTags = this.instanceSetting.headTags
+        const onerror = (msg, _, row, col) => {
+          docConsole.consoleInfo.push({
+            type: 'system-error',
+            content: msg,
+            row,
+            col,
+          })
+          return void 0
+        }
+        const onunhandledrejection = (e) => {
+          docConsole.consoleInfo.push({
+            type: 'error',
+            content: `Unhandled promise rejection: ${e.reason}`,
+          })
+        }
         await handler
-          .insertCode({ HTMLCode, CSSCode, JSCode }, links, isMD, headTags)
+          .insertCode(
+            { HTMLCode, CSSCode, JSCode },
+            links,
+            isMD,
+            headTags,
+            onerror,
+            onunhandledrejection
+          )
           .then((callback) => {
-            iframe.contentWindow.onerror = (msg, _, row, col) => {
-              docConsole.consoleInfo.push({
-                type: 'system-error',
-                content: msg,
-                row,
-                col,
-              })
-              return void 0
-            }
-            iframe.contentWindow.onunhandledrejection = (e) => {
-              docConsole.consoleInfo.push({
-                type: 'error',
-                content: `Unhandled promise rejection: ${e.reason}`,
-              })
-            }
             callback()
           })
         const logs = docConsole.getLogs()
