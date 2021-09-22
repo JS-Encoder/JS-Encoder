@@ -21,11 +21,14 @@ class IframeHandler {
    * @param {Object} links 外部链接集合
    * @param {Boolean} isMD 是否为markdown模式
    * @param {String} headTags 需要添加在头部的标签字符串
+   * @param {Function} onerror 代码执行异常监听函数
+   * @param {Function} onunhandledrejection Promise执行异常监听函数
    */
-  async insertCode (code, links, isMD, headTags = '') {
+  async insertCode (code, links, isMD, headTags, onerror, onunhandledrejection) {
     const { HTMLCode, CSSCode, JSCode } = code
     const { cssLinks, JSLinks } = links
-    const iDoc = this.iframe.contentWindow.document
+    const iWin = this.iframe.contentWindow
+    const iDoc = iWin.document
     let extCss = '',
       extJS = ''
     for (let i = 0, k = cssLinks.length;i < k;i++) {
@@ -37,6 +40,9 @@ class IframeHandler {
       extJS += linkStr
     }
     iDoc.open()
+    // 在执行js脚本前向iframe注入错误监听回调函数
+    iWin.onerror = onerror
+    iWin.onunhandledrejection = onunhandledrejection
     iDoc.write(`
     <!DOCTYPE html>
     <html lang="en">
@@ -45,26 +51,29 @@ class IframeHandler {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     ${headTags}
     ${extCss}
-    ${extJS}
     <title></title>
     <style>
     ${CSSCode}
     </style>
-    <body>
+    <body translate="no">
     ${HTMLCode}
+    ${extJS}
+    <script>
+    ${JSCode}
+    </script>
     </body>
     </html>
     `)
     iDoc.close()
     return new Promise((resolve) => {
+      // 执行用户在写的onload回调函数
+      iWin.onload?.()
       this.iframe.onload = () => {
         if (isMD) {
           this.renderMathFormula()
           this.renderFlowchart()
         }
-        resolve(() => {
-          this.insertScript(JSCode)
-        })
+        resolve(() => {})
       }
     })
   }
