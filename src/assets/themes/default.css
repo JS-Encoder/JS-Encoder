@@ -183,9 +183,9 @@
   position: relative;
 }
 .cm-tab::before{
-  position: absolute;
+  /* position: absolute;
   content: '•';
-  color: #3d3e3d;
+  color: #3d3e3d; */
   /* left: 20%; */
 }
 
