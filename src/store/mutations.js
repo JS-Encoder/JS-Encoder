@@ -66,5 +66,8 @@ export default {
   },
   handleConsoleInfoCount: (state, count) => {
     state.consoleInfoCount = count
+  },
+  handleHasUploadCode: (state, status) => {
+    state.hasUploadCode = status
   }
 }

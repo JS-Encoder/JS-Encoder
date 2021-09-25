@@ -42,7 +42,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['visibleDialog', 'resolveHTML']),
+    ...mapState(['visibleDialog', 'resolveHTML', 'language']),
     uploadLang() {
       return this.$t('dialogs').upload
     },
@@ -55,6 +55,7 @@ export default {
       'handleInstanceCode',
       'handlePreprocessor',
       'handleCurrentTab',
+      'handleHasUploadCode',
     ]),
     chooseFile() {
       /**
@@ -95,6 +96,7 @@ export default {
         const fileList = this.fileList
         const resolve = this.resolve
         const codeObj = {}
+        this.handleHasUploadCode(false)
         await uploader(fileList, resolve).then((res) => {
           let visibleTab = ''
           const { HTML, CSS, JavaScript } = res
@@ -161,6 +163,8 @@ export default {
           position: 'top-right',
           offset: 23,
         })
+        this.$refs.fileInput.value = ''
+        this.handleHasUploadCode(true)
       } catch (err) {
         let title, message
         if (this.language === 'zh') {
