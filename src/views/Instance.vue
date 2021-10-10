@@ -308,7 +308,18 @@ export default {
           .then((callback) => {
             callback()
           })
-        const logs = docConsole.getLogs()
+        let logs = docConsole.getLogs()
+        /**
+         * Error alarms are generated when the number of logs exceeds 1000
+         * 日志超出1000条弹出错误警报
+         */
+        if (logs.length > 1000) {
+          logs = logs.slice(0, 999)
+          logs.push({
+            type: 'error',
+            content: 'You have over 1000 logs on the Console, rendering too many logs will cause the page to stage. please use your browser Console to view more logs!'
+          })
+        }
         this.calcConsoleInfoCount(logs)
         this.consoleInfo = logs
         if (isMD) this.initSyncScroll(iframe)
