@@ -18,8 +18,15 @@ Vue.config.productionTip = false
 
 // plugins
 Vue.use(element).use(codemirror).use(VueI18n)
+/**
+ * Determine the preferred language of the current browser
+ * 判断当前浏览器的首选语言
+ */
+function WebLocation () {
+  return navigator.language === 'zh-CN' ? 'zh' : 'en'
+}
 const i18n = new VueI18n({
-  locale: 'zh',
+  locale: WebLocation(),
   messages: {
     zh: require('./language/zh'),
     en: require('./language/en'),
