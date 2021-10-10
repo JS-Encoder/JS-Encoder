@@ -41,7 +41,8 @@ export default {
   consoleInfoCount: {
     error: 0,
     warn: 0,
-    info: 0
+    info: 0,
+    sum: 0
   },
   hasUploadCode: false
 }

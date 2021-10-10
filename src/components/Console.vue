@@ -5,6 +5,9 @@
         <i class="icon iconfont icon-console"></i>
         <span>Console</span>
       </div>
+      <div class="info-sum" v-show="consoleInfoCount.sum > 0">
+        <span>{{consoleInfoCount.sum}}</span>
+      </div>
       <div class="resize flex flex-ai" @mousedown="resize">
         <i class="icon iconfont icon-resize"></i>
       </div>
@@ -153,6 +156,7 @@ export default {
       'consoleHeight',
       'consoleSettings',
       'consoleInfo',
+      'consoleInfoCount',
     ]),
     consoleLang() {
       return this.$t('console')
@@ -399,6 +403,14 @@ export default {
         font-size: 14px;
         margin-left: 5px;
       }
+    }
+    .info-sum{
+      margin-left: 5px;
+      border-radius: 4px;
+      font-size: 12px;
+      background-color: $thirdColor;
+      padding: 0 5px;
+      margin-top: 2px;
     }
     .resize {
       height: 100%;

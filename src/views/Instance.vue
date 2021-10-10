@@ -342,7 +342,12 @@ export default {
       this.cursorPos = pos
     },
     calcConsoleInfoCount(consoleInfo) {
-      const consoleInfoCount = { error: 0, warn: 0, info: 0 }
+      const consoleInfoCount = {
+        error: 0,
+        warn: 0,
+        info: 0,
+        sum: consoleInfo.length,
+      }
       for (let item of consoleInfo) {
         const type = item.type
         switch (item.type) {
