@@ -270,8 +270,18 @@ export default class Console {
           break
         case 'Array':
         case 'Map':
+        case 'Set':
+        case 'Error':
+        case 'Date':
+        case 'RegExp':
         case 'Object':
-          result = result + JSONStringify(item) + afterStr
+          try {
+            result = result + JSONStringify(item) + afterStr
+          } catch (error) {
+            if (error === 'circular reference') {
+              result = 'JSEncoder Tip: "There is a circular reference in the output variable, please view the full log in the browser console."'
+            }
+          }
           break
         case 'dom':
           result = result + stringifyDOM(item)
