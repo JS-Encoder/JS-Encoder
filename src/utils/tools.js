@@ -255,12 +255,20 @@ function getObjAllKeys (obj) {
  * @param {String} info
  */
 function copyInfo (info) {
-  const input = document.createElement('input')
-  input.value = info
-  document.body.appendChild(input)
-  input.select()
-  document.execCommand('Copy')
-  document.body.removeChild(input)
+  /**
+   * Since execCommand is facing abandon, use navigator.clipboard instead
+   * 由于execCommand面临被废弃的问题，使用navigator.clipboard替代它
+   */
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(info)
+  } else {
+    const input = document.createElement('input')
+    input.value = info
+    document.body.appendChild(input)
+    input.select()
+    document.execCommand('Copy')
+    document.body.removeChild(input)
+  }
 }
 
 /**
