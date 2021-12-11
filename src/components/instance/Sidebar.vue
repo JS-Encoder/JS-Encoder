@@ -77,6 +77,23 @@ export default {
   height: 100%;
   background-color: $thirdColor;
   border-right: 1px solid $deep;
+  overflow-y: overlay;
+  &::-webkit-scrollbar {
+    outline: none;
+    width: 4px;
+    background-color: transparent;
+    @include setTransition(all, 0.3s, ease);
+  }
+  &::-webkit-scrollbar-track {
+    background-color: rgba(30, 30, 30, 0);
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(80, 80, 80, 0.3);
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    outline: none;
+    background-color: rgba(80, 80, 80, 0.7);
+  }
   .tool-list {
     width: 100%;
     .tool {
