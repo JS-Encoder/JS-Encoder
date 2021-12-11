@@ -1,5 +1,5 @@
 <template>
-  <div id="viewTabBar" class="flex noselect">
+  <div id="viewTabBar" class="flex noselect flex-sh">
     <div class="tab flex flex-1">
       <div class="browser-tab flex flex-ai flex-jcc" :class="showView?'active-tab':''">
         <i class="el-icon-view"></i>

@@ -31,10 +31,10 @@ export default {
     setTimeout(() => {
       const { clientHeight: clientH, clientWidth: clientW } = document.body
       /**
-       * The height of iframe is equal to client height subtract header and console height
-       * iframe的高度等于整个可见窗口高度减去header和console的高度
+       * The height of iframe is equal to client height subtract header, console and footer height
+       * iframe的高度等于整个可见窗口高度减去header、console和底部信息栏的高度
        */
-      const iframeH = clientH - this.consoleHeight - 41 - 30
+      const iframeH = clientH - this.consoleHeight - 41 - 30 - 20
       this.handleIframeH(iframeH)
       /**
        * Divide the editor and iframe widths equally
