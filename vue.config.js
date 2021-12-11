@@ -86,9 +86,11 @@ module.exports = {
       if (IS_PROD || devNeedCdn) args[0].cdn = cdn
       return args
     })
-    config
-      .plugin('webpack-bundle-analyzer')
-      .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
+    if (IS_PROD) {
+      config
+        .plugin('webpack-bundle-analyzer')
+        .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
+    }
   },
   css: {
     extract: IS_PROD,
