@@ -46,9 +46,13 @@
     </div>
     <div class="head-tags">
       <span class="title">{{settingsLang.headTags.title}}</span>
-      <el-input class="head-tags-input" type="textarea" :rows="3" :placeholder="settingsLang.headTags.describe"
-        v-model="settings.headTags">
-      </el-input>
+      <el-input
+        class="head-tags-input"
+        type="textarea"
+        :rows="3"
+        :placeholder="settingsLang.headTags.describe"
+        v-model="settings.headTags"
+      ></el-input>
     </div>
   </el-dialog>
 </template>
@@ -57,7 +61,7 @@
 import { mapState, mapMutations } from 'vuex'
 import { fontList } from '@utils/publicData.js'
 export default {
-  data() {
+  data () {
     return {
       name: 'settings',
       settings: {
@@ -75,12 +79,12 @@ export default {
       fontList,
     }
   },
-  created() {
+  created () {
     this.settings = this.instanceSetting
   },
   computed: {
     ...mapState(['visibleDialog', 'instanceSetting']),
-    settingsLang() {
+    settingsLang () {
       return this.$t('dialogs').settings
     },
   },
