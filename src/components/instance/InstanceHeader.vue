@@ -4,21 +4,6 @@
       <img src="../../assets/images/logo.svg" alt="" />
     </div>
     <span class="project-name flex flex-ai flex-jcc">JS Encoder</span>
-    <!-- <div class="instance-name flex-sh pointer flex" v-popover:popover>
-      <span class="inblock text-small">{{ instanceName }}</span>
-      <i class="icon iconfont icon-genggai"></i>
-    </div> -->
-    <!-- <el-popover ref="popover" placement="bottom-start" width="250" trigger="click" @show="openInstanceInfo"
-      v-model="isInstanceInfoVisible">
-      <div class="flex flex-clo">
-        <el-input :placeholder="headerLang.instanceInfo.name" size="small" v-model="instanceInfo.name"></el-input>
-        <el-input :placeholder="headerLang.instanceInfo.describe" type="textarea" :autosize="{ minRows: 2, maxRows: 4}"
-          v-model="instanceInfo.describe" maxlength="150" resize="none" style="font-size: 13px;margin-top: 10px">
-        </el-input>
-        <el-button class="def-btn save-btn" size="small" style="margin-top: 10px" @click="saveInstanceInfo">
-          {{headerLang.instanceInfo.save}}</el-button>
-      </div>
-    </el-popover> -->
     <div class="flex-1"></div>
     <div class="btn-opts flex flex-ai flex-jcc">
       <a href="https://www.lliiooiill.cn/" target="blank">
