@@ -143,6 +143,7 @@ module.exports = {
       },
     },
     sidebar: ['Preprocessor', 'Library', 'Settings', 'Upload', 'Download', 'Shortcuts', 'Switch Languages', 'Github'],
+    editorTools: ['Format code'],
     viewTools: {
       refresh: 'Refresh',
       fullScreen: 'Full Screen',

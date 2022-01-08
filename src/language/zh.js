@@ -159,6 +159,7 @@ module.exports = {
       },
     },
     sidebar: ['预处理语言', '库', '设置', '上传', '下载', '快捷键', '中英文切换', 'Github'],
+    editorTools: ['格式化代码'],
     viewTools: {
       refresh: '刷新',
       fullScreen: '全屏',
