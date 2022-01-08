@@ -140,6 +140,33 @@ CodeMirror.hint.javascript = (cm) => {
   return inner
 }
 
+const formatCode = (cm, mode) => {
+  /**
+   * Format code
+   * 格式化代码
+   */
+  const code = cm.getValue()
+  const cursor = cm.getCursor()
+  let finCode = ''
+  if (cm.getOption('mode') === 'text/md-mix') {
+    return void 0
+  } else {
+    switch (mode) {
+      case 'HTML':
+        finCode = formatter.formatHtml(code)
+        break
+      case 'CSS':
+        finCode = formatter.formatCss(code)
+        break
+      case 'JavaScript':
+        finCode = formatter.formatJavaScript(code)
+        break
+    }
+  }
+  cm.setValue(finCode)
+  cm.setCursor(cursor)
+}
+
 /**
  * Configure editor features and options
  * 配置编辑器功能及选项
@@ -188,30 +215,7 @@ function codemirrorConfig (mode = '') {
         cm.foldCode(cm.getCursor())
       },
       'Shift-Alt-F': (cm) => {
-        /**
-         * Format code
-         * 格式化代码
-         */
-        const code = cm.getValue()
-        const cursor = cm.getCursor()
-        let finCode = ''
-        if (cm.getOption('mode') === 'text/md-mix') {
-          return void 0
-        } else {
-          switch (mode) {
-            case 'HTML':
-              finCode = formatter.formatHtml(code)
-              break
-            case 'CSS':
-              finCode = formatter.formatCss(code)
-              break
-            case 'JavaScript':
-              finCode = formatter.formatJavaScript(code)
-              break
-          }
-        }
-        cm.setValue(finCode)
-        cm.setCursor(cursor)
+        formatCode(cm, mode)
       },
     },
   }
@@ -727,3 +731,6 @@ function codemirrorConfig (mode = '') {
   return codeOptions
 }
 export default codemirrorConfig
+export {
+  formatCode
+}
