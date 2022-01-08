@@ -38,12 +38,12 @@
     </div>
     <div class="console-body flex flex-clo">
       <div class="cm-list flex-1 CodeMirror cm-s-default" ref="consoleList" v-show="!settingsVisible">
-        <div v-for="(item, index) in consoleInfo" :key="index" class="log-list">
+        <div v-for="(item, index) in consoleInfo" :key="index" class="log-content">
           <div v-if="item.type==='log'|| item.type==='dir'" v-show="filter.Log" class="log flex flex-ai">
             <i class="icon iconfont icon-lfmonth"></i>
             <pre v-for="(value, index) in item.logs" :key="index" v-html="value" class="CodeMirror-line"></pre>
           </div>
-          <div v-if="item.type==='mix'" class="mix flex flex-ai">
+          <div v-if="item.type==='mix'" class="mix flex flex-ai" v-show="filter.Log">
             <i class="icon iconfont icon-lfmonth"></i>
             <codemirror :options="codeOptions" @hook:mounted="cmFold(index)" v-show="settings.highlight" v-once
               :value="item.content" class="code-log" :ref="`logArea${index}`">
@@ -214,8 +214,8 @@ export default {
       this.handleIframeH(viewH - 25)
     },
     scrollToBottom() {
-      const logList = this.$refs.consoleList.querySelectorAll('.log-list')
-      logList[logList.length - 1].scrollIntoView(false)
+      const logContent = this.$refs.consoleList.querySelectorAll('.log-content')
+      logContent[logContent.length - 1].scrollIntoView(false)
     },
     closeSettings() {
       this.handleConsoleSettings(this.settings)
@@ -464,7 +464,7 @@ export default {
         background-color: rgba(80, 80, 80, 1);
       }
       font-family: $codeFont;
-      .log-list {
+      .log-content {
         font-size: 12px;
         .log,
         .system-error,
