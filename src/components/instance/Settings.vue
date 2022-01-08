@@ -86,8 +86,11 @@ export default {
   },
   methods: {
     ...mapMutations(['handleDialogState', 'handleAllInstanceSetting']),
-    closeDialog() {
-      const settings = this.settings
+    closeDialog () {
+      const settings = { ...this.settings }
+      if (settings.lint) {
+        settings.lint = { options: { esversion: 2021 } }
+      }
       this.handleAllInstanceSetting(settings)
       this.handleDialogState('')
     },

@@ -191,7 +191,7 @@ export default {
         switch (codeMode) {
           case 'JavaScript': {
             lint = {
-              esversion: 10,
+              esversion: 2021,
             }
             break
           }
