@@ -1,9 +1,10 @@
-import { judgeBaseArray, judgeType, judgeWindow, JSONStringify, stringifyDOM } from './tools'
+import { judgeBaseArray, judgeType, judgeWindow, JSONStringify, judgeCyclic, stringifyDOM } from './tools'
 import { formatJavaScript } from './codeFormatter'
 
 const highlightMap = {
   string: 'cm-string',
   number: 'cm-number',
+  bigint: 'cm-none',
   boolean: 'cm-atom',
   symbol: 'cm-variable',
   null: 'cm-none',
@@ -261,6 +262,10 @@ export default class Console {
           result = `${result}"${String(item)}"`
           if (index !== length - 1) result += afterStr
           break
+        case 'bigint':
+          result += `${item.toString()}n`
+          if (index !== length - 1) result += afterStr
+          break
         case 'String':
         case 'Number':
         case 'Boolean':
@@ -275,12 +280,10 @@ export default class Console {
         case 'Date':
         case 'RegExp':
         case 'Object':
-          try {
+          if (judgeCyclic(item)) {
+            result = 'JSEncoder Tip: "There is a circular reference in the output variable, please view the full log in the browser console."'
+          } else {
             result = result + JSONStringify(item) + afterStr
-          } catch (error) {
-            if (error === 'circular reference') {
-              result = 'JSEncoder Tip: "There is a circular reference in the output variable, please view the full log in the browser console."'
-            }
           }
           break
         case 'dom':
@@ -291,6 +294,8 @@ export default class Console {
             result = result + stringifyDOM(item[i]) + '\n'
           }
           break
+        default:
+          result = 'JSEncoder Tip: "We do not support the display of this data type at this time, if you want to help us, please fork our project on Github."'
       }
     })
     return result
@@ -305,7 +310,11 @@ export default class Console {
     if (!content.length) return ''
     content.forEach((item) => {
       const type = judgeType(item)
-      if (type === 'symbol') item = String(item)
+      if (type === 'symbol') {
+        item = String(item)
+      } else if (type === 'bigint') {
+        item = `${item.toString()}n`
+      }
       const domClass = highlightMap[type]
       const html = `<span class="${domClass}">${item}</span>`
       result.push(html)
