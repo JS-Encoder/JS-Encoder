@@ -6,7 +6,7 @@
         <Sidebar class="flex-sh"></Sidebar>
         <div class="flex flex-1 area">
           <div class="code-area flex flex-clo" :style="{ width: `${editorWidth}px` }">
-            <EditorTabBar></EditorTabBar>
+            <EditorTabBar @selectTool="selectTool"></EditorTabBar>
             <MarkdownTools :getCodeMirror="getCodeMirror" :getIframeBody="getIframeBody"
               v-if="mdToolbarVisible && currentTab === 'Markdown'">
             </MarkdownTools>
@@ -74,6 +74,7 @@ import IframeConsole from '@utils/console'
 import ShortcutHandler from '@utils/handleShortcut'
 import { iframeLinks } from '@utils/cdn'
 import handleLoop from '@utils/handleLoop'
+import { judgeMode } from '@utils/judgeMode'
 
 export default {
   data() {
@@ -336,6 +337,18 @@ export default {
     },
     changeFullScreenState(visible) {
       this.iframeFullScreen = visible
+    },
+    selectTool(toolName){
+      if(this.isChildrenMounted){
+        switch(toolName){
+          case 'format': {
+            const mode = judgeMode(this.currentTab)
+            const tabs = [ 'HTML', 'CSS', 'JavaScript' ]
+            const index = tabs.indexOf(mode)
+            this.$refs[`editor${index}`][0].format()
+          }
+        }
+      }
     },
     getCodeMirror(index) {
       /**
