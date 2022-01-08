@@ -7,9 +7,20 @@
       </div>
     </div>
     <div class="tools flex flex-sh">
-      <div class="flex flex-ai flex-jcc" v-if="currentTab === 'Markdown'"
+      <div class="tool flex flex-ai flex-jcc" v-if="currentTab === 'Markdown'"
         @click="handleMdToolbarVisible(!mdToolbarVisible)" :class="mdToolbarVisible?'active':''">
         <i class="icon iconfont icon-gongju1"></i>
+      </div>
+      <div class="tool other flex flex-ai flex-jcc">
+        <el-dropdown class="tools-dropdown" trigger="click">
+          <i class="icon iconfont icon-menu"></i>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item v-for="(item, index) in toolsList" :key="index" 
+            class="flex flex-ai" style="font-family:Consolas, Monaco" @click.native="selectTool(item)">
+              <span class="flex-1">{{editorToolsLang[index]}}</span>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </div>
     </div>
   </div>
@@ -23,6 +34,7 @@ export default {
   data() {
     return {
       iconMap,
+      toolsList: ['format']
     }
   },
   mounted() {
@@ -30,9 +42,15 @@ export default {
   },
   computed: {
     ...mapState(['preprocessor', 'currentTab', 'mdToolbarVisible']),
+    editorToolsLang() {
+      return this.$t('instance.editorTools')
+    },
   },
   methods: {
     ...mapMutations(['handleCurrentTab', 'handleMdToolbarVisible']),
+    selectTool(toolName){
+      this.$emit('selectTool', toolName)
+    }
   },
   components: {},
 }
@@ -91,11 +109,20 @@ export default {
   .tools {
     font-size: 18px;
     color: $beforeFocus;
-    & > div {
+    .tool {
       width: 40px;
       cursor: pointer;
       &:hover {
         color: $afterFocus;
+      }
+    }
+    .other {
+      i {
+        color: $beforeFocus;
+        cursor: pointer;
+        &:hover {
+          color: $afterFocus;
+        }
       }
     }
     .active {

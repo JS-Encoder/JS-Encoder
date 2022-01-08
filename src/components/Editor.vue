@@ -10,7 +10,7 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import { codemirror } from 'vue-codemirror'
-import cmConfig from '@utils/editorOptions'
+import cmConfig, { formatCode } from '@utils/editorOptions'
 import { judgeMode, modeStyleList } from '@utils/judgeMode'
 import { debounce } from '@utils/tools'
 import { changeFormatOptions } from '@utils/codeFormatter'
@@ -171,6 +171,10 @@ export default {
     },
     getCodeMirror() {
       return this.$refs.codeArea.codemirror
+    },
+    format() {
+      const mode = judgeMode(this.codeMode)
+      formatCode(this.getCodeMirror(), mode)
     },
     autoComplete(cm, changeObj) {
       /**
