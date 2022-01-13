@@ -7,19 +7,19 @@ const cdn = {
   externals: {
     vue: 'Vue',
     vuex: 'Vuex',
-    'axios': 'axios'
+    'axios': 'axios',
   },
   js: [
     'https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.min.js',
     'https://cdn.bootcdn.net/ajax/libs/vuex/3.5.1/vuex.min.js',
-    'https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.min.js'
+    'https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.min.js',
   ]
 }
 // 本地环境是否需要使用cdn
 const devNeedCdn = false
 
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'development' ? '/' : './', // 默认'/'，部署应用包时的基本 URL
+  publicPath: IS_PROD ? './' : '/', // 默认'/'，部署应用包时的基本 URL
   outputDir: 'dist', // 'dist', 生产环境构建文件的目录
   assetsDir: 'assets', // 相对于outputDir的静态资源(js、css、img、fonts)目录
   lintOnSave: false,
