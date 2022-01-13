@@ -1,5 +1,5 @@
 <template>
-  <div id="instanceHeader" class="flex borbox">
+  <div id="instanceHeader" class="flex borbox noselect">
     <div class="logo flex flex-ai flex-jcc flex-sh">
       <img src="../../assets/images/logo.svg" alt="" />
     </div>

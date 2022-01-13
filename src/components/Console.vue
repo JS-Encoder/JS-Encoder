@@ -392,7 +392,7 @@ export default {
     color: $beforeFocus;
     padding-left: 15px;
     position: relative;
-    font-family: $codeFont;
+    font-family: $font;
     border-left: 1px solid $mainColor;
     .title {
       i {
