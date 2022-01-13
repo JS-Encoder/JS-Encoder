@@ -10,6 +10,12 @@ export default {
     const { index, newPrep } = obj
     state.preprocessor.splice(index, 1, newPrep)
   },
+  handleShouldResetCode: (state, bool) => {
+    state.shouldResetCode = bool
+  },
+  handleAllPreprocessor: (state, arr) => {
+    state.preprocessor = arr
+  },
   handleCurrentTab: (state, tab) => {
     state.currentTab = tab
   },

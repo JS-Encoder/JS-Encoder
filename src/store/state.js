@@ -44,5 +44,6 @@ export default {
     info: 0,
     sum: 0
   },
-  hasUploadCode: false
+  hasUploadCode: false,
+  shouldResetCode: false
 }
