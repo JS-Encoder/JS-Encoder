@@ -1,5 +1,8 @@
 const externalLinks = {
-  stylus: 'https://cdn.bootcdn.net/ajax/libs/stylus/0.32.1/stylus.js'
+  stylus: 'https://cdn.bootcdn.net/ajax/libs/stylus/0.32.1/stylus.js',
+  typeScript: 'https://cdn.jsdelivr.net/npm/browserified-typescript@0.3.0/index.js',
+  coffeeScript: 'https://cdn.jsdelivr.net/npm/coffeescript@2.5.1/lib/coffeescript-browser-compiler-legacy/coffeescript.js',
+  babel: 'https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js'
 }
 
 const iframeLinks = {
