@@ -10,6 +10,7 @@ const modeStyleList = {
   JavaScript: 'text/javascript',
   TypeScript: 'text/typescript',
   CoffeeScript: 'text/coffeescript',
+  JSX: 'text/jsx'
 }
 
 function judgeMode (edit) {
@@ -27,6 +28,7 @@ function judgeMode (edit) {
     case 'JavaScript':
     case 'TypeScript':
     case 'CoffeeScript':
+    case 'JSX':
       return 'JavaScript'
     case 'Console':
       return 'Console'
@@ -50,6 +52,7 @@ function judgeExtension (edit) {
     case 'js':
     case 'ts':
     case 'coffee':
+    case 'jsx':
       return 'JavaScript'
   }
 }
@@ -63,6 +66,7 @@ const mimeTypeMap = {
   Stylus: 'styl',
   TypeScript: 'ts',
   CoffeeScript: 'coffee',
+  JSX: 'jsx'
 }
 
 const ModeMimeTypeMap = {
@@ -74,6 +78,7 @@ const ModeMimeTypeMap = {
   styl: 'Stylus',
   ts: 'TypeScript',
   coffee: 'CoffeeScript',
+  jsx: 'JSX',
   html: 'HTML',
   css: 'CSS',
   js: 'JavaScript',

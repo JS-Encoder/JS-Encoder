@@ -12,6 +12,7 @@ import markdownTools from './markdownTools'
 
 // 语言高亮
 import 'codemirror/mode/javascript/javascript'
+import 'codemirror/mode/jsx/jsx'
 import 'codemirror/mode/pug/pug'
 import 'codemirror/mode/xml/xml'
 import 'codemirror/mode/css/css'

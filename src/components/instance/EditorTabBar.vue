@@ -161,4 +161,7 @@ export default {
 .icon-coffeescript {
   color: lightcoral;
 }
+.icon-jsx {
+  color: #61dafb;
+}
 </style>

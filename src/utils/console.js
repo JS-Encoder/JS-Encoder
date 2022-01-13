@@ -1,5 +1,5 @@
 import { judgeBaseArray, judgeType, judgeWindow, JSONStringify, judgeCyclic, stringifyDOM } from './tools'
-import { formatJavaScript } from './codeFormatter'
+import { format } from './codeFormatter'
 
 const highlightMap = {
   string: 'cm-string',
@@ -211,7 +211,7 @@ export default class Console {
       case 'dir':
       case 'print':
         if (!judgeBaseArray(content)) {
-          content = formatJavaScript(this.contentToString(content))
+          content = format(this.contentToString(content), 'JavaScript')
           finLog = {
             type: 'mix',
             content,
@@ -226,7 +226,7 @@ export default class Console {
       case 'info':
       case 'warn':
       case 'error': {
-        content = formatJavaScript(this.contentToString(content))
+        content = format(this.contentToString(content), 'JavaScript')
         finLog = {
           type,
           content,
