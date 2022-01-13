@@ -18,12 +18,29 @@ Vue.config.productionTip = false
 
 // plugins
 Vue.use(element).use(codemirror).use(VueI18n)
+
+const jsEcdStore = sessionStorage.getItem('jsEcdStore')
+
+/**
+ * Get state from sessionStorage when page onload
+ * 页面加载完之后取出session中储存的配置信息放到VueX中
+ */
+if (jsEcdStore !== null) {
+  const oldState = JSON.parse(jsEcdStore)
+  oldState.visibleDialog = ''
+  store.replaceState(oldState)
+}
+
 /**
  * Determine the preferred language of the current browser
  * 判断当前浏览器的首选语言
  */
 function WebLocation () {
-  return navigator.language === 'zh-CN' ? 'zh' : 'en'
+  if (jsEcdStore !== null) {
+    return store.state.language
+  } else {
+    return navigator.language === 'zh-CN' ? 'zh' : 'en'
+  }
 }
 const i18n = new VueI18n({
   locale: WebLocation(),
@@ -32,17 +49,6 @@ const i18n = new VueI18n({
     en: require('./language/en'),
   },
 })
-
-/**
- * Get state from sessionStorage when page onload
- * 页面加载完之后取出session中储存的配置信息放到VueX中
- */
-const jsEcdStore = sessionStorage.getItem('jsEcdStore')
-if (jsEcdStore !== null) {
-  const oldState = JSON.parse(jsEcdStore)
-  oldState.visibleDialog = ''
-  store.replaceState(oldState)
-}
 
 /**
  * Create Vue instance must be after replace state
