@@ -17,6 +17,7 @@ export default {
   data() {
     return {
       iconList: [
+        'icon-template',
         'icon-shalou',
         'icon-ku',
         'icon-kongzhitai',
@@ -27,6 +28,7 @@ export default {
         'icon-github',
       ],
       dialogNameList: [
+        'templates',
         'preprocessor',
         'library',
         'settings',

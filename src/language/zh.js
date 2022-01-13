@@ -5,27 +5,11 @@ module.exports = {
     cancel: '取消',
   },
   dialogs: {
-    newInstance: {
-      title: '新建实例',
-      name: {
-        label: '实例名',
-        describe: '实例名不能超过50字符',
-        error: {
-          blank: '实例名不能为空！',
-        },
-      },
-      tags: {
-        label: '标签',
-        describe: '为你的项目添加最多三个标签',
-        new: '+ 新标签',
-      },
-      type: {
-        label: '类型',
-        list: ['公共', '私有'],
-      },
-      submit: '新建实例',
+    templates: {
+      title: '模板',
+      describe: '选择你的初始模板',
+      show: '不再自动显示'
     },
-    newProject: {},
     library: {
       title: '库',
       loading: '加载中...',
@@ -158,7 +142,7 @@ module.exports = {
         save: '保存',
       },
     },
-    sidebar: ['预处理语言', '库', '设置', '上传', '下载', '快捷键', '中英文切换', 'Github'],
+    sidebar: ['模板', '预处理语言', '库', '设置', '上传', '下载', '快捷键', '中英文切换', 'Github'],
     editorTools: ['格式化代码'],
     viewTools: {
       refresh: '刷新',

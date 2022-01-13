@@ -38,6 +38,7 @@
       </div>
       <InstanceFooter :isCompiling="isCompiling" :cursorPos="cursorPos"></InstanceFooter>
     </div>
+    <Templates></Templates>
     <Preprocessor></Preprocessor>
     <Library></Library>
     <Settings></Settings>
@@ -55,6 +56,7 @@ import InstanceFooter from '@components/instance/InstanceFooter.vue'
 import Sidebar from '@components/instance/Sidebar.vue'
 import ViewTabBar from '@components/instance/ViewTabBar.vue'
 import EditorTabBar from '@components/instance/EditorTabBar.vue'
+import Templates from '@components/instance/Templates.vue'
 import Preprocessor from '@components/instance/Preprocessor.vue'
 import Library from '@components/instance/Library.vue'
 import Settings from '@components/instance/Settings.vue'
@@ -99,6 +101,7 @@ export default {
     Editor,
     ViewTabBar,
     Console,
+    Templates,
     Preprocessor,
     Library,
     Settings,

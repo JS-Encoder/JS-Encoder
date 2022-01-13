@@ -5,6 +5,11 @@ module.exports = {
     cancel: 'cancel',
   },
   dialogs: {
+    templates: {
+      title: 'Templates',
+      describe: 'Select your initial template',
+      show: 'No longer auto-display'
+    },
     library: {
       title: 'Library',
       loading: 'loading...',
@@ -142,7 +147,7 @@ module.exports = {
         save: 'Save',
       },
     },
-    sidebar: ['Preprocessor', 'Library', 'Settings', 'Upload', 'Download', 'Shortcuts', 'Switch Languages', 'Github'],
+    sidebar: ['Templates', 'Preprocessor', 'Library', 'Settings', 'Upload', 'Download', 'Shortcuts', 'Switch Languages', 'Github'],
     editorTools: ['Format code'],
     viewTools: {
       refresh: 'Refresh',
