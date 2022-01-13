@@ -1,17 +1,20 @@
 <template>
   <div id="app">
-    <div v-show="!loaded" class="loader flex flex-jcc">
-      <div class="loader-content flex flex-clo flex-ai">
-        <PageLoader class="page-loader"></PageLoader>
-        <span class="tip">{{ loadLang.init }}</span>
+    <transition name="fade">
+      <div v-show="!loaded" class="loader flex flex-jcc">
+        <div class="loader-content flex flex-clo flex-ai">
+          <PageLoader class="page-loader"></PageLoader>
+          <span class="tip">{{ loadLang.init }}</span>
+        </div>
       </div>
-    </div>
+    </transition>
     <Instance></Instance>
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations } from 'vuex'
+import storage from '@utils/localStorage'
 import PageLoader from '@components/PageLoader.vue'
 import Instance from '@views/Instance.vue'
 export default {
@@ -20,14 +23,14 @@ export default {
     PageLoader,
     Instance,
   },
-  data() {
+  data () {
     return {
       loaded: false,
       clientWidth: window.innerWidth,
       clientHeight: document.body.clientHeight,
     }
   },
-  mounted() {
+  mounted () {
     setTimeout(() => {
       const { clientHeight: clientH, clientWidth: clientW } = document.body
       /**
@@ -59,7 +62,16 @@ export default {
        * 完成后隐藏全页面的加载动画
        */
       this.loaded = true
-    }, 3000)
+      // Show the templates dialog
+      const hiddenAutoTmp = storage.get('hiddenAutoTmp')
+      if (!hiddenAutoTmp) {
+        this.$nextTick(() => {
+          setTimeout(() => {
+            this.$store.commit('handleDialogState', 'templates')
+          }, 500)
+        })
+      }
+    }, 2500)
   },
   computed: {
     ...mapState([
@@ -68,12 +80,12 @@ export default {
       'editorWidth',
       'iframeWidth',
     ]),
-    loadLang() {
+    loadLang () {
       return this.$t('instance').loader
     },
   },
   watch: {
-    clientWidth(newW, oldW) {
+    clientWidth (newW, oldW) {
       /**
        * Change the editor and iframe widths when the browser's visible are width changed
        * The width of them cannot be less than 100px, if any one reaches the minimal width, only change the other one's width
@@ -97,7 +109,7 @@ export default {
       this.handleIframeW(iframeW + avgW)
       this.handleEditorW(editorW + avgW)
     },
-    clientHeight(newH, oldH) {
+    clientHeight (newH, oldH) {
       /**
        * Change the iframe and console heights when the browser's visible area height changed
        * The height of console and iframe cannot be less than 25px and 100px, if any one reaches the minimal width, only change the other one's width
@@ -135,18 +147,16 @@ export default {
 
 <style lang="scss">
 @include scrollBar();
-@include keyframes(bgc-fade) {
-  0%,
-  100% {
-    background-color: $thirdColor;
-  }
-  50% {
-    background-color: $deep;
-  }
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 #app {
-  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
-    Microsoft YaHei, SimSun, sans-serif;
+  font-family: $font;
   width: 100%;
   height: 100%;
   overflow-y: hidden;
@@ -159,7 +169,6 @@ export default {
     left: 0;
     top: 0;
     z-index: 100;
-    @include animation(bgc-fade, 3s, 0s, ease, infinite);
     .loader-content {
       margin-top: 100px;
       .page-loader {
