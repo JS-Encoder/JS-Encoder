@@ -44,8 +44,10 @@ export default {
     setTimeout(() => {
       if (this.showCodeArea) {
         const codeArea = this.$refs.codeArea
-        codeArea.refresh()
-        codeArea.codemirror.focus()
+        if(codeArea) {
+          codeArea.refresh()
+          codeArea.codemirror.focus()
+        }
       }
     }, 3100)
   },
@@ -56,6 +58,7 @@ export default {
       'mdToolbarVisible',
       'currentTab',
       'hasUploadCode',
+      'shouldResetCode'
     ]),
     fontStyle() {
       const { fontFamily, fontSize } = this.instanceSetting
@@ -77,6 +80,16 @@ export default {
       const codeOptions = this.codeOptions
       codeOptions.mode = modeStyleList[newMode]
       codeOptions.lint = this.getLintOpts(newMode)
+    },
+    shouldResetCode(newState) {
+      if (newState) {
+        const codeMode = this.codeMode
+        const mode = judgeMode(codeMode)
+        this.code = this.instanceCode[mode]
+        this.$nextTick(() => {
+          this.handleShouldResetCode(false)
+        })
+      }
     },
     showCodeArea(newState) {
       /**
@@ -141,7 +154,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(['handleInstanceCode']),
+    ...mapMutations(['handleInstanceCode', 'handleShouldResetCode']),
     initEditor() {
       /**
        * Initialize the code and configuration of editor
@@ -150,7 +163,7 @@ export default {
       const instanceCode = this.instanceCode
       const codeMode = this.codeMode
       const mode = judgeMode(codeMode)
-      this.codeOptions = cmConfig(mode)
+      this.codeOptions = cmConfig(codeMode)
       const codeOptions = this.codeOptions
       codeOptions.mode = modeStyleList[codeMode]
       codeOptions.lint = this.getLintOpts(codeMode)
@@ -173,8 +186,7 @@ export default {
       return this.$refs.codeArea.codemirror
     },
     format() {
-      const mode = judgeMode(this.codeMode)
-      formatCode(this.getCodeMirror(), mode)
+      formatCode(this.getCodeMirror(), this.codeMode)
     },
     autoComplete(cm, changeObj) {
       /**

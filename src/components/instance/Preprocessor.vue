@@ -1,10 +1,10 @@
 <template>
-  <el-dialog @close="handleDialogState('')" :visible="visibleDialog === name" :title="prepLang.title">
+  <el-dialog @close="handleDialogState('')" :visible="isDialogVisible" :title="prepLang.title">
     <div class="preprocessor flex flex-clo">
       <div class="prep-item flex flex-ai" v-for="(item,index) in prepTitle" :key="index">
         <span class="flex-sh">{{item}}</span>
         <el-select v-model="prep[index]" @change="prepChange(index)">
-          <el-option v-for="lang in defPrepOpts[item]" :key="lang" :label="lang" :value="lang"> </el-option>
+          <el-option v-for="lang in defPrepOpts[item]" :key="lang" :label="lang" :value="lang"></el-option>
         </el-select>
       </div>
     </div>
@@ -24,9 +24,6 @@ export default {
       prepTitle: ['HTML', 'CSS', 'JavaScript'],
     }
   },
-  created() {
-    this.prep = [...this.preprocessor]
-  },
   computed: {
     ...mapState({
       visibleDialog: 'visibleDialog',
@@ -36,6 +33,16 @@ export default {
     prepLang() {
       return this.$t('dialogs').preprocessor
     },
+    isDialogVisible() {
+      return this.name === this.visibleDialog
+    }
+  },
+  watch: {
+    isDialogVisible(newState) {
+      if(newState){
+        this.prep = [...this.preprocessor]
+      }
+    }
   },
   methods: {
     ...mapMutations([
