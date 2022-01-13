@@ -151,17 +151,7 @@ const formatCode = (cm, mode) => {
   if (cm.getOption('mode') === 'text/md-mix') {
     return void 0
   } else {
-    switch (mode) {
-      case 'HTML':
-        finCode = formatter.formatHtml(code)
-        break
-      case 'CSS':
-        finCode = formatter.formatCss(code)
-        break
-      case 'JavaScript':
-        finCode = formatter.formatJavaScript(code)
-        break
-    }
+    finCode = formatter.format(code, mode)
   }
   cm.setValue(finCode)
   cm.setCursor(cursor)

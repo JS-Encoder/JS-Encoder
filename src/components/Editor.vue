@@ -118,7 +118,7 @@ export default {
       codeOptions.tabSize = newState
       codeOptions.indentUnit = newState
       changeFormatOptions({
-        attr: 'indent_size',
+        attr: 'tabWidth',
         val: newState,
       })
     },

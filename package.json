@@ -7,6 +7,7 @@
     "build": "vue-cli-service build --report"
   },
   "dependencies": {
+    "@prettier/plugin-pug": "^1.19.1",
     "acorn": "^8.4.1",
     "acorn-loose": "^8.1.0",
     "acorn-walk": "^8.1.1",
@@ -21,11 +22,11 @@
     "flowchart.js": "^1.15.0",
     "highlight.js": "^10.1.2",
     "htmlhint": "^0.14.2",
-    "js-beautify": "^1.13.5",
     "jshint": "^2.12.0",
     "jszip": "^3.5.0",
     "less": "^3.12.2",
     "marked": "^1.1.1",
+    "prettier": "^2.5.1",
     "pug": "^3.0.0",
     "qs": "^6.9.4",
     "stylus": "^0.54.8",

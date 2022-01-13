@@ -1,42 +1,81 @@
 import Loader from './loader'
+import parserHTML from 'prettier/parser-html'
+import parserMarkdown from 'prettier/parser-markdown'
+import parserCSS from 'prettier/parser-postcss'
+import parserJavaScript from 'prettier/parser-babel'
+import parserPug from '@prettier/plugin-pug'
 
 const formatOptions = {
-  indent_size: 2, // tab缩进数
-  indent_level: 0, // 缩进等级
-  space_in_empty_paren: true,
-  preserve_newlines: true // 元素前的换行是否被允许存在
+  useTabs: false, // 使用tab替换空格
+  semi: false, // 分号结尾
+  singleQuote: true, // 单引号
+  tabWidth: 2, // tab对应空格数
 }
-
-const loader = new Loader()
 
 function changeFormatOptions (newOption) {
   formatOptions[newOption.attr] = newOption.val
 }
-function formatHtml (code) {
-  if (!loader.get('formatHtml')) {
-    const formatHtml = require('js-beautify').html
-    loader.set('formatHtml', formatHtml)
-  }
-  return loader.get('formatHtml')(code, formatOptions)
+
+const loader = new Loader()
+
+const parserMap = {
+  HTML: 'html',
+  Markdown: 'markdown',
+  Pug: 'pug',
+  CSS: 'css',
+  Sass: 'scss',
+  Scss: 'scss',
+  Less: 'less',
+  Stylus: 'css',
+  JavaScript: 'babel',
+  TypeScript: 'typescript',
+  CoffeeScript: 'babel',
+  JSX: 'babel'
 }
-function formatCss (code) {
-  if (!loader.get('formatCss')) {
-    const formatCss = require('js-beautify').css
-    loader.set('formatCss', formatCss)
-  }
-  return loader.get('formatCss')(code, formatOptions)
+
+/**
+ * 对于TypeScript的格式化插件使用外部cdn链接引入
+ * 这是因为该插件文件过大而为之
+ */
+const pluginMap = {
+  HTML: parserHTML,
+  Markdown: parserMarkdown,
+  Pug: parserPug,
+  CSS: parserCSS,
+  Sass: parserCSS,
+  Scss: parserCSS,
+  Less: parserCSS,
+  Stylus: parserCSS,
+  JavaScript: parserJavaScript,
+  TypeScript: window.prettierPlugins.typescript,
+  CoffeeScript: parserJavaScript,
+  JSX: parserJavaScript
 }
-function formatJavaScript (code) {
-  if (!loader.get('formatJs')) {
-    const formatJs = require('js-beautify').js
-    loader.set('formatJs', formatJs)
+
+function format (code, mode) {
+  let parser = parserMap[mode]
+  let plugin = pluginMap[mode]
+  if (plugin === null) {
+    return code
   }
-  return loader.get('formatJs')(code, formatOptions)
+  if (!loader.has('format')) {
+    const format = require('prettier').format
+    loader.set('format', format)
+  }
+  let result = code
+  try {
+    result = loader.get('format')(code, {
+      ...formatOptions,
+      parser,
+      plugins: [plugin]
+    })
+  } catch (err) {
+    console.log('format error:', err)
+  }
+  return result
 }
 
 export {
-  formatHtml,
-  formatCss,
-  formatJavaScript,
-  changeFormatOptions
+  changeFormatOptions,
+  format
 }
