@@ -1,7 +1,12 @@
 {
-  "name": "js-encoder-offline",
-  "version": "3.2.3",
+  "name": "JS-Encoder",
+  "version": "3.3.0",
   "private": true,
+  "author": "Longgererer",
+  "email": "c2b139460q@gmail.com",
+  "homepage": "http://jsencoder.lliiooiill.cn/",
+  "repository": "https://github.com/JS-Encoder/JS-Encoder",
+  "bugs": "https://github.com/JS-Encoder/JS-Encoder/issues",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --report"
