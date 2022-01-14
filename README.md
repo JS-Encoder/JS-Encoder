@@ -4,7 +4,7 @@
 
 <h1 align="center">JS-Encoder</h1>
 
-<p align="center">👉 An online WEB compiler based on Vue.js and Codemirror👈</p>
+<p align="center">👉 A front-end code editor based on Vue.js and Codemirror 👈</p>
 
 <div align=center>
   <a href="https://travis-ci.org/Longgererer/JS-Encoder">
@@ -23,7 +23,9 @@
 
 <p align="center">English | <a href="https://github.com/Longgererer/JS-Encoder/blob/master/READMECN.md">简体中文</a></p>
 
-![1614658567_1_.png](http://picstore.lliiooiill.cn/1628329983.jpg)
+![1614658567_1_.png](http://picstore.lliiooiill.cn/1642123287%281%29.jpg)
+
+> The code in this figure comes from [CodePen](https://codepen.io/andymerskin/pen/XNMWvQ)
 
 ## Preview
 
@@ -31,28 +33,39 @@
 
 ## Describe
 
-**JS-Encoder** gets some inspiration from [JS Bin](https://jsbin.com) and [CODEPEN](https://codepen.io/pen/), both of then are excellent online compiler. Built with Vue.js and Codemirror.
-
-In fact, JS-Encoder was released in its original version last year, but there were many shortcomings, so this year I rebuilt the JS-Encoder. If you want to see the old version, please go to: [The old version](https://www.lliiooiill.cn/jsencoder).
+**JS-Encoder** gets some inspiration from [JSBin](https://jsbin.com), [CodePen](https://codepen.io/pen/) and [JSFiddle](https://jsfiddle.net/), JS-Encoder inspired by these three excellent online compilers, built with Vue.js and Codemirror.
 
 ## Feature 🌟
 
 - [x] Live preview.
-- [x] Support for a variety of front-end languages and pre-processing languages.
+- [x] Support for a variety of front-end languages and pre-processing languages. Currently supported preprocessing languages are:
+  - Markdown
+  - Pug
+  - Sass/Scss
+  - Less
+  - Stylus
+  - TypeScript
+  - CoffeeScript
+  - JSX(Babel)
 - [x] Support for external scripts and styles.
 - [x] Local storage, where you can save code on the compiler locally, currently supports three forms:
   - Single file: A file include HTML, CSS and JS named index.html.
   - Zip: A zip file include HTML file, CSS file and JS file.
   - Preprocessing files: if you are using a preprocessing language, you can download a preprocessing language file that is not compiled.
 - [x] File import, you can import the file from the local to the compiler, the compiler will automatically read the contents of the file and display in the edit window.
-- [x] Support for multiple keyboard shortcuts, including the emmet extension.
-- [x] Add markdown mode, support edit window and preview window real-time preview and synchronous scrolling, and add shortcut menu bar.
-- [x] Search code function.
-- [x] CDN search function, faster to add required CSS and JS external links.
-- [x] Console, display log and debug.
+- [x] Support for multiple keyboard shortcuts, includes formatting, HTML Emmet extensions, and Markdown related shortcuts.
+- [x] Add Markdown mode, support edit window and preview window real-time preview and synchronization scrolling, and join the shortcut menu bar.
+- [x] Code Search.
+- [x] CDN search, faster to add required CSS and JS external links(Powered by cdnjs).
+- [x] Powerful console for displaying many common types of logs and debugging.
 - [x] Code hinter.
 - [x] Personalized settings.
 - [x] linter for some languages.
+- [x] Support for initializing templates, currently supported (vue2/3, React, Angular).
+
+## DOC(Chinese)
+
+[JS-Encoder 中文使用文档](http://doc.lliiooiill.cn/)
 
 ## Future ❓
 
