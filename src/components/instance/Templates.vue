@@ -24,6 +24,7 @@
 import { mapState, mapMutations } from 'vuex'
 import { templatesInfo } from '@utils/publicData'
 import { images } from '@utils/cdn'
+import storage from '@utils/localStorage'
 export default {
   data () {
     return {
@@ -49,6 +50,13 @@ export default {
       return this.visibleDialog === this.name
     },
   },
+  watch: {
+    isDialogVisible(newState){
+      if (newState) {
+        this.hiddenAutoTmp = !!storage.get('hiddenAutoTmp')
+      }
+    }
+  },
   methods: {
     ...mapMutations([
       'handleDialogState',
@@ -59,7 +67,7 @@ export default {
       'handleAllInstanceExtLinks'
     ]),
     closeDialog () {
-      localStorage.setItem('hiddenAutoTmp', this.hiddenAutoTmp)
+      storage.set('hiddenAutoTmp', this.hiddenAutoTmp)
       this.handleDialogState('')
     },
     selectTemplate (template) {
