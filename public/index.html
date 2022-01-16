@@ -9,7 +9,6 @@
   <meta name="Description" content="JS-Encoder 是一款可以编辑包括JavaScript,CSS和HTML多种前端语言的在线编译器，实时查看效果，并有独立控制台" />
   <link rel="stylesheet" href="https://at.alicdn.com/t/font_2391891_f456t3gj0x.css">
   <link rel="shortcut icon" type="image/x-icon" href="./images/favicon.ico">
-  <link rel="icon" href="<%= BASE_URL %>favicon.ico">
   <title>
     <%= htmlWebpackPlugin.options.title %>
   </title>
@@ -33,9 +32,8 @@
   <div id="app"></div>
   <% for (var i in htmlWebpackPlugin.options.cdn &&
     htmlWebpackPlugin.options.cdn.js) { %>
-    <script src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"></script>
+    <script async src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"></script>
   <% } %>
-  <script src="https://unpkg.com/prettier@2.5.1/parser-typescript.js"></script>
 </body>
 
 </html>
