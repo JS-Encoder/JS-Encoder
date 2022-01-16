@@ -9,7 +9,7 @@
           :key="template.label"
           @click="selectTemplate(template.label)"
         >
-          <img :src="`${publicPath}images/${template.svgName}.svg`" :alt="template.label" />
+          <img :src="`${cdnPath}/${template.svgName}.svg`" :alt="template.label" />
           <span class="name">{{ template.label }}</span>
         </div>
       </div>
@@ -23,11 +23,12 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import { templatesInfo } from '@utils/publicData'
+import { images } from '@utils/cdn'
 export default {
   data () {
     return {
       name: 'templates',
-      publicPath: process.env.BASE_URL,
+      cdnPath: images,
       hiddenAutoTmp: false,
       templateList: [
         { label: 'Vanilla', svgName: 'Vanilla' },

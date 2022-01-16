@@ -21,7 +21,15 @@ const iframeLinks = {
   ]
 }
 
+const formatLinks = {
+  typeScript: 'https://unpkg.com/prettier@2.5.1/parser-typescript.js'
+}
+
+const images = 'http://picstore.lliiooiill.cn'
+
 export {
   externalLinks,
-  iframeLinks
+  iframeLinks,
+  images,
+  formatLinks
 }
