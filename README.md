@@ -31,6 +31,10 @@
 
 [open JS-Encoder](http://jsencoder.lliiooiill.cn/)
 
+If you can't visit this site:
+
+[open by github page](https://js-encoder.github.io/JS-Encoder-preview/)
+
 ## Describe
 
 **JS-Encoder** gets some inspiration from [JSBin](https://jsbin.com), [CodePen](https://codepen.io/pen/) and [JSFiddle](https://jsfiddle.net/), JS-Encoder inspired by these three excellent online compilers, built with Vue.js and Codemirror.

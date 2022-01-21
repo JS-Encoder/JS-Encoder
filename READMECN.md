@@ -31,6 +31,10 @@
 
 [进入 JS-Encoder](http://jsencoder.lliiooiill.cn/)
 
+如果你无法访问这个链接：
+
+[通过 github page 使用](https://js-encoder.github.io/JS-Encoder-preview/)
+
 ## 描述
 
 **JS-Encoder** 在 [JSBin](https://jsbin.com/)，[CodePen](https://codepen.io/) 和 [JSFiddle](https://jsfiddle.net/) 这三个优秀的在线编译器上获得了启发，由 Vue.js 和 Codemirror 构建而成。
