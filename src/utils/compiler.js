@@ -4,6 +4,7 @@
 
 import Loader from './loader'
 import { externalLinks } from './cdn'
+import hash from 'hash-sum'
 
 const publicPath = process.env.BASE_URL
 const loader = new Loader()
@@ -189,8 +190,111 @@ async function compileJS (code, prep) {
   }
   return code
 }
+
+function compileVue2 (code) {
+  let vue
+  if (!loader.get('vue')) {
+    vue = require('@vue/compiler-sfc')
+    loader.set('vue', vue)
+  } else {
+    vue = loader.get('vue')
+  }
+  const id = hash(code)
+  const dataVId = 'data-v-' + id
+  const parseResult = vue.parse(code, { sourceMap: false })
+  const descriptor = parseResult.descriptor
+  // script
+  const script = vue.compileScript(descriptor, { id })
+  // style
+  const styles = descriptor.styles
+  const styleCodes = []
+  if (styles.length) {
+    for (let i = 0;i < styles.length;i++) {
+      const styleItem = styles[i]
+      styleCodes.push(vue.compileStyle({
+        source: styleItem.content,
+        id: dataVId,
+        scoped: styleItem.scoped,
+      }).code.trim())
+    }
+  }
+  const styleCode = styleCodes.join('\n').replace(/url\(\s*(?:(["'])((?:\\.|[^\n\\"'])+)\1|((?:\\.|[^\s,"'()\\])+))\s*\)/g, (_, quotes, relUrl1, relUrl2) => {
+    return 'url(' + quotes + resolveUrl(relUrl1 || relUrl2, styleUrl) + quotes + ')'
+  })
+  const mainName = '_sfc_main'
+  const scriptCode = `
+  ${vue.rewriteDefault(script.content, mainName)}
+  const app = new Vue({
+    el: '#app',
+    template: \`${descriptor.template.content}\`,
+    ...${mainName},
+  })
+  `.trim()
+  return {
+    HTMLCode: '<div id="app"></div>',
+    CSSCode: styleCode,
+    JSCode: scriptCode
+  }
+}
+
+function compileVue3 (code) {
+  let vue
+  if (!loader.get('vue')) {
+    vue = require('@vue/compiler-sfc')
+    loader.set('vue', vue)
+  } else {
+    vue = loader.get('vue')
+  }
+  const { parse, compileScript, rewriteDefault } = vue
+  const descriptor = parse(code).descriptor
+  const id = hash(code)
+  const compiledScript = compileScript(descriptor, { id })
+
+  // style
+  const styles = descriptor.styles
+  const styleCodes = []
+  if (styles.length) {
+    for (let i = 0;i < styles.length;i++) {
+      const styleItem = styles[i]
+      styleCodes.push(vue.compileStyle({
+        source: styleItem.content,
+        id: dataVId,
+        scoped: styleItem.scoped,
+      }).code.trim())
+    }
+  }
+  const styleCode = styleCodes.join('\n').replace(/url\(\s*(?:(["'])((?:\\.|[^\n\\"'])+)\1|((?:\\.|[^\s,"'()\\])+))\s*\)/g, (_, quotes, relUrl1, relUrl2) => {
+    return 'url(' + quotes + resolveUrl(relUrl1 || relUrl2, styleUrl) + quotes + ')'
+  })
+  const mainName = '_sfc_main'
+  let scriptCode = rewriteDefault(compiledScript.content, mainName)
+  const importReg = /import [^<]* from \'vue\'/
+  const importList = scriptCode.match(importReg)
+  const importStr = importList ? importList[0] : ''
+  const importContent = importStr.match(/{.+}/)
+  scriptCode = scriptCode.replace(importReg, `const ${importContent} = Vue`)
+  const templateCode = descriptor.template.content.trim()
+  const HTMLCode = `
+  <div id="app"></div>
+  <script type="module">
+    ${scriptCode}
+    const _sfc_app = Vue.createApp({
+      template: \`${templateCode}\`,
+      ...${mainName}
+    }).mount('#app')
+  </script>
+  `.trim()
+  return {
+    HTMLCode,
+    CSSCode: styleCode,
+    JSCode: ''
+  }
+}
+
 export {
   compileHTML,
   compileCSS,
-  compileJS
+  compileJS,
+  compileVue2,
+  compileVue3
 }

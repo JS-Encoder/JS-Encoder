@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@prettier/plugin-pug": "^1.19.1",
+    "@vue/compiler-sfc": "^3.2.29",
     "acorn": "^8.4.1",
     "acorn-loose": "^8.1.0",
     "acorn-walk": "^8.1.1",

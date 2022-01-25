@@ -10,7 +10,9 @@ const modeStyleList = {
   JavaScript: 'text/javascript',
   TypeScript: 'text/typescript',
   CoffeeScript: 'text/coffeescript',
-  JSX: 'text/jsx'
+  JSX: 'text/jsx',
+  Vue2: 'text/x-vue',
+  Vue3: 'text/x-vue',
 }
 
 function judgeMode (edit) {

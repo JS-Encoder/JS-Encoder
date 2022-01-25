@@ -32,7 +32,9 @@ module.exports = {
     JavaScript: 'icon-javascript',
     TypeScript: 'icon-typescript',
     CoffeeScript: 'icon-coffeescript',
-    JSX: 'icon-jsx'
+    JSX: 'icon-jsx',
+    Vue2: 'icon-vue',
+    Vue3: 'icon-vue'
   },
   templatesInfo: {
     Vanilla: {
@@ -56,7 +58,7 @@ module.exports = {
       code: {
         HTML: '<div id=\"app\">\n\t{{ message }}\n</div>',
         CSS: '',
-        JavaScript: `var app = new Vue({\n\tel: '#app',\n\tdata: {\n\t\tmessage: 'This is a template of Vue2!'\n\t}\n})`
+        JavaScript: `const app = new Vue({\n\tel: '#app',\n\tdata: {\n\t\tmessage: 'This is a template of Vue2!'\n\t}\n})`
       }
     },
     Vue3: {
@@ -70,6 +72,20 @@ module.exports = {
         CSS: '',
         JavaScript: `const app = {\n\tdata() {\n\t\treturn {\n\t\t\tmessage: 'This is a template of Vue3!'\n\t\t}\n\t}\n}\n\nVue.createApp(app).mount('#app')`
       }
+    },
+    ['Vue2 CPNT']: {
+      links: {
+        cssLinks: [],
+        JSLinks: ['https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js']
+      },
+      code: `<template>\n\t<h1>{{ msg }}</h1>\n</template>\n<script>\nexport default {\n\tdata () {\n\t\treturn {\n\t\t\tmsg: 'This is a Vue2 component'\n\t\t}\n\t}\n}\n</script>\n<style>\n</style>`
+    },
+    ['Vue3 CPNT']: {
+      links: {
+        cssLinks: [],
+        JSLinks: ['https://unpkg.com/vue@3/dist/vue.global.js'],
+      },
+      code: `<template>\n\t<h1>{{ msg }}</h1>\n</template>\n<script>\nexport default {\n\tdata () {\n\t\treturn {\n\t\t\tmsg: 'This is a Vue3 component'\n\t\t}\n\t}\n}\n</script>\n<style>\n</style>`
     },
     React: {
       preprocessor: ['HTML', 'CSS', 'JSX'],

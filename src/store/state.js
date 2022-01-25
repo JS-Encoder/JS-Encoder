@@ -45,5 +45,14 @@ export default {
     sum: 0
   },
   hasUploadCode: false,
-  shouldResetCode: false
+  shouldResetCode: false,
+  /**
+   * 组件模式，一旦cpntMode为true，则只显示一个编辑窗口
+   * 开启组件模式则不能设置preprocessor，窗口切换快捷键也无效
+   */
+  cpntMode: false,
+  // 组件名称，现支持：Vue2、Vue3
+  cpntName: '',
+  // 组件代码
+  cpntCode: ''
 }

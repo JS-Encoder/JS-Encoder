@@ -1,9 +1,10 @@
 <template>
   <el-dialog @close="handleDialogState('')" :visible="isDialogVisible" :title="prepLang.title">
     <div class="preprocessor flex flex-clo">
+      <span class="describe" v-show="cpntMode">{{prepLang.describe}}</span>
       <div class="prep-item flex flex-ai" v-for="(item,index) in prepTitle" :key="index">
         <span class="flex-sh">{{item}}</span>
-        <el-select v-model="prep[index]" @change="prepChange(index)">
+        <el-select v-model="prep[index]" @change="prepChange(index)" :disabled="cpntMode">
           <el-option v-for="lang in defPrepOpts[item]" :key="lang" :label="lang" :value="lang"></el-option>
         </el-select>
       </div>
@@ -25,11 +26,7 @@ export default {
     }
   },
   computed: {
-    ...mapState({
-      visibleDialog: 'visibleDialog',
-      preprocessor: 'preprocessor',
-      currentTab: 'currentTab',
-    }),
+    ...mapState(['visibleDialog', 'preprocessor', 'currentTab', 'cpntMode']),
     prepLang() {
       return this.$t('dialogs').preprocessor
     },

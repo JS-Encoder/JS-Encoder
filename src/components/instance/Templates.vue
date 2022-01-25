@@ -9,7 +9,9 @@
           :key="template.label"
           @click="selectTemplate(template.label)"
         >
-          <img :src="`${cdnPath}/${template.svgName}.svg`" :alt="template.label" />
+          <svg class="icon" aria-hidden="true">
+            <use v-bind:xlink:href="`#${template.svgName}`" />
+          </svg>
           <span class="name">{{ template.label }}</span>
         </div>
       </div>
@@ -23,21 +25,20 @@
 <script>
 import { mapState, mapMutations } from 'vuex'
 import { templatesInfo } from '@utils/publicData'
-import { images } from '@utils/cdn'
 import storage from '@utils/localStorage'
 export default {
   data () {
     return {
       name: 'templates',
-      cdnPath: images,
       hiddenAutoTmp: false,
       templateList: [
-        { label: 'Vanilla', svgName: 'Vanilla' },
-        { label: 'Vue2', svgName: 'Vue' },
-        { label: 'Vue3', svgName: 'Vue' },
-        { label: 'React', svgName: 'React' },
-        { label: 'Angular', svgName: 'Angular' },
-        // { label: 'Svelte', svgName: 'Svelte' },
+        { label: 'Vanilla', svgName: 'icon-javascript' },
+        { label: 'Vue2', svgName: 'icon-vue' },
+        { label: 'Vue3', svgName: 'icon-vue' },
+        { label: 'Vue2 CPNT', svgName: 'icon-vue' },
+        { label: 'Vue3 CPNT', svgName: 'icon-vue' },
+        { label: 'React', svgName: 'icon-react' },
+        { label: 'Angular', svgName: 'icon-angular' },
       ]
     }
   },
@@ -51,7 +52,7 @@ export default {
     },
   },
   watch: {
-    isDialogVisible(newState){
+    isDialogVisible (newState) {
       if (newState) {
         this.hiddenAutoTmp = !!storage.get('hiddenAutoTmp')
       }
@@ -64,19 +65,40 @@ export default {
       'handleAllPreprocessor',
       'handleAllInstancesCode',
       'handleCurrentTab',
-      'handleAllInstanceExtLinks'
+      'handleAllInstanceExtLinks',
+      'handleCpntCode',
+      'handleCpntMode',
+      'handleCpntName'
     ]),
     closeDialog () {
       storage.set('hiddenAutoTmp', this.hiddenAutoTmp)
       this.handleDialogState('')
     },
     selectTemplate (template) {
-      const { preprocessor, links, code } = templatesInfo[template]
-      this.handleAllPreprocessor(preprocessor)
-      this.handleCurrentTab(preprocessor[0])
-      this.handleAllInstanceExtLinks(links)
-      this.handleAllInstancesCode(code)
-      this.handleShouldResetCode(true)
+      switch (template) {
+        case 'Vue2 CPNT':
+        case 'Vue3 CPNT': {
+          const { links, code } = templatesInfo[template]
+          this.handleAllInstanceExtLinks(links)
+          this.handleCpntCode(code)
+          this.handleCpntMode(true)
+          this.handleCpntName(template.replace(/ CPNT/, ''))
+          this.handleShouldResetCode(true)
+          break
+        }
+        default: {
+          const { preprocessor, links, code } = templatesInfo[template]
+          this.handleAllPreprocessor(preprocessor)
+          this.handleCurrentTab(preprocessor[0])
+          this.handleAllInstanceExtLinks(links)
+          this.handleAllInstancesCode(code)
+          this.handleCpntMode(false)
+          this.handleShouldResetCode(true)
+        }
+      }
+      this.$nextTick(() => {
+        this.handleShouldResetCode(false)
+      })
       this.closeDialog()
     }
   }
@@ -104,8 +126,9 @@ export default {
         color: $beforeFocus;
         background-color: $secondColor;
         @include setTransition(all, 0.2s, ease);
-        img {
+        .icon {
           width: 50px;
+          height: 50px;
         }
         .name {
           margin-top: 10px;

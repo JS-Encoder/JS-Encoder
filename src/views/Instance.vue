@@ -10,10 +10,15 @@
             <MarkdownTools :getCodeMirror="getCodeMirror" :getIframeBody="getIframeBody"
               v-if="mdToolbarVisible && currentTab === 'Markdown'">
             </MarkdownTools>
-            <Editor @runCode="runCode" :ref="'editor' + index" class="flex-1" v-for="(item, index) in preprocessor"
-              :key="index" :codeMode="item" :index="index" @cursorPosChanged="cursorPosChanged"
-              :showCodeArea="item === currentTab" v-show="item === currentTab">
-            </Editor>
+            <template v-if="cpntMode">
+              <CpntEditor ref="cpntEditor" class="flex-1" @cursorPosChanged="cursorPosChanged" @runCode="runCode"></CpntEditor>
+            </template>
+            <template v-else>
+              <Editor :ref="'editor' + index" class="flex-1" v-for="(item, index) in preprocessor"
+                :key="index" :codeMode="item" :index="index" @cursorPosChanged="cursorPosChanged"
+                @runCode="runCode" :showCodeArea="item === currentTab" v-show="item === currentTab">
+              </Editor>
+            </template>
           </div>
           <div v-if="resizeVisible" class="resize borbox" @mousedown="viewResize"></div>
           <div class="view-area flex flex-clo" :style="{ width: `${iframeWidth}px` }">
@@ -65,10 +70,11 @@ import Download from '@components/instance/Download.vue'
 import Shortcut from '@components/instance/Shortcut.vue'
 import MarkdownTools from '@components/MarkdownTools.vue'
 import Editor from '@components/Editor.vue'
+import CpntEditor from '@components/CpntEditor.vue'
 import Console from '@components/Console.vue'
 import FullScreenBar from '@components/FullScreenBar.vue'
 /* scripts */
-import { compileHTML, compileCSS, compileJS } from '@utils/compiler'
+import { compileHTML, compileCSS, compileJS, compileVue2, compileVue3 } from '@utils/compiler'
 import { deepCopy } from '@utils/tools'
 import SyncScroll from '@utils/syncScroll'
 import IframeHandler from '@utils/handleInstanceView'
@@ -111,6 +117,7 @@ export default {
     FullScreenBar,
     InstanceFooter,
     MarkdownTools,
+    CpntEditor,
   },
   mounted() {
     this.$nextTick(() => {
@@ -144,6 +151,9 @@ export default {
       'instanceSetting',
       'instanceExtLinks',
       'consoleSettings',
+      'cpntMode',
+      'cpntName',
+      'cpntCode'
     ]),
     isMD() {
       return this.preprocessor[0] === 'Markdown'
@@ -217,19 +227,19 @@ export default {
        */
       this.isCompiling = true
       const iframe = this.$refs.iframeBox
+      const docConsole = new IframeConsole()
+      let HTMLCode = '',
+        CSSCode = '',
+        JSCode = ''
       const code = this.instanceCode
       const prep = this.preprocessor
       let links = {}
       const isMD = this.isMD
-      let HTMLCode = '',
-        CSSCode = '',
-        JSCode = ''
-      const docConsole = new IframeConsole()
       /**
        * No need to reload iframe when execute code at first time or when preprocessor is markdown
        * 在markdown模式下不需要重新引入iframe，因为改变的只是html而已
        */
-      if (!isMD) {
+      if (!isMD || this.cpntMode) {
         if (this.iframeInit) {
           /**
            * Reload is essential because the old javascript code has effective for iframe
@@ -251,16 +261,30 @@ export default {
             }
           })
         }
-        await compileCSS(code.CSS, prep[1]).then((res) => {
-          CSSCode = res
-        })
-        await compileJS(code.JavaScript, prep[2]).then((res) => {
-          /**
-           * Switch raw JavaScript code to code that prevents infinite loops
-           * 将JavaScript源代码通过AST在内部插入可以监听并阻止死循环的代码
-           */
-          JSCode = handleLoop(res)
-        })
+        if (this.cpntMode) {
+          switch (this.cpntName) {
+            case 'Vue2': {
+              ;({HTMLCode, CSSCode, JSCode} = compileVue2(this.cpntCode))
+              break
+            }
+            case 'Vue3': {
+              ;({HTMLCode, CSSCode, JSCode} = compileVue3(this.cpntCode))
+              break
+            }
+          }
+          
+        } else {
+          await compileCSS(code.CSS, prep[1]).then((res) => {
+            CSSCode = res
+          })
+          await compileJS(code.JavaScript, prep[2]).then((res) => {
+            /**
+             * Switch raw JavaScript code to code that prevents infinite loops
+             * 将JavaScript源代码通过AST在内部插入可以监听并阻止死循环的代码
+             */
+            JSCode = handleLoop(res)
+          })
+        }
         /**
          * Deep copy the external links to avoid the effect state
          * 因为接下来可能需要动态修改外部链接，因此这里需要深拷贝一下
@@ -279,9 +303,11 @@ export default {
         links.cssLinks = iframeLinks.mdCSS
         links.JSLinks = iframeLinks.mdJS
       }
-      await compileHTML(code.HTML, prep[0]).then((res) => {
-        HTMLCode = res
-      })
+      if(!this.cpntMode){
+        await compileHTML(code.HTML, prep[0]).then((res) => {
+          HTMLCode = res
+        })
+      }
       setTimeout(async () => {
         const handler = new IframeHandler(iframe)
         const headTags = this.instanceSetting.headTags
@@ -358,9 +384,14 @@ export default {
        * Get the instance of cm after the child components mounted successful
        * 仔codemirror组件挂载完毕，获取其内部方法
        */
-      return this.isChildrenMounted
-        ? this.$refs[`editor${index}`][0].getCodeMirror()
-        : void 0
+      if (this.isChildrenMounted) {
+        if (this.cpntMode) {
+          return this.$refs.cpntEditor.getCodeMirror()
+        } else {
+          return this.$refs[`editor${index}`][0].getCodeMirror()
+        }
+      }
+      return void 0
     },
     getIframeBody() {
       return this.$refs.iframeBox

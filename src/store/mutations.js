@@ -75,5 +75,14 @@ export default {
   },
   handleHasUploadCode: (state, status) => {
     state.hasUploadCode = status
+  },
+  handleCpntMode: (state, status) => {
+    state.cpntMode = status
+  },
+  handleCpntName: (state, name) => {
+    state.cpntName = name
+  },
+  handleCpntCode: (state, code) => {
+    state.cpntCode = code
   }
 }

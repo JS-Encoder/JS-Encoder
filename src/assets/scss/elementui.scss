@@ -63,6 +63,11 @@
       color: $afterFocus;
     }
   }
+  &.is-disabled > .el-input__inner {
+    background-color: $thirdColor !important;
+    opacity: 0.5;
+    border-color: $thirdColor !important;
+  }
 }
 .el-textarea {
   & > .el-textarea__inner {

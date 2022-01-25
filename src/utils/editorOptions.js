@@ -22,6 +22,7 @@ import 'codemirror/mode/stylus/stylus'
 import 'codemirror/mode/coffeescript/coffeescript'
 import 'codemirror/mode/stex/stex'
 import 'codemirror/addon/mode/multiplex'
+import 'codemirror/mode/vue/vue'
 // 代码收缩
 import 'codemirror/addon/fold/foldcode'
 import 'codemirror/addon/fold/foldgutter'

@@ -29,6 +29,7 @@ module.exports = {
     },
     preprocessor: {
       title: '预处理语言',
+      describe: '由于你使用了组件模式，因此你无法设置预处理语言'
     },
     upload: {
       title: '上传文件',

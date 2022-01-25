@@ -31,6 +31,7 @@ module.exports = {
     },
     preprocessor: {
       title: 'Preprocessor',
+      describe: 'Because you are using component mode, you cannot set the preprocessor language.'
     },
     upload: {
       title: 'Upload Files',

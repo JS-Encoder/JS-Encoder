@@ -1,10 +1,20 @@
 <template>
   <div id="editorTabBar" class="flex noselect">
     <div class="tab-list flex flex-1" ref="tabList">
-      <div v-for="(item, index) in preprocessor" :key="index" class="editor-tab flex flex-jcc flex-ai"
+      <template v-if="cpntMode">
+        <div class="editor-tab flex flex-jcc flex-ai active-tab">
+          <svg class="icon" aria-hidden="true">
+            <use v-bind:xlink:href="`#${iconMap[cpntName]}`" />
+          </svg>
+          {{cpntName}}
+        </div>
+      </template>
+      <template v-else>
+        <div v-for="(item, index) in preprocessor" :key="index" class="editor-tab flex flex-jcc flex-ai"
         :class="currentTab === item ? 'active-tab' : ''" @click="handleCurrentTab(item)">
-        <i class="icon iconfont" :class="iconMap[item]"></i>{{ item }}
-      </div>
+          <i class="icon iconfont" :class="iconMap[item]"></i>{{ item }}
+        </div>
+      </template>
     </div>
     <div class="tools flex flex-sh">
       <div class="tool flex flex-ai flex-jcc" v-if="currentTab === 'Markdown'"
@@ -41,7 +51,7 @@ export default {
     new WheelDirective(this.$refs.tabList)
   },
   computed: {
-    ...mapState(['preprocessor', 'currentTab', 'mdToolbarVisible']),
+    ...mapState(['preprocessor', 'currentTab', 'mdToolbarVisible', 'cpntName', 'cpntMode']),
     editorToolsLang() {
       return this.$t('instance.editorTools')
     },
@@ -93,6 +103,11 @@ export default {
       i {
         margin-right: 5px;
         font-size: 18px;
+      }
+      svg {
+        margin-right: 5px;
+        width: 18px;
+        height: 18px;
       }
       &:not(:first-child) {
         border-left: 1px solid $deep;
