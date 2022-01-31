@@ -12,11 +12,11 @@ const cdn = {
     prettier: 'prettier',
   },
   js: [
-    'https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.min.js',
-    'https://cdn.bootcdn.net/ajax/libs/vuex/3.5.1/vuex.min.js',
-    'https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.min.js',
-    'https://cdn.bootcdn.net/ajax/libs/jszip/3.7.1/jszip.min.js',
-    'https://cdn.bootcdn.net/ajax/libs/prettier/2.5.1/standalone.min.js',
+    'https://cdn.staticfile.org/vue/2.6.11/vue.min.js',
+    'https://cdn.staticfile.org/vuex/3.5.1/vuex.min.js',
+    'https://cdn.staticfile.org/axios/0.19.2/axios.min.js',
+    'https://cdn.staticfile.org/jszip/3.7.1/jszip.min.js',
+    'https://cdn.staticfile.org/prettier/2.5.1/standalone.min.js',
   ]
 }
 // 本地环境是否需要使用cdn
