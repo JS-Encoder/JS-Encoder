@@ -53,7 +53,7 @@ module.exports = {
       preprocessor: ['HTML', 'CSS', 'JavaScript'],
       links: {
         cssLinks: [],
-        JSLinks: ['https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js']
+        JSLinks: ['https://cdn.staticfile.org/vue/2.6.14/vue.min.js']
       },
       code: {
         HTML: '<div id=\"app\">\n\t{{ message }}\n</div>',
@@ -65,7 +65,7 @@ module.exports = {
       preprocessor: ['HTML', 'CSS', 'JavaScript'],
       links: {
         cssLinks: [],
-        JSLinks: ['https://unpkg.com/vue@next']
+        JSLinks: ['https://cdn.staticfile.org/vue/3.2.31/vue.global.min.js']
       },
       code: {
         HTML: '<div id=\"app\">\n\t{{message}}\n</div>',
@@ -76,14 +76,14 @@ module.exports = {
     ['Vue2 CPNT']: {
       links: {
         cssLinks: [],
-        JSLinks: ['https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js']
+        JSLinks: ['https://cdn.staticfile.org/vue/2.6.14/vue.min.js']
       },
       code: `<template>\n\t<h1>{{ msg }}</h1>\n</template>\n<script>\nexport default {\n\tdata () {\n\t\treturn {\n\t\t\tmsg: 'This is a Vue2 component'\n\t\t}\n\t}\n}\n</script>\n<style>\n</style>`
     },
     ['Vue3 CPNT']: {
       links: {
         cssLinks: [],
-        JSLinks: ['https://unpkg.com/vue@3/dist/vue.global.js'],
+        JSLinks: ['https://cdn.staticfile.org/vue/3.2.31/vue.global.min.js'],
       },
       code: `<template>\n\t<h1>{{ msg }}</h1>\n</template>\n<script>\nexport default {\n\tdata () {\n\t\treturn {\n\t\t\tmsg: 'This is a Vue3 component'\n\t\t}\n\t}\n}\n</script>\n<style>\n</style>`
     },
@@ -92,8 +92,8 @@ module.exports = {
       links: {
         cssLinks: [],
         JSLinks: [
-          'https://unpkg.com/react@17/umd/react.development.js',
-          'https://unpkg.com/react-dom@17/umd/react-dom.development.js'
+          'https://cdn.staticfile.org/react/17.0.0/umd/react.development.min.js',
+          'https://cdn.staticfile.org/react-dom/17.0.0/umd/react-dom.development.min.js'
         ]
       },
       code: {
@@ -106,7 +106,7 @@ module.exports = {
       preprocessor: ['HTML', 'CSS', 'JavaScript'],
       links: {
         cssLinks: [],
-        JSLinks: ['https://unpkg.com/angular@1.8.2/angular.js']
+        JSLinks: ['https://cdn.staticfile.org/angular.js/1.8.0/angular.min.js']
       },
       code: {
         HTML: `<div ng-app="myApp" ng-controller="myCtrl">\n\t{{message}}\n</div>`,

@@ -33,12 +33,12 @@ module.exports = {
   pwa: {},
   devServer: {
     proxy: {
-      '/cdnJS': {
-        target: 'https://api.cdnjs.com/libraries',
+      '/qiNiuCdn': {
+        target: 'http://picstore.lliiooiill.cn',
         secure: true,
         changeOrigin: true,
         pathRewrite: {
-          '^/cdnJS': '',
+          '^/qiNiuCdn': '',
         },
       },
       '/npmSearch': {
