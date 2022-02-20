@@ -4,6 +4,7 @@
       <img src="../../assets/images/logo.svg" alt="" />
     </div>
     <span class="project-name flex flex-ai flex-jcc">JS Encoder</span>
+    <div class="version describe flex flex-ai">v{{projectInfo.version}}</div>
     <div class="flex-1"></div>
     <div class="btn-opts flex flex-ai flex-jcc">
       <a href="https://www.lliiooiill.cn/" target="blank">
@@ -14,6 +15,7 @@
 </template>
 
 <script>
+import projectInfo from '../../../package.json'
 export default {
   data() {
     return {
@@ -23,6 +25,7 @@ export default {
         describe: '',
       },
       isInstanceInfoVisible: false,
+      projectInfo
     }
   },
   computed: {
@@ -81,29 +84,11 @@ export default {
     color: $lightCyan;
     margin-left: 5px;
   }
+  .version {
+    margin-left: 5px;
+  }
   .btn-opts {
     padding: 0 5px;
   }
-  // .instance-name {
-  //   color: $beforeFocus;
-  //   margin-left: 20px;
-  //   @include setTransition(all, 0.3s, ease);
-  //   &:hover {
-  //     color: $afterFocus;
-  //     i {
-  //       visibility: visible;
-  //     }
-  //   }
-  //   i {
-  //     line-height: 40px;
-  //     visibility: hidden;
-  //     margin-left: 5px;
-  //   }
-  //   span {
-  //     line-height: 40px;
-  //     max-width: 250px;
-  //     @include text-ellipsis();
-  //   }
-  // }
 }
 </style>
