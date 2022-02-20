@@ -141,15 +141,28 @@ export default {
     'instanceSetting.lint'(newState) {
       this.codeOptions.lint = newState && this.getLintOpts(this.codeMode)
     },
-    'instanceSetting.delayTime'(newState) {
+    'instanceSetting.autoExecute'(newState) {
       this.watchCode()
+      const setting = this.instanceSetting
       this.watchCode = this.$watch(
         'code',
         debounce(function (code) {
           const mode = judgeMode(this.codeMode)
           this.handleInstanceCode({ mode, code })
-          if (this.instanceSetting.autoExecute) this.$emit('runCode')
-        }, newState)
+          if (newState) this.$emit('runCode')
+        }, newState ? setting.delayTime : 500)
+      )
+    },
+    'instanceSetting.delayTime'(newState) {
+      this.watchCode()
+      const setting = this.instanceSetting
+      this.watchCode = this.$watch(
+        'code',
+        debounce(function (code) {
+          const mode = judgeMode(this.codeMode)
+          this.handleInstanceCode({ mode, code })
+          if (setting.autoExecute) this.$emit('runCode')
+        }, setting.autoExecute ? newState : 500)
       )
     },
   },
@@ -173,13 +186,14 @@ export default {
        * so it needs to be define after waiting for initialization is complete
        * 观察者会在组件初始化完就执行，因此需要在给编辑器赋予初始代码之后才执行
        */
+      const setting = this.instanceSetting
       this.watchCode = this.$watch(
         'code',
         debounce(function (code) {
           const mode = judgeMode(this.codeMode)
           this.handleInstanceCode({ mode, code })
-          if (this.instanceSetting.autoExecute) this.$emit('runCode')
-        }, this.instanceSetting.delayTime)
+          if (setting.autoExecute) this.$emit('runCode')
+        }, setting.autoExecute ? setting.delayTime : 500)
       )
     },
     getCodeMirror() {
