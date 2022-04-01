@@ -215,6 +215,9 @@ function JSONStringify (target) {
       case 'bigint':
         str += `${value.toString()}n`
         break
+      case 'number':
+        str += Object.is(NaN, value) ? 'NaN' : JSON.stringify(value)
+        break
       default:
         str += JSON.stringify(value)
     }
