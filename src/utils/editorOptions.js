@@ -239,7 +239,8 @@ function codemirrorConfig (mode = '') {
           const cursor = cm.getCursor() // 获取焦点
           const line = cursor.line // 获取光标所在行数
           const ch = cursor.ch // 获取光标位置
-          if (ch === 0 || cm.getOption('mode') === 'text/md-mix') {
+          const mode = cm.getOption('mode')
+          if (ch === 0 || mode === 'text/md-mix') {
             indent() // 为markdown
           } else {
             const value = cm.getLine(line) // 获取当前行文本
@@ -250,20 +251,37 @@ function codemirrorConfig (mode = '') {
               case ' ':
               case "'":
               case '/':
+              case '{':
                 indent()
                 return void 0
             }
-            if (cm.getOption('mode') === 'text/html') {
-              // 为html
-              front === '>' && indent()
-              try {
-                cm.execCommand('emmetExpandAbbreviation') // emmet扩展
-              } catch (err) {
-                console.error(err)
+            switch (mode) {
+              case 'text/html': {
+                // 为html
+                front === '>' && indent()
+                try {
+                  cm.execCommand('emmetExpandAbbreviation') // emmet扩展
+                } catch (err) {
+                  console.error(err)
+                }
+                break
               }
-            } else {
-              indent()
-              // cm.showHint()
+              case 'css':
+              case 'text/x-sass':
+              case 'text/x-scss':
+              case 'text/x-less':
+              case 'text/x-styl': {
+                try {
+                  cm.execCommand('emmetExpandAbbreviation') // emmet扩展
+                } catch (err) {
+                  console.error(err)
+                }
+                break
+              }
+              default: {
+                indent()
+                // cm.showHint()
+              }
             }
           }
         }
