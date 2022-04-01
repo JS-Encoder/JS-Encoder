@@ -336,6 +336,15 @@ function isMac () {
   return /macintosh|mac os x/i.test(navigator.userAgent)
 }
 
+/**
+ * 把字符串第一位变成大写，其他为小写
+ * @param {String} str 
+ * @returns 
+ */
+function firstUpper (str) {
+  return str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase()
+}
+
 module.exports = {
   debounce,
   throttle,
@@ -350,5 +359,6 @@ module.exports = {
   copyInfo,
   deepCopy,
   escapeRegExp,
-  isMac
+  isMac,
+  firstUpper
 }

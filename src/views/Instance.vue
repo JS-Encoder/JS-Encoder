@@ -264,11 +264,11 @@ export default {
         if (this.cpntMode) {
           switch (this.cpntName) {
             case 'Vue2': {
-              ;({HTMLCode, CSSCode, JSCode} = compileVue2(this.cpntCode))
+              ;({HTMLCode, CSSCode, JSCode} = await compileVue2(this.cpntCode))
               break
             }
             case 'Vue3': {
-              ;({HTMLCode, CSSCode, JSCode} = compileVue3(this.cpntCode))
+              ;({HTMLCode, CSSCode, JSCode} = await compileVue3(this.cpntCode))
               break
             }
           }

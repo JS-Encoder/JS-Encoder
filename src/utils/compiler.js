@@ -5,6 +5,7 @@
 import Loader from './loader'
 import { externalLinks } from './cdn'
 import hash from 'hash-sum'
+import { firstUpper } from './tools'
 
 const publicPath = process.env.BASE_URL
 const loader = new Loader()
@@ -191,7 +192,7 @@ async function compileJS (code, prep) {
   return code
 }
 
-function compileVue2 (code) {
+async function compileVue2 (code) {
   let vue
   if (!loader.get('vue')) {
     vue = require('@vue/compiler-sfc')
@@ -211,8 +212,10 @@ function compileVue2 (code) {
   if (styles.length) {
     for (let i = 0;i < styles.length;i++) {
       const styleItem = styles[i]
+      const lang = firstUpper(styleItem.lang)
+      let cssCode = await compileCSS(styleItem.content, lang)
       styleCodes.push(vue.compileStyle({
-        source: styleItem.content,
+        source: cssCode,
         id: dataVId,
         scoped: styleItem.scoped,
       }).code.trim())
@@ -237,7 +240,7 @@ function compileVue2 (code) {
   }
 }
 
-function compileVue3 (code) {
+async function compileVue3 (code) {
   let vue
   if (!loader.get('vue')) {
     vue = require('@vue/compiler-sfc')
