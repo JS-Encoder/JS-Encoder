@@ -158,6 +158,13 @@
     }
   }
 }
+.el-slider__runway {
+  background-color: $thirdColor !important;
+}
+.el-checkbox__inner {
+  border-color: $thirdColor !important;
+  background-color: $thirdColor !important;
+}
 .is-checked {
   .el-checkbox__inner {
     background-color: $primary !important;
@@ -246,7 +253,7 @@
 }
 .el-tabs__nav-wrap::after {
   height: 2px !important;
-  background-color: $beforeFocus !important;
+  background-color: $thirdColor !important;
 }
 .el-notification {
   border-radius: 4px !important;

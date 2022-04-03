@@ -102,6 +102,7 @@ export default {
     }
     kbd {
       background-color: $thirdColor;
+      font-family: Consolas;
     }
     .affect{
       color: $beforeFocus;
