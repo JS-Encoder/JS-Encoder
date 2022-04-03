@@ -251,6 +251,7 @@ async function compileVue3 (code) {
   const { parse, compileScript, rewriteDefault } = vue
   const descriptor = parse(code).descriptor
   const id = hash(code)
+  const dataVId = 'data-v-' + id
   const compiledScript = compileScript(descriptor, { id })
 
   // style
@@ -259,8 +260,10 @@ async function compileVue3 (code) {
   if (styles.length) {
     for (let i = 0;i < styles.length;i++) {
       const styleItem = styles[i]
+      const lang = firstUpper(styleItem.lang)
+      let cssCode = await compileCSS(styleItem.content, lang)
       styleCodes.push(vue.compileStyle({
-        source: styleItem.content,
+        source: cssCode,
         id: dataVId,
         scoped: styleItem.scoped,
       }).code.trim())
