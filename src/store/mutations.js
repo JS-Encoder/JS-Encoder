@@ -14,7 +14,8 @@ export default {
     state.shouldResetCode = bool
   },
   handleAllPreprocessor: (state, arr) => {
-    state.preprocessor = arr
+    state.preprocessor.splice(0)
+    state.preprocessor.push(...arr)
   },
   handleCurrentTab: (state, tab) => {
     state.currentTab = tab
