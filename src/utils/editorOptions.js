@@ -123,7 +123,7 @@ CodeMirror.defineMode('text/md-mix', (config) => {
 const orig = CodeMirror.hint.javascript
 const extraJsKeywords = (
   'includes at charAt charCodeAt codePointAt concat indexOf endsWith lastIndexOf match matchAll replace replaceAll repeat startsWith toLocaleLowerCase toLocaleUpperCase toLowerCase toUpperCase trim ' +
-  'assign create entries defineProperty defineProperties freeze getOwnPropertyDescriptor getOwnPropertyDescriptors getOwnPropertyNames getOwnPropertySymbols fromEntries is getPrototypeOf isSealed isExtensible isFrozen keys values setPrototypeOf seal preventExtensions'
+  'assign create entries defineProperty defineProperties freeze getOwnPropertyDescriptor getOwnPropertyDescriptors getOwnPropertyNames getOwnPropertySymbols fromEntries is getPrototypeOf isSealed isArray isExtensible isFrozen keys values setPrototypeOf seal preventExtensions'
 ).split(' ')
 
 CodeMirror.hint.javascript = (cm) => {
