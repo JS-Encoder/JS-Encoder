@@ -106,7 +106,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/.el-dialog {
+::v-deep .el-dialog {
   width: 500px !important;
   color: $afterFocus;
   max-height: 450px;

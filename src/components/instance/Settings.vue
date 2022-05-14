@@ -104,7 +104,7 @@ export default {
 
 <style lang="scss" scoped>
 /* main style */
-/deep/.el-dialog {
+::v-deep .el-dialog {
   width: 450px !important;
   max-height: 500px;
   overflow-y: auto;
@@ -112,7 +112,7 @@ export default {
     padding-top: 0 !important;
   }
 }
-/deep/.el-checkbox {
+::v-deep .el-checkbox {
   .el-checkbox__label {
     color: $afterFocus !important;
   }
@@ -175,7 +175,7 @@ export default {
   .title {
     color: $afterFocus;
   }
-  /deep/.head-tags-input {
+  ::v-deep .head-tags-input {
     margin-top: 10px;
     .el-textarea__inner {
       font-family: $codeFont;

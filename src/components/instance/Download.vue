@@ -62,14 +62,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/.el-dialog {
+::v-deep .el-dialog {
   width: 450px !important;
   color: $afterFocus;
   .el-dialog__body {
     padding-top: 0 !important;
   }
 }
-/deep/.el-checkbox {
+::v-deep .el-checkbox {
   .el-checkbox__label {
     color: $afterFocus !important;
   }

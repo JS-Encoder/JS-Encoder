@@ -60,7 +60,7 @@ export default {
 
 <style lang="scss" scoped>
 /* main style */
-/deep/.el-dialog {
+::v-deep .el-dialog {
   width: 450px !important;
 }
 .preprocessor {

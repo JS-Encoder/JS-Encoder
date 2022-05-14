@@ -84,7 +84,7 @@ export default {
 
 <style lang="scss" scoped>
 /* main style */
-/deep/.el-dialog {
+::v-deep .el-dialog {
   width: 600px !important;
   max-height: 500px;
   overflow-y: auto;

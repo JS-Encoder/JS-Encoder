@@ -282,7 +282,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/.code {
+::v-deep .code {
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -316,7 +316,7 @@ export default {
     overflow-y: hidden;
   }
 }
-/deep/.md-active {
+::v-deep .md-active {
   .CodeMirror {
     height: calc(100vh - 121px) !important;
   }

@@ -245,7 +245,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/.el-dialog {
+::v-deep .el-dialog {
   width: 450px !important;
   color: $afterFocus;
   max-height: 450px;
@@ -271,7 +271,7 @@ export default {
     .link-input {
       margin-top: 5px;
     }
-    /deep/.el-input {
+    ::v-deep .el-input {
       .el-input-group__prepend {
         padding: 0;
         .prepend {

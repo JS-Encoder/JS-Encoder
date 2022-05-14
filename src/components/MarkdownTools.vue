@@ -131,7 +131,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/.el-dropdown {
+::v-deep .el-dropdown {
   color: $beforeFocus;
   &:hover {
     background-color: $deep;

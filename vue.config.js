@@ -101,9 +101,7 @@ module.exports = {
     sourceMap: false,
     loaderOptions: {
       scss: {
-        prependData: `
-        @import "@scss/main.scss";
-        `,
+        additionalData: `@import "@scss/main.scss";`,
       },
     },
   },

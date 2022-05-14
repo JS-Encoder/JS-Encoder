@@ -307,7 +307,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/.CodeMirror {
+::v-deep .CodeMirror {
   .CodeMirror-gutter-elt {
     left: 1px !important;
   }
@@ -315,7 +315,7 @@ export default {
 .cmd-codemirror {
   width: calc(100% - 80px);
   height: auto;
-  /deep/.CodeMirror {
+  ::v-deep .CodeMirror {
     width: 100%;
     height: auto;
     max-height: 90px;
@@ -347,12 +347,12 @@ export default {
     }
   }
 }
-/deep/.el-checkbox {
+::v-deep .el-checkbox {
   .el-checkbox__label {
     color: $afterFocus !important;
   }
 }
-/deep/.el-textarea {
+::v-deep .el-textarea {
   .el-textarea__inner {
     &::-webkit-scrollbar {
       outline: none;
@@ -477,7 +477,7 @@ export default {
           box-sizing: border-box;
           padding: 0 10px;
           min-height: 25px;
-          /deep/.vue-codemirror {
+          ::v-deep .vue-codemirror {
             width: 100%;
             .CodeMirror {
               height: auto;
@@ -622,7 +622,7 @@ export default {
         color: $primary;
         margin-left: 5px;
       }
-      /deep/.el-textarea {
+      ::v-deep .el-textarea {
         width: 100%;
         .el-textarea__inner {
           height: 100%;
