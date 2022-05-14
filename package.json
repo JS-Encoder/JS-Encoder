@@ -17,7 +17,7 @@
     "acorn": "^8.4.1",
     "acorn-loose": "^8.1.0",
     "acorn-walk": "^8.1.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.2",
     "codemirror": "^5.62.2",
     "codemirror-emmet": "^1.0.0",
     "core-js": "^3.6.5",
