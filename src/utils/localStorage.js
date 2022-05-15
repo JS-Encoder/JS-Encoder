@@ -4,7 +4,7 @@ function set (key, val) {
 
 function get (key) {
   const val = localStorage.getItem(key)
-  if (val === undefined) {
+  if (val === undefined && val === 'undefined') {
     return undefined
   } else {
     return JSON.parse(val)

@@ -50,6 +50,7 @@
     <Upload></Upload>
     <Download></Download>
     <Shortcut></Shortcut>
+    <VersionLogs></VersionLogs>
   </div>
 </template>
 
@@ -73,6 +74,7 @@ import Editor from '@components/Editor.vue'
 import CpntEditor from '@components/CpntEditor.vue'
 import Console from '@components/Console.vue'
 import FullScreenBar from '@components/FullScreenBar.vue'
+import VersionLogs from '@components/instance/VersionLogs.vue'
 /* scripts */
 import { compileHTML, compileCSS, compileJS, compileVue2, compileVue3 } from '@utils/compiler'
 import { deepCopy } from '@utils/tools'
@@ -118,6 +120,7 @@ export default {
     InstanceFooter,
     MarkdownTools,
     CpntEditor,
+    VersionLogs,
   },
   mounted() {
     this.$nextTick(() => {

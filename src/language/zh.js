@@ -130,6 +130,9 @@ module.exports = {
         '跳至某行',
       ],
     },
+    versionLogs: {
+      title: '版本更新日志'
+    }
   },
   instance: {
     loader: {
@@ -142,6 +145,9 @@ module.exports = {
         describe: '实例描述...',
         save: '保存',
       },
+      sideOpts: {
+        versionLogs: '版本更新日志'
+      }
     },
     sidebar: ['模板', '预处理语言', '库', '设置', '上传', '下载', '快捷键', '中英文切换', 'Github'],
     editorTools: ['格式化代码'],

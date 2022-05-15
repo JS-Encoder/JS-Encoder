@@ -48,6 +48,14 @@ module.exports = {
         pathRewrite: {
           '^/npmSearch': '',
         },
+      },
+      '/githubApi': {
+        target: 'https://api.github.com',
+        secure: true,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/githubApi': '',
+        }
       }
     },
   },

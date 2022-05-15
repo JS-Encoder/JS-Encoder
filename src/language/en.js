@@ -135,6 +135,9 @@ module.exports = {
         'Jump to line',
       ],
     },
+    versionLogs: {
+      title: '版本更新日志'
+    }
   },
   instance: {
     loader: {
@@ -147,6 +150,9 @@ module.exports = {
         describe: 'Describe...',
         save: 'Save',
       },
+      sideOpts: {
+        versionLogs: 'Version update log'
+      }
     },
     sidebar: ['Templates', 'Preprocessor', 'Library', 'Settings', 'Upload', 'Download', 'Shortcuts', 'Switch Languages', 'Github'],
     editorTools: ['Format code'],
