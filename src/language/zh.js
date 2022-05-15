@@ -140,11 +140,6 @@ module.exports = {
       load: '加载实例中，请稍等...',
     },
     header: {
-      instanceInfo: {
-        name: '实例名',
-        describe: '实例描述...',
-        save: '保存',
-      },
       sideOpts: {
         versionLogs: '版本更新日志'
       }

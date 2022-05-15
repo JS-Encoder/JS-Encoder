@@ -45,7 +45,7 @@ export default {
       }
     },
     lastestV(newV) {
-      if(this.isDialogVisible) {
+      if (this.isDialogVisible) {
         storage.set('version', newV)
       }
     }

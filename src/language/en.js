@@ -145,11 +145,6 @@ module.exports = {
       load: 'Load the instance, please wait...',
     },
     header: {
-      instanceInfo: {
-        name: 'Name',
-        describe: 'Describe...',
-        save: 'Save',
-      },
       sideOpts: {
         versionLogs: 'Version update log'
       }

@@ -29,12 +29,6 @@ import { mapState, mapMutations } from 'vuex'
 export default {
   data() {
     return {
-      instanceName: 'My Instance Name',
-      instanceInfo: {
-        name: '',
-        describe: '',
-      },
-      isInstanceInfoVisible: false,
       projectInfo,
       sideOpts: [
         {
@@ -64,13 +58,6 @@ export default {
   },
   methods: {
     ...mapMutations(['handleDialogState']),
-    openInstanceInfo() {
-      this.instanceInfo.name = this.instanceName
-    },
-    saveInstanceInfo() {
-      this.instanceName = this.instanceInfo.name
-      this.isInstanceInfoVisible = false
-    },
     async compareVersions() {
       // 获取本地的version和github上最新的version，如果不同就显示提示圆点
       const { tag_name: githubV } = await get('/githubApi/repositories/190842308/releases/latest')
