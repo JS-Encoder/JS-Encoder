@@ -25,6 +25,9 @@
             <ViewTabBar @fullScreen="changeFullScreenState" @runCode="runCode"></ViewTabBar>
             <div class="iframe-box" :style="{ height: `${iframeHeight}px` }"
               :class="iframeFullScreen ? 'full-screen' : ''">
+              <div class="introduce" v-if="showIntroduce">
+                <Introduce @spaceIntroduce="showIntroduce = false"></Introduce>
+              </div>
               <div class="iframe-screen noselect" v-show="iframeScreenVisible"></div>
               <FullScreenBar :getIframeBody="getIframeBody" @runCode="runCode" v-show="iframeFullScreen"
                 @exitFullScreen="changeFullScreenState"></FullScreenBar>
@@ -75,6 +78,7 @@ import CpntEditor from '@components/CpntEditor.vue'
 import Console from '@components/Console.vue'
 import FullScreenBar from '@components/FullScreenBar.vue'
 import VersionLogs from '@components/instance/VersionLogs.vue'
+import Introduce from '@components/instance/Introduce.vue'
 /* scripts */
 import { compileHTML, compileCSS, compileJS, compileVue2, compileVue3 } from '@utils/compiler'
 import { deepCopy } from '@utils/tools'
@@ -85,6 +89,7 @@ import ShortcutHandler from '@utils/handleShortcut'
 import { iframeLinks } from '@utils/cdn'
 import handleLoop from '@utils/handleLoop'
 import { judgeMode } from '@utils/judgeMode'
+import storage from '@utils/localStorage'
 
 export default {
   data() {
@@ -100,6 +105,7 @@ export default {
       isCompiling: false,
       cursorPos: { col: 1, ln: 1 },
       showIframeWidth: false,
+      showIntroduce: false,
     }
   },
   components: {
@@ -121,6 +127,10 @@ export default {
     MarkdownTools,
     CpntEditor,
     VersionLogs,
+    Introduce,
+  },
+  created() {
+    this.showIntroduce = !storage.get('spaceIntroduce')
   },
   mounted() {
     this.$nextTick(() => {
@@ -442,11 +452,11 @@ export default {
         .resize {
           width: 4px;
           height: 100%;
-          border: 2px solid $secondColor;
+          background-color: $secondColor;
           cursor: w-resize;
           @include setTransition(all, 0.3s, ease);
           &:hover {
-            border-color: $primary;
+            background-color: $primary;
           }
         }
         .view-area {
@@ -455,6 +465,12 @@ export default {
             position: relative;
             overflow: hidden;
             transform-origin: top right;
+            .introduce {
+              width: 100%;
+              height: 100%;
+              position: absolute;
+              z-index: 2;
+            }
             .iframe-screen {
               width: 100%;
               height: 100%;

@@ -12,9 +12,9 @@
       </a>
     </div> -->
     <div class="header-side-opts flex">
-      <div class="flex flex-ai flex-jcc pointer" v-for="item in sideOpts" :key="item.name" 
+      <div class="flex flex-ai flex-jcc pointer relative" v-for="item in sideOpts" :key="item.name" 
       :title="headerLang.sideOpts[item.name]" @click="handleSideOpts(item.name)">
-        <div class="badge-dot" v-if="!isLogReaded"></div>
+        <div class="badge-dot" v-if="!isLogRead && item.name==='versionLogs'"></div>
         <i class="icon iconfont" :class="item.class"></i>
       </div>
     </div>
@@ -34,10 +34,14 @@ export default {
         {
           name: 'versionLogs',
           class: 'icon-dengpao'
+        },
+        {
+          name: 'helpDocs',
+          class: 'icon-help'
         }
       ],
       // 用户是否查看过新版本特性
-      isLogReaded: true
+      isLogRead: true
     }
   },
   created() {
@@ -46,7 +50,7 @@ export default {
   watch: {
     visibleDialog(newVal) {
       if (newVal === 'versionLogs') {
-        this.isLogReaded = true
+        this.isLogRead = true
       }
     }
   },
@@ -63,13 +67,17 @@ export default {
       const { tag_name: githubV } = await get('/githubApi/repositories/190842308/releases/latest')
       const version = storage.get('version')
       if (githubV !== version) {
-        this.isLogReaded = false
+        this.isLogRead = false
       }
     },
     handleSideOpts(name) {
       switch(name) {
         case 'versionLogs': {
           this.handleDialogState(name)
+          break
+        }
+        case 'helpDocs': {
+          window.open('http://docs.lliiooiill.cn/')
           break
         }
       }
