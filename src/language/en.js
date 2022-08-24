@@ -146,7 +146,8 @@ module.exports = {
     },
     header: {
       sideOpts: {
-        versionLogs: 'Version update log'
+        versionLogs: 'Version update log',
+        helpDocs: 'Help Documents',
       }
     },
     sidebar: ['Templates', 'Preprocessor', 'Library', 'Settings', 'Upload', 'Download', 'Shortcuts', 'Switch Languages', 'Github'],

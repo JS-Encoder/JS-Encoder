@@ -418,7 +418,7 @@ export default {
       @include positionMiddle();
       @include setTransition(all, 0.3s, ease);
       i {
-        font-size: 8px;
+        font-size: 24px;
       }
       &:hover {
         color: $afterFocus;

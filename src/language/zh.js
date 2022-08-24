@@ -141,7 +141,8 @@ module.exports = {
     },
     header: {
       sideOpts: {
-        versionLogs: '版本更新日志'
+        versionLogs: '版本更新日志',
+        helpDocs: '帮助文档',
       }
     },
     sidebar: ['模板', '预处理语言', '库', '设置', '上传', '下载', '快捷键', '中英文切换', 'Github'],
