@@ -1,0 +1,67 @@
+@charset "UTF-8";
+@import "./variable";
+@import "./mixins";
+@import "./theme";
+@import "./common";
+
+html,
+body,
+div,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+ul,
+ol,
+dl,
+li,
+dt,
+dd,
+p,
+blockquote,
+pre,
+form,
+fieldset,
+table,
+th,
+td,
+input,
+textarea {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-size: 16px;
+}
+a {
+  text-decoration: none;
+}
+ul,
+ol,
+li {
+  list-style-type: none;
+}
+html,
+body,
+div,
+ul,
+li,
+button,
+input,
+textarea {
+  box-sizing: border-box;
+}
+i {
+  font-style: normal;
+}
+html, body {
+  font-family: $def-font;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

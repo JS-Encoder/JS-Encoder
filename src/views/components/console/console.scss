@@ -1,0 +1,41 @@
+.console {
+  .console-header {
+    height: 28px;
+    .error-count,
+    .warn-count,
+    .info-count {
+      height: 16px;
+    }
+    .error-count {
+      color: var(--color-red2);
+    }
+    .warn-count {
+      color: var(--color-amber2);
+    }
+    .info-count {
+      color: var(--color-primary2);
+    }
+    .fold-btn {
+      width: 28px;
+      height: 28px;
+    }
+  }
+  .console-toolbar {
+    height: 28px;
+    .tool-btn-group {
+      margin-left: 22px;
+    }
+  }
+  .console-log-list-wrapper {
+    height: calc(100% - 56px);
+    .console-log-list {
+      .console-command-input-wrapper {
+        min-height: 24px;
+        .console-command-input {
+          outline: none;
+          border: none;
+        }
+      } 
+    }
+  }
+}

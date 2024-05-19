@@ -1,0 +1,24 @@
+.navbar {
+  height: 49px;
+  border-bottom: 1px solid var(--color-main-bg-3);
+  .logo {
+    width: 48px;
+    img {
+      width: 20px;
+    }
+  }
+  .logo-text {
+    font-size: 18px;
+    background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(135deg, var(--color-primary2), var(--color-primary1));
+  }
+  .right-side-menu {
+    .menu-item {
+      color: var(--color-no-active-color);
+      &:hover {
+        color: var(--color-active-color);
+      }
+    }
+  }
+}

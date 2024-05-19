@@ -1,0 +1,75 @@
+$namespace: "custom-input";
+$input-padding: (
+  small: 2px,
+  medium: 4px,
+  large: 8px,
+);
+$input-font-size: (
+  small: 12px,
+  medium: 14px,
+  large: 16px,
+);
+$input-border-radius: (
+  small: 2px,
+  medium: 4px,
+  large: 8px,
+);
+
+.#{$namespace} {
+  textarea, .virtual-box {
+    line-height: 1.5;
+  }
+  input, textarea {
+    outline: none;
+    color: inherit;
+    border: 2px solid var(--color-form-item);
+    &:focus {
+      border-color: var(--color-primary1);
+    }
+    &::placeholder {
+      color: var(--color-no-active-color);
+    }
+  }
+  .virtual-box {
+    border: 2px solid transparent;
+    z-index: -1;
+  }
+  .#{$namespace}-step-btn-wrapper {
+    right: 0;
+    top: 0;
+  }
+}
+
+@each $size in (small, medium, large) {
+  $radius: map.get($input-border-radius, $size);
+  $padding: map.get($input-padding, $size);
+  $font-size: map.get($input-font-size, $size);
+  .#{$namespace}--#{$size} {
+    input, textarea {
+      border-radius: $radius;
+      padding: $padding;
+      font-size: $font-size;
+    }
+    &.#{$namespace}--text {
+      .left-side-slot {
+        border-radius: $radius 0 0 $radius;
+      }
+      .right-side-slot {
+        border-radius: 0 $radius $radius 0;
+      }
+      .left-side-slot, .right-side-slot {
+        background-color: var(--color-main-bg-1);
+      }
+    }
+    &.#{$namespace}--number input {
+      border-radius: $radius 0 0 $radius;
+      & + .#{$namespace}-step-btn-wrapper {
+        border-radius: 0 $radius $radius 0;
+      }
+    }
+    &.#{$namespace}--textarea .virtual-box {
+      padding: $padding;
+      font-size: $font-size;
+    }
+  }
+}

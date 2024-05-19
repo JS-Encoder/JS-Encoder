@@ -1,0 +1,8 @@
+dist
+node_modules
+public
+
+src/assets
+
+.eslintrc.js
+.stylelintrc.js

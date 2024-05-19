@@ -1,0 +1,40 @@
+.editor-bar {
+  height: 36px;
+
+  .split-line {
+    border-right: 0.5px solid var(--color-main-bg-3);
+  }
+
+  .editor-tab {
+    padding: 0 24px;
+    background-color: var(--color-main-bg-1);
+    border-top: 2px solid transparent;
+
+    &.active {
+      background-color: var(--color-main-bg-3);
+      color: var(--color-active-color);
+      border-top: 2px solid var(--color-main-bg-1);
+    }
+
+    &.dragging {
+      opacity: 0.3;
+    }
+
+    &.highlight {
+      filter: brightness(1.5);
+    }
+  }
+
+  .more-opts {
+    .more-icon-wrapper {
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  .right-side {
+    &.highlight {
+      filter: brightness(1.5);
+    }
+  }
+}

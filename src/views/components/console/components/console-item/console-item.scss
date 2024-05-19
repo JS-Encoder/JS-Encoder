@@ -1,0 +1,15 @@
+.console-item {
+  min-height: 24px;
+}
+
+@each $type in (message, info, warn, error, command, result) {
+  .console-#{$type} {
+    background-color: var(--color-console-#{$type}-bg);
+    border-bottom: 1px solid var(--color-console-#{$type}-border);
+    .console-item-icon {
+      width: 12px;
+      height: 12px;
+      color: var(--color-console-#{$type});
+    }
+  }
+}

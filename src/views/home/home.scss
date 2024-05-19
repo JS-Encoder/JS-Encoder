@@ -1,0 +1,176 @@
+$home-navbar-height: 48px;
+$home-footer-height: 100px;
+$home-content-width: 1200px;
+$home-btn-bg-map: (
+  github: var(--color-main-bg-3),
+  docs: var(--color-emphasis2),
+  start: linear-gradient(135deg, var(--color-primary2), var(--color-primary1)),
+);
+$home-btn-color-map: (
+  github: var(--color-emphasis2),
+  docs: var(--color-main-bg-3),
+  start: var(--color-emphasis2),
+);
+
+.home {
+  min-height: 100vh;
+  background: url("../../assets/images/home-bg.svg");
+  background-size: 100% 100%;
+  .navbar {
+    height: $home-navbar-height;
+    backdrop-filter: blur(6px);
+    padding-right: 48px;
+    .logo-wrapper {
+      .logo {
+        width: $home-navbar-height;
+        .logo-img {
+          width: 20px;
+        }
+      }
+    }
+    .navbar-menu {
+      .menu-item {
+        padding: 0 36px;
+        &:hover {
+          background-color: rgba($primary2, 0.3);
+        }
+      }
+    }
+  }
+  .container {
+    width: $home-content-width;
+    padding-top: $home-navbar-height;
+    .introduce-wrapper {
+      .typewrite-name {
+        min-height: 75px;
+        font-size: 60px;
+        &::after {
+          content: "_";
+          color: var(--color-primary0);
+          animation: show-hide 1s step-end infinite;
+        }
+      }
+      .introduce {
+        .describe-wrapper {
+          margin-top: 40px;
+        }
+      }
+      .btn-group {
+        margin-top: 100px;
+        button {
+          border: none;
+          border-radius: 30px;
+          outline: none;
+          padding: 14px 48px;
+          font-size: 20px;
+          font-weight: bold;
+          cursor: pointer;
+          position: relative;
+        }
+        .btn-group-left button {
+          margin-right: 48px;
+        }
+        .btn-group-right button {
+          margin-left: 48px;
+        }
+
+        @each $type in (github, docs, start) {
+          .btn-#{$type} {
+            color: map.get($home-btn-color-map, $type);
+            background: map.get($home-btn-bg-map, $type);
+          }
+        }
+      }
+    }
+  }
+  .footer {
+    height: $home-footer-height;
+    backdrop-filter: blur(6px);
+    .footer-container {
+      width: $home-content-width;
+      .logo-wrapper {
+        .logo {
+          .logo-img {
+            width: 28px;
+          }
+        }
+      }
+      .bei-an-link {
+        &:hover {
+          color: var(--color-emphasis1);
+        }
+      }
+    }
+  }
+}
+
+@keyframes show-hide {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@media screen and (max-width: 1300px) {
+  .home {
+    .container {
+      width: 100%;
+      .introduce-wrapper {
+        padding: 0 48px;
+      }
+    }
+    .footer {
+      .footer-container {
+        padding: 0 48px;
+        width: 100%;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .home {
+    .container {
+      .introduce-wrapper {
+        .btn-group {
+          margin-top: 48px;
+          flex-direction: column-reverse;
+          .btn-group-left, .btn-group-right {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            justify-content: flex-start;
+            button {
+              margin: 10px 0;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .home {
+    .navbar {
+      .navbar-menu {
+        display: none;
+      }
+    }
+    .container {
+      width: 100%;
+      .introduce-wrapper {
+        padding: 0 48px;
+        .typewrite-name {
+          font-size: 40px;
+        }
+      }
+    }
+    .footer {
+      .footer-container {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+}

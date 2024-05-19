@@ -1,86 +1,57 @@
 <div align=center>
-  <img width="150" src="./src/assets/images/logo.svg"/>
+  <img width="64" src="./src/assets/images/logo.svg"/>
 </div>
 
 <h1 align="center">JS-Encoder</h1>
 
-<p align="center">👉 A front-end code editor based on Vue.js and Codemirror 👈</p>
+<p align="center">这是一个前端在线编辑器，且致力于成为一个方便、快速的在线 Web 实例开发、调试工具</p>
 
-<div align=center>
-  <a href="https://travis-ci.org/Longgererer/JS-Encoder">
-    <img src="https://img.shields.io/travis/Longgererer/JS-Encoder.svg?style=flat-square"/>
-  </a>
-  <a href="https://github.styleci.io/repos/190842308">
-    <img src="https://img.shields.io/badge/StyleCI-passed-green.svg?style=flat-square"/>
-  </a>
-  <a href="https://github.com/prettier/prettier">
-    <img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square"/>
-  </a>
-  <a href="https://github.com/Longgererer/JS-Encoder/blob/master/LICENSE">
-    <img src="https://img.shields.io/badge/LICENSE-MIT-blue.svg?style=flat-square"/>
-  </a>
-</div>
+<p align="center">
+  <img src="https://img.shields.io/badge/version-v4-%236690FF?style=flat-square"/>
+  <img src="https://img.shields.io/badge/contributions-welcome-%233366FF?style=flat-square" />
+  <img src="https://img.shields.io/github/stars/JS-Encoder/JS-Encoder?label=stars&logo=Github&style=flat-square&color=%23254EDB" />
+</p>
 
-<p align="center">English | <a href="https://github.com/Longgererer/JS-Encoder/blob/master/READMECN.md">简体中文</a></p>
+<p align="center">
+  <a href="https://www.jsencoder.cn/code">👉 Get Started 👈</a>
+</p>
 
-![1614658567_1_.png](http://picstore.lliiooiill.cn/1642123287%281%29.jpg)
+<p align="center">
+  <a href="https://docs.jsencoder.cn/">说明文档</a> |
+  <a href="https://github.com/JS-Encoder/JS-Encoder">Github</a> |
+  <a href="https://github.com/Longgererer/JS-Encoder/blob/master/LICENSE">License</a>
+</p>
 
-> The code in this figure comes from [CodePen](https://codepen.io/andymerskin/pen/XNMWvQ)
+<p align="center">
+  <span>旧版（V3） <a href="https://github.com/JS-Encoder/JS-Encoder/tree/v3.5.1">代码</a></span>
+  <span>及 <a href="http://jsencoder.lliiooiill.cn/">链接</a></span>
+</p>
 
-## Preview
+<img width="1280" alt="Screenshot 2024-05-17 150903" src="https://github.com/Longgererer/JS-Encoder-next/assets/40834209/61576c39-6b00-48cd-bb07-cc2f6d18b279">
+<div align=center>图中示例来自<a href="https://codepen.io/josetxu/pen/RwdGmqp?editors=1100">CodePen</a></div>
 
-[open JS-Encoder](http://jsencoder.lliiooiill.cn/)
+## 特性
 
-If you can't visit this site:
+- 编写代码并实时预览。
+- 支持包含 TypeScript、Scss、Markdown 等常用语言在内的12种预处理语言。
+- 支持使用模板，可自定义，并且支持 Vue 单文件组件的开发。
+- 视图自由分割，合适的布局更能提升编码效率。
+- 可上传本地代码或下载 JS-Encoder 中编写的代码。
+- 内置 Console 随时调试，在大多数时间告别 F12。
+- 丰富的编码设置、插件，提供更舒适的编码体验。
 
-[open by github page](https://js-encoder.github.io/JS-Encoder-preview/)
+## 未来
 
-## Describe
+所有未来计划的功能性改动都记录在此：[TO DO LIST](https://docs.jsencoder.cn/docs/to-do-list)
 
-**JS-Encoder** gets some inspiration from [JSBin](https://jsbin.com), [CodePen](https://codepen.io/pen/) and [JSFiddle](https://jsfiddle.net/), JS-Encoder inspired by these three excellent online compilers, built with Vue.js and Codemirror.
+## 本地运行
 
-## Feature 🌟
+```dash
+npm run dev
+```
 
-- [x] Live preview.
-- [x] Support for a variety of front-end languages and pre-processing languages. Currently supported preprocessing languages are:
-  - Markdown
-  - Pug
-  - Sass/Scss
-  - Less
-  - Stylus
-  - TypeScript
-  - CoffeeScript
-  - JSX(Babel)
-- [x] Support for external scripts and styles.
-- [x] Local storage, where you can save code on the compiler locally, currently supports three forms:
-  - Single file: A file include HTML, CSS and JS named index.html.
-  - Zip: A zip file include HTML file, CSS file and JS file.
-  - Preprocessing files: if you are using a preprocessing language, you can download a preprocessing language file that is not compiled.
-- [x] File import, you can import the file from the local to the compiler, the compiler will automatically read the contents of the file and display in the edit window.
-- [x] Support for multiple keyboard shortcuts, includes formatting, HTML Emmet extensions, and Markdown related shortcuts.
-- [x] Add Markdown mode, support edit window and preview window real-time preview and synchronization scrolling, and join the shortcut menu bar.
-- [x] Code Search.
-- [x] CDN search, faster to add required CSS and JS external links(Powered by cdnjs).
-- [x] Powerful console for displaying many common types of logs and debugging.
-- [x] Code hinter.
-- [x] Personalized settings.
-- [x] linter for some languages.
-- [x] Support for initializing templates, currently supported (vue2/3, React, Angular).
+如果你是该项目的贡献者，请使用该命令运行，该命令会执行 stylelint 和 eslint 的校验（在 commit 时会再进行一次校验）：
 
-## DOC(Chinese)
-
-[JS-Encoder 中文使用文档](http://doc.lliiooiill.cn/)
-
-## Future ❓
-
-- **rebuild**, due to the new features of Vue3 and the support for TypeScript, JS-Encoder will be refactored after all dependent Vue plugins are compatible with Vue3.
-- **Preprocessor support**, JS-Encoder may support more front-end languages, such as component writing that supports Vue and React.
-- **More personalized settings**.
-
-## Support
-
-If you want to support **JS-Encoder**, click star 💗 to support it!
-
-## LICENSE
-
-[The MIT LICENSE](https://github.com/Longgererer/JS-Encoder/blob/master/LICENSE)
+```dash
+npm run start
+```

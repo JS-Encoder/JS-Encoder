@@ -1,0 +1,43 @@
+@charset "UTF-8";
+
+@mixin transition($target, $time, $func, $delay: 0s) {
+  transition: $target $time $func $delay;
+}
+
+/** 内边距和外边距 */
+@mixin edge($name, $dir: all, $gap: 0) {
+  @if $name == p {
+    $name: padding
+  } @else if $name == m {
+    $name: margin
+  }
+
+  @if $dir == x {
+    #{$name}-left: $gap;
+    #{$name}-right: $gap;
+  } @else if $dir == y {
+    #{$name}-top: $gap;
+    #{$name}-bottom: $gap;
+  } @else {
+    #{$name}-left: $gap;
+    #{$name}-right: $gap;
+    #{$name}-top: $gap;
+    #{$name}-bottom: $gap;
+  }
+}
+
+/** 遍历主题颜色表 */
+@mixin color-list($colors) {
+  @each $name, $color in $colors {
+    --color-#{$name}: #{$color};
+  }
+}
+
+/** 文字图标的默认及hover样式 */
+@mixin text-hover($defColor, $activeColor) {
+  color: $defColor;
+
+  &:hover {
+    color: $activeColor;
+  }
+}

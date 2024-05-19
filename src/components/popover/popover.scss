@@ -1,0 +1,49 @@
+$namespace: "popover";
+$border-width: 6;
+
+.#{$namespace} {
+  color: var(--color-tooltip-color);
+  &.no-append-to-body {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .#{$namespace}-container {
+    background-color: var(--color-popover-bg);
+    border-color: var(--color-popover-bg);
+    min-width: 300px;
+    max-width: 500px;
+  }
+  .#{$namespace}-bottom {
+    top: calc(100% + #{$border-width}px);
+    left: 50%;
+    transform: scale(1) translateX(-50%);
+  }
+  .#{$namespace}-left {
+    top: 50%;
+    right: calc(100% + #{$border-width}px);
+    transform: scale(1) translateY(-50%);
+  }
+  .#{$namespace}-right {
+    left: calc(100% + #{$border-width}px);
+    top: 50%;
+    transform: scale(1) translateY(-50%);
+  }
+  .#{$namespace}-top {
+    bottom: calc(100% + #{$border-width}px);
+    left: 50%;
+    transform: scale(1) translateX(-50%);
+  }
+  .triangle-bottom {
+    inset: calc(-2 * #{$border-width}px) 0 0 calc(50% - #{$border-width}px);
+  }
+  .triangle-right {
+    inset: calc(50% - #{$border-width}px) 0 0 calc(-2 * #{$border-width}px);
+  }
+  .triangle-left {
+    inset: calc(50% - #{$border-width}px) 0 0 100%;
+  }
+  .triangle-top {
+    inset: 100% 0 0 calc(50% - #{$border-width}px);
+  }
+}

@@ -1,0 +1,58 @@
+$namespace: "preview";
+
+.#{$namespace} {
+  .#{$namespace}-bar {
+    height: 36px;
+    .#{$namespace}-tab {
+      padding: 0 24px;
+      background-color: var(--color-main-bg-1);
+      border-top: 2px solid var(--color-main-bg-1);
+      &.active {
+        background-color: var(--color-main-bg-3);
+        color: var(--color-active-color);
+      }
+    }
+    .#{$namespace}-options {
+      &:not(:first-child) {
+        padding-left: 8px;
+      }
+    }
+  }
+  .#{$namespace}-iframe-wrapper {
+    .#{$namespace}-iframe-size {
+      height: 24px;
+      background-color: #f2f2f2;
+      color: #999;
+    }
+  }
+  .#{$namespace}-guide {
+    .jump-btn {
+      margin-top: 120px;
+    }
+  }
+
+  .top-bar {
+    .top-bar-folder {
+      width: 100px;
+      height: 16px;
+      border-bottom-right-radius: 10px;
+      border-bottom-left-radius: 10px;
+      transform: perspective(20px) rotateX(-8deg) rotateY(0) translateZ(0);
+      bottom: -16px;
+    }
+    &.fold {
+      opacity: 0.1;
+      top: -36px;
+      &:hover {
+        opacity: 1;
+      }
+    }
+    &.unfold {
+      opacity: 1;
+      top: 0;
+      i {
+        transform: rotate(180deg);
+      }
+    }
+  }
+}

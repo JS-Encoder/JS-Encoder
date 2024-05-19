@@ -1,0 +1,67 @@
+name-template: $NEXT_MINOR_VERSION
+tag-template: $NEXT_MINOR_VERSION
+version-template: v$MAJOR.$MINOR.$PATCH
+category-template: '### $TITLE'
+version-resolver:
+  major:
+    labels:
+      - major
+  minor:
+    labels:
+      - enhancement
+      - feature
+  patch:
+    labels:
+      - fix
+      - CI/CD
+      - documentation
+  default: patch
+
+categories:
+  - title: Major
+    labels:
+      - major
+  - title: New Features
+    labels:
+      - feature
+  - title: Enhancements
+    labels:
+      - enhancement
+  - title: Bugfix
+    labels:
+      - fix
+  - title: CI/CD
+    labels:
+      - CI/CD
+  - title: Documentation
+    labels:
+      - documentation
+  - title: Other changes
+sort-by: title
+sort-direction: ascending
+template: |
+  ## Changes
+
+  $CHANGES
+autolabeler:
+  - label: documentation
+    files:
+      - '*.md'
+    branch:
+      - '/^docs-.+/'
+      - '/^chore-.+/'
+  - label: fix
+    branch:
+      - '/^fix-.+/'
+  - label: feature
+    branch:
+      - '/^feat-.+/'
+      - '/^style-.+/'
+  - label: CI/CD
+    branch:
+      - '/^ci-.+/'
+      - '/^build-.+/'
+  - label: enhancement
+    branch: 
+      - '/^refactor-.+/'
+      - '/^enh-.+/'

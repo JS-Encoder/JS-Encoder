@@ -1,0 +1,48 @@
+.position-capture {
+  overflow: hidden;
+  display: grid;
+  grid-template-areas:
+    "up1 up1 up1 up1 up1 up1 up1 up1 up1 up1"
+    "lf1 up2 up2 up2 up2 up2 up2 up2 up2 rt1"
+    "lf1 lf2 md md md md md md rt2 rt1"
+    "lf1 lf2 md md md md md md rt2 rt1"
+    "lf1 lf2 md md md md md md rt2 rt1"
+    "lf1 lf2 md md md md md md rt2 rt1"
+    "lf1 lf2 md md md md md md rt2 rt1"
+    "lf1 lf2 md md md md md md rt2 rt1"
+    "lf1 dw2 dw2 dw2 dw2 dw2 dw2 dw2 dw2 rt1"
+    "dw1 dw1 dw1 dw1 dw1 dw1 dw1 dw1 dw1 dw1";
+  z-index: 10;
+  .up1-area {
+    grid-area: up1;
+  }
+  .up2-area {
+    grid-area: up2;
+  }
+  .down1-area {
+    grid-area: dw1;
+  }
+  .down2-area {
+    grid-area: dw2;
+  }
+  .middle-area {
+    grid-area: md;
+  }
+  .right1-area {
+    grid-area: rt1;
+  }
+  .right2-area {
+    grid-area: rt2;
+  }
+  .left1-area {
+    grid-area: lf1;
+  }
+  .left2-area {
+    grid-area: lf2;
+  }
+}
+.highlight-area {
+  background-color: var(--color-main-bg-1);
+  z-index: 5;
+  opacity: 0.7;
+}

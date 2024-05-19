@@ -1,0 +1,137 @@
+$namespace: "custom-button";
+$btn-theme: (
+  default: var(--color-main-bg-1),
+  default-hover: var(--color-main-bg-1),
+  default-active: var(--color-main-bg-3),
+  primary: var(--color-primary1),
+  primary-hover: var(--color-primary2),
+  primary-active: var(--color-primary0),
+  success: var(--color-green1),
+  success-hover: var(--color-green2),
+  success-active: var(--color-green0),
+  danger: var(--color-red1),
+  danger-hover: var(--color-red2),
+  danger-active: var(--color-red0),
+);
+$btn-font-size: (
+  mini: 12px,
+  small: 12px,
+  medium: 14px,
+  large: 16px,
+  xLarge: 18px,
+);
+$round-padding: (
+  mini: 2px,
+  small: 4px,
+  medium: 6px,
+  large: 8px,
+  xLarge: 10px,
+);
+$horizontal-padding: (
+  mini: 12px,
+  small: 16px,
+  medium: 20px,
+  large: 24px,
+  xLarge: 28px,
+);
+
+.#{$namespace} {
+  border: none;
+  overflow: hidden;
+  vertical-align: center;
+  font-family: $def-font;
+  outline: none;
+  .#{$namespace}-icon {
+    font-size: inherit;
+    margin-right: 10px;
+    color: inherit;
+  }
+  .#{$namespace}-load {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    clip-path: inset(0 0 50% 0);
+    transform: rotate(0);
+    animation: spin .6s linear infinite;
+    opacity: 0.3;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0)
+    }
+    to {
+      transform: rotate(1turn)
+    }
+  }
+}
+
+.#{$namespace}.#{$namespace}-disabled {
+  pointer-events: none;
+  color: var(--color-disabled-color);
+  background-color: var(--color-disabled-bgc);
+}
+
+.#{$namespace}.#{$namespace}-only-icon {
+  border-radius: 50%;
+  .#{$namespace}-icon {
+    margin-right: 0;
+  }
+}
+
+@each $type in (default, primary, danger, success) {
+  @if $type == default {
+    .#{$namespace}--#{$type} {
+      color: var(--color-no-active-color);
+      &:hover {
+        color: var(--color-active-color);
+      }
+    }
+  } @else {
+    .#{$namespace}--#{$type} {
+      color: var(--color-active-color);
+    }
+  }
+  .#{$namespace}--#{$type} {
+    background-color: map.get($btn-theme, $type);
+    &:hover {
+      background-color: map.get($btn-theme, #{$type}-hover);
+    }
+    &:active {
+      background-color: map.get($btn-theme, #{$type}-active) !important;
+    }
+    .#{$namespace}-content {
+      color: inherit;
+    }
+  }
+  .#{$namespace}--#{$type}.#{$namespace}-outline {
+    color: map.get($btn-theme, $type);
+    border: 1px solid map.get($btn-theme, $type);
+    background-color: transparent;
+    &:hover {
+      color: map.get($btn-theme, #{$type}-hover);
+      border-color: map.get($btn-theme, #{$type}-hover);
+    }
+  }
+}
+
+@each $size in (mini, small, medium, large, xLarge) {
+  $font-size: map.get($btn-font-size, $size);
+  $padding: map.get($round-padding, $size);
+  .#{$namespace}--#{$size} {
+    height: calc($font-size + 2.6 * $padding);
+    border-radius: 4px;
+    padding: 0 map.get($horizontal-padding, $size);
+    font-size: $font-size;
+
+    // line-height: $font-size;
+  }
+  .#{$namespace}--#{$size}.#{$namespace}-radius {
+    border-radius: calc(($font-size + 2.6 * $padding) / 2);
+  }
+  .#{$namespace}--#{$size}.#{$namespace}-only-icon {
+    padding: 0 calc(1.3 * $padding);
+  }
+}
