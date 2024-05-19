@@ -1,0 +1,4 @@
+* text=auto
+
+# Display languages
+*.js linguist-language=TypeScript
