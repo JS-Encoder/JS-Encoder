@@ -1,0 +1,12 @@
+.go-to-line-panel {
+  .target-input-wrapper {
+    height: 24px;
+    border: 1px solid transparent;
+    .target-input {
+      outline: none;
+    }
+    &.focus {
+      border-color: var(--color-primary1);
+    }
+  }
+}
