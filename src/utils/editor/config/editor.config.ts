@@ -25,6 +25,7 @@ import { markdownKeymap, markdownToolsState } from "../panels/markdown-tools"
 import { javascriptAutocomplete, typescriptAutocomplete } from "../auto-complete"
 import { tsTypeDefinition, typescriptLSPPlugin } from "../lsp/typescript"
 import { indentationMarkers } from "@replit/codemirror-indentation-markers"
+import { getGoToLinePanel } from "../panels/go-to-line"
 
 /** 快捷键模式对应的按键映射扩展 */
 export const ShortCutMode2ExtensionMap = {
@@ -168,6 +169,7 @@ export const getEditorThemeExtension = (theme: Theme): Extension => {
 export const getPanelExtension = (): Extension => {
   return [
     search({ top: true, createPanel: createSearchPanel }),
+    getGoToLinePanel(),
   ]
 }
 
