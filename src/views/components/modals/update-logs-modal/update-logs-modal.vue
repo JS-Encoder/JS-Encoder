@@ -83,7 +83,7 @@ const setUpdateLogsInfo = async () => {
   const { success, data: list = [] } = await getReleases()
   setTimeout(() => isReleasesLoading.value = false, 200)
   // 请求失败提示
-  if (success) {
+  if (!success) {
     isShowLoadError.value = true
     return
   }

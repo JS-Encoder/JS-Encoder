@@ -53,6 +53,6 @@ export const FLOW_CHART_URLS = [
  * 更新日志
  */
 /** github releases */
-export const GITHUB_RELEASES_URL = "https://api.github.com/repos/Longgererer/JS-Encoder-next/releases"
+export const GITHUB_RELEASES_URL = "https://api.github.com/repos/JS-Encoder/JS-Encoder/releases"
 /** github latest release */
-export const GITHUB_LATEST_RELEASE_URL = "https://api.github.com/repos/Longgererer/JS-Encoder-next/releases/latest"
+export const GITHUB_LATEST_RELEASE_URL = "https://api.github.com/repos/JS-Encoder/JS-Encoder/releases/latest"
