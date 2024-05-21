@@ -9,12 +9,13 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue"
 import { IEditorViewExpose, IEmits, IProps } from "./editor"
-import { EditorView, basicSetup, minimalSetup } from "codemirror"
+import { EditorView } from "@codemirror/view"
 import { EditorState, Extension } from "@codemirror/state"
 import { CodemirrorBase } from "@utils/editor/utils/codemirror-base"
 import { CodemirrorExtensionsUpdater, ExtensionToggler } from "@utils/editor/utils/codemirror-extensions-updater"
 import { ShortcutMode } from "@type/settings"
 import { getPrepAutocompleteExtension, getPrepEmmetExtension, getPrepLintExtension } from "@utils/editor/config/editor.config"
+import { minimalSetup, basicSetup } from "codemirror"
 
 const props = withDefaults(defineProps<IProps>(), {
   modelValue: "",

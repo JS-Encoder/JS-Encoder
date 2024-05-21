@@ -35,6 +35,9 @@ export const BABEL_URL = "https://cdn.bootcdn.net/ajax/libs/babel-standalone/7.2
 /** pug编译 */
 export const PUG_JS_URL = "https://cdnjs.cloudflare.com/ajax/libs/jade/1.11.0/jade.min.js"
 
+/** formatter */
+export const PRETTIER_PLUGIN_PREFIX = "https://unpkg.com/prettier/plugins"
+
 /**
  * markdown
  */
@@ -48,6 +51,7 @@ export const FLOW_CHART_URLS = [
   "https://cdn.bootcdn.net/ajax/libs/raphael/2.3.0/raphael.min.js",
   "https://cdn.bootcdn.net/ajax/libs/flowchart/1.17.1/flowchart.min.js",
 ]
+export const HIGHLIGHT_JS_URL = "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"
 
 /**
  * 更新日志

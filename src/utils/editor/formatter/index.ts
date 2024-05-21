@@ -1,11 +1,6 @@
 import { Prep } from "@type/prep"
+import { PRETTIER_PLUGIN_PREFIX } from "@utils/tools/config"
 import prettier, { BuiltInParserName, RequiredOptions } from "prettier"
-import parserBabel from "prettier/plugins/babel"
-import parserESTree from "prettier/plugins/estree"
-import parserHTML from "prettier/plugins/html"
-import parserMarkdown from "prettier/plugins/markdown"
-import parserCSS from "prettier/plugins/postcss"
-import parserTypescript from "prettier/plugins/typescript"
 
 const prep2ParserNameMap: Partial<Record<Prep, BuiltInParserName>> = {
   [Prep.HTML]: "html",
@@ -20,24 +15,24 @@ const prep2ParserNameMap: Partial<Record<Prep, BuiltInParserName>> = {
   [Prep.VUE]: "vue",
 }
 
-const prep2ParserPlugins: Partial<Record<Prep, Array<prettier.Plugin<any>>>> = {
-  [Prep.HTML]: [parserHTML],
-  [Prep.MARKDOWN]: [parserMarkdown],
-  [Prep.CSS]: [parserCSS],
-  [Prep.SASS]: [parserCSS],
-  [Prep.SCSS]: [parserCSS],
-  [Prep.LESS]: [parserCSS],
-  [Prep.JAVASCRIPT]: [parserBabel, parserESTree],
-  [Prep.TYPESCRIPT]: [parserTypescript],
-  [Prep.BABEL]: [parserBabel, parserESTree, parserHTML],
-  [Prep.VUE]: [parserHTML, parserBabel, parserCSS],
+const prep2ParserName: Partial<Record<Prep, string[]>> = {
+  [Prep.HTML]: ["html"],
+  [Prep.MARKDOWN]: ["markdown"],
+  [Prep.CSS]: ["postcss"],
+  [Prep.SASS]: ["postcss"],
+  [Prep.SCSS]: ["postcss"],
+  [Prep.LESS]: ["postcss"],
+  [Prep.JAVASCRIPT]: ["babel", "estree"],
+  [Prep.TYPESCRIPT]: ["typescript"],
+  [Prep.BABEL]: ["babel", "estree", "html"],
+  [Prep.VUE]: ["html", "babel", "postcss"],
 }
 
 // TODO: 可以在设置里面添加prettier配置
 /** 初始格式化风格配置 */
 export const initialFormatStyleOptions: Partial<RequiredOptions> = {
   /** 分号 */
-  semi: true,
+  semi: false,
   /** 单引号 */
   singleQuote: false,
   /** jsx中使用单引号 */
@@ -56,10 +51,19 @@ export const initialFormatStyleOptions: Partial<RequiredOptions> = {
   useTabs: true,
 }
 
+const importFormatPlugin = async (prep: Prep) => {
+  const list = prep2ParserName[prep] || []
+  const reqList = list?.map((name) => {
+    return import(/* @vite-ignore */`${PRETTIER_PLUGIN_PREFIX}/${name}.mjs`)
+  })
+  return Promise.all(reqList)
+}
+
 export const formatCode = async (code: string, prep: Prep, options?: Partial<RequiredOptions>) => {
+  const plugins = await importFormatPlugin(prep)
   return prettier.format(code, {
     parser: prep2ParserNameMap[prep],
-    plugins: prep2ParserPlugins[prep],
+    plugins,
     ...initialFormatStyleOptions,
     ...options,
   })

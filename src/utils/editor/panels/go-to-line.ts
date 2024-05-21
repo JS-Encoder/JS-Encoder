@@ -1,8 +1,7 @@
 import { Prec, StateEffect, StateField, Transaction } from "@codemirror/state"
-import { EditorView } from "codemirror"
 import GoToLineComponent from "@views/components/plugins/go-to-line/go-to-line.vue"
 import { VNode, createVNode, render } from "vue"
-import { KeyBinding, Panel, keymap, showPanel } from "@codemirror/view"
+import { KeyBinding, Panel, keymap, showPanel, EditorView } from "@codemirror/view"
 
 let goToLineWrapperNode: HTMLDivElement
 let goToLineVNode: VNode<any>

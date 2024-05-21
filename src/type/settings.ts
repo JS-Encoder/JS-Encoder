@@ -55,7 +55,7 @@ export enum CodeFontFamily {
   FIRA_CODE = "Fira Code",
   HACK = "Hack",
   SOURCE_CODE_PRO = "Source Code Pro",
-  MONACO = "Monaco",
+  // MONACO = "Monaco",
   SPACE_MONO = "Space Mono",
   IBM_PLEX_MONO = "IBM Plex Mono",
   INCONSOLATA = "Inconsolata",

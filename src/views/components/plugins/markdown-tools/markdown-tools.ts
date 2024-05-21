@@ -1,5 +1,5 @@
 import { FreeRecord } from "@type/types"
-import { EditorView } from "codemirror"
+import { EditorView } from "@codemirror/view"
 import { reactive } from "vue"
 
 export interface IProps {
