@@ -1,9 +1,8 @@
 import highlightJS from "highlight.js"
 import { marked } from "marked"
 import { markedHighlight } from "marked-highlight"
-import markedKatex from "marked-katex-extension"
 
-marked.use(
+export default marked.use(
   {
     // 开启异步渲染
     async: true,
@@ -19,8 +18,4 @@ marked.use(
       return highlightJS.highlight(code, { language }).value
     },
   }),
-  // 支持katex公式
-  markedKatex({ throwOnError: false }),
 )
-
-export default marked

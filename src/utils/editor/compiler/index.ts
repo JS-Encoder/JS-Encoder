@@ -30,8 +30,8 @@ export const defaultCodeMap = {
 const loaderService = new LoaderService()
 
 export const compileMarkdown = async (code: string) => {
-  const marked = await import("marked")
-  return marked.parse(code, { async: true })
+  const marked = (await import("./marked")).default
+  return marked.parse(code)
 }
 
 export const compilePug = async (code: string) => {
