@@ -115,7 +115,6 @@ const handleJumpToInstance = (): void => {
   router.push("/code")
 }
 
-
 onMounted(() => {
   startTypewrite()
 })
