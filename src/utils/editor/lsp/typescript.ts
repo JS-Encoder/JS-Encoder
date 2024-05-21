@@ -6,8 +6,7 @@
 import * as tsVfs from "@typescript/vfs"
 import ts from "typescript"
 import { CompletionContext, CompletionResult } from "@codemirror/autocomplete"
-import { EditorView } from "codemirror"
-import { Tooltip, ViewPlugin, ViewUpdate } from "@codemirror/view"
+import { Tooltip, ViewPlugin, ViewUpdate, EditorView } from "@codemirror/view"
 
 const DEFAULT_FILE_NAME = "index.ts"
 const vfsMap = await tsVfs.createDefaultMapFromCDN(
