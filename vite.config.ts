@@ -1,4 +1,4 @@
-import { ConfigEnv, defineConfig } from "vite"
+import { ConfigEnv, defineConfig, splitVendorChunkPlugin } from "vite"
 import { resolve } from "path"
 import vue from "@vitejs/plugin-vue"
 import eslintPlugin from "vite-plugin-eslint"
@@ -9,6 +9,7 @@ import { visualizer } from "rollup-plugin-visualizer"
 import externalGlobals from "rollup-plugin-external-globals"
 import viteCompression from "vite-plugin-compression"
 import autoprefixer from "autoprefixer"
+import chunks from "./chunks.conf"
 
 // https://vitejs.dev/config/
 // eslint-disable-next-line max-lines-per-function
@@ -30,8 +31,11 @@ export default defineConfig(({ command }: ConfigEnv) => {
           entryFileNames: "js/[name]-[hash].js",
           /** 资源文件像 字体，图片等 */
           assetFileNames: "[ext]/[name]-[hash].[ext]",
+          manualChunks: {
+            ...chunks,
+          },
         },
-        external: ["typescript"],
+        external: ["typescript", "highlight.js"],
         plugins: [
           externalGlobals({
             typescript: "ts",
@@ -67,6 +71,7 @@ export default defineConfig(({ command }: ConfigEnv) => {
       }),
       /** 查看打包大小 */
       visualizer({ open: true }),
+      splitVendorChunkPlugin(),
     ],
     resolve: {
       alias: {

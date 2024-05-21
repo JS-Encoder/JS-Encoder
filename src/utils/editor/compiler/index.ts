@@ -30,7 +30,7 @@ export const defaultCodeMap = {
 const loaderService = new LoaderService()
 
 export const compileMarkdown = async (code: string) => {
-  const marked = (await import("./marked")).default
+  const marked = await (await import("./marked")).getMarked()
   return marked.parse(code)
 }
 
