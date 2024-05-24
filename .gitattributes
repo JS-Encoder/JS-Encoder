@@ -1,3 +1,5 @@
 * text=auto
 
-*.js linguist-detectable=false
+*.js linguist-language=ts
+*.json linguist-language=ts
+*.jsx linguist-language=ts
