@@ -2,3 +2,4 @@
 
 # Display languages
 *.js linguist-language=TypeScript
+*.ts linguist-language=TypeScript
