@@ -59,8 +59,13 @@
     </div>
     <div v-else-if="type === 'function'" class="fs-italic">
       <!-- ƒ a(){} -->
-      <span class="console-function-prefix">ƒ&nbsp;</span>
-      <span class="console-function-code">{{ value }}</span>
+      <template v-if="simple">
+        <span class="console-function-prefix">ƒ</span>
+      </template>
+      <template v-else>
+        <span class="console-function-prefix">ƒ&nbsp;</span>
+        <span class="console-function-code">{{ value }}</span>
+      </template>
     </div>
     <div v-else-if="type === 'Map' || type === 'WeakMap'">
       <template v-if="simple">
