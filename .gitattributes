@@ -3,3 +3,4 @@
 *.js linguist-language=ts
 *.json linguist-language=ts
 *.jsx linguist-language=ts
+*.yaml linguist-language=ts
