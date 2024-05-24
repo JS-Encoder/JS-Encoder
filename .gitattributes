@@ -1,7 +1,3 @@
 * text=auto
 
-*.js linguist-language=ts
-*.cjs linguist-language=ts
-*.json linguist-language=ts
-*.jsx linguist-language=ts
-*.yaml linguist-language=ts
+src/assets/* linguist-verdored
