@@ -1,5 +1,5 @@
 import { IConsoleValue } from "@type/console"
-import { getObjAllKeys, getType, isBaseData } from "."
+import { getObjEntries, getType, isBaseData } from "."
 import { isElement } from "./judge"
 
 export const processConsoleValueList = (list: any[]) => {
@@ -67,7 +67,7 @@ export const formatConsoleValue = (
         ...consoleValue,
         ...recordLengthLimit,
         name: value?.constructor?.name,
-        attrs: Object.keys(value).map((key) => ({ key, value: value[key] })),
+        attrs: getObjEntries(value),
       }
       break
     }
@@ -76,7 +76,7 @@ export const formatConsoleValue = (
         ...consoleValue,
         ...recordLengthLimit,
         size: (value as Map<any, any>).size,
-        attrs: getObjAllKeys(value).map((key) => ({ key, value: value.get(key) })),
+        attrs: getObjEntries(value),
       }
       break
     }
@@ -92,7 +92,7 @@ export const formatConsoleValue = (
         ...consoleValue,
         ...listLengthLimit,
         size: (value as Set<any>).size,
-        attrs: getObjAllKeys(value).map((item, index) => ({ key: index, value: item })),
+        attrs: getObjEntries(value),
       }
       break
     }
@@ -170,7 +170,7 @@ export const formatConsoleValue = (
           ...recordLengthLimit,
           type: "Object",
           name: value?.constructor?.name,
-          attrs: Object.keys(value).map((key) => ({ key, value: value[key] })),
+          attrs: getObjEntries(value),
         }
       }
     }

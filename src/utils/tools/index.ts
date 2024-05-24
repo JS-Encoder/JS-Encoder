@@ -1,4 +1,4 @@
-import { AnyArray } from "@type/interface"
+import { AnyArray, Type } from "@type/interface"
 import { stringifyDOM } from "@utils/tools/common"
 
 export const basicTypes = [
@@ -27,6 +27,32 @@ export const getType = (data: any): string => {
 
 export const getObjType = (data: any): string => {
   return Object.prototype.toString.call(data).slice(8, -1)
+}
+
+export const getObjEntries = (obj: any): Array<{ key: any, value: any }> => {
+  const type = getType(obj)
+  const result: Array<{ key: any, value: any }> = []
+  switch (type) {
+    case Type.MAP:
+    case Type.SET:
+    case Type.ARRAY: {
+      for (const [key, value] of obj.entries()) {
+        result.push({ key, value })
+      }
+      break
+    }
+    default: {
+      try {
+        const keys = Object.getOwnPropertyNames(obj).sort()
+        keys.forEach((key) => {
+          result.push({ key, value: obj[key] })
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
+  return result
 }
 
 /** 获取对象的所有键，包括不可枚举的键 */
