@@ -9,8 +9,12 @@ import { CompletionContext, CompletionResult } from "@codemirror/autocomplete"
 import { Tooltip, ViewPlugin, ViewUpdate, EditorView } from "@codemirror/view"
 
 const DEFAULT_FILE_NAME = "index.ts"
+const compileOptions: ts.CompilerOptions = {
+  target: ts.ScriptTarget.ESNext,
+  "lib": ["esnext", "dom"],
+}
 const vfsMap = await tsVfs.createDefaultMapFromCDN(
-  {},
+  compileOptions,
   ts.version,
   true,
   ts,
@@ -22,7 +26,7 @@ const tsEnv = tsVfs.createVirtualTypeScriptEnvironment(
   system,
   [DEFAULT_FILE_NAME],
   ts,
-  {},
+  compileOptions,
 )
 
 export const tsLinter = () => {
