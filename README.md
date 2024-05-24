@@ -5,6 +5,7 @@
 <h1 align="center">JS-Encoder</h1>
 
 <p align="center">一个前端在线编辑器，且致力于成为一个方便、快速的在线 Web 实例开发、调试工具</p>
+<p align="center">使用 Vue3 和 Codemirror6 构建</p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/version-v4-%236690FF?style=flat-square"/>
