@@ -1,4 +1,4 @@
-import { ConfigEnv, defineConfig, splitVendorChunkPlugin } from "vite"
+import { ConfigEnv, defineConfig } from "vite"
 import { resolve } from "path"
 import vue from "@vitejs/plugin-vue"
 import eslintPlugin from "vite-plugin-eslint"
@@ -71,7 +71,6 @@ export default defineConfig(({ command }: ConfigEnv) => {
       }),
       /** 查看打包大小 */
       visualizer({ open: true }),
-      splitVendorChunkPlugin(),
     ],
     resolve: {
       alias: {
