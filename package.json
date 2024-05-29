@@ -41,7 +41,7 @@
     "@replit/codemirror-vscode-keymap": "^6.0.2",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@typescript/vfs": "^1.5.0",
-    "@vue/compiler-sfc": "^3.4.21",
+    "@vue/compiler-sfc": "^3.4.27",
     "autoprefixer": "^10.4.19",
     "codemirror": "^6.0.1",
     "coffeescript": "^2.7.0",
