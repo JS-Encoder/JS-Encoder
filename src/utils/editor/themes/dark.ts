@@ -201,7 +201,7 @@ const theme = createTheme({
     },
     {
       tag: tags.special(tags.string),
-      color: "#F11",
+      color: "#c3e88d",
     },
     {
       tag: tags.escape,

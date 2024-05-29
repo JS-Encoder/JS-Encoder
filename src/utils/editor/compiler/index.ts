@@ -3,6 +3,7 @@ import { BABEL_URL, COFFEESCRIPT_URL, LESS_JS_URL, SASS_JS_URL, STYLUS_JS_URL, T
 import { ModuleKind } from "typescript"
 import { OriginLang, Prep } from "@type/prep"
 import hash from "hash-sum"
+import { switchImport2Destruct } from "@utils/editor/utils/compile"
 
 interface ICompileResultBase {
   /** 是否编译成功 */
@@ -95,8 +96,7 @@ export const compileJSX = async (code: string) => {
 
 // eslint-disable-next-line max-lines-per-function
 export const compileVue = async (code: string): Promise<ICompileCodeMapResult> => {
-  const vue = await import("@vue/compiler-sfc")
-  const { parse, compileScript, rewriteDefault } = vue
+  const { parse, compileStyle, compileScript, rewriteDefault } = await import("@vue/compiler-sfc")
   const descriptor = parse(code).descriptor
   const id = hash(code)
 
@@ -114,7 +114,7 @@ export const compileVue = async (code: string): Promise<ICompileCodeMapResult> =
         message: cssCompileResult.message,
       }
     }
-    styleCodes.push(vue.compileStyle({
+    styleCodes.push(compileStyle({
       scoped,
       source: cssCompileResult.result,
       id: `data-v-${hash(code)}`,
@@ -125,7 +125,15 @@ export const compileVue = async (code: string): Promise<ICompileCodeMapResult> =
   // 解析编译script
   let compiledScript
   try {
-    compiledScript = compileScript(descriptor, { id })
+    compiledScript = compileScript(descriptor, {
+      id,
+      inlineTemplate: true,
+      templateOptions: {
+        compilerOptions: {
+          expressionPlugins: ["typescript", "jsx"],
+        },
+      },
+    })
   } catch (error: any) {
     return {
       success: false,
@@ -136,12 +144,16 @@ export const compileVue = async (code: string): Promise<ICompileCodeMapResult> =
   const mainName = "_sfc_main"
   let scriptCode = rewriteDefault(compiledScript.content, mainName)
   // 取出通过import引入的变量，改为从Vue中取出
-  const importReg = /import [^<]* from ['|"]vue['|"]/
-  const importList = scriptCode.match(importReg)
-  const importStr = importList?.[0] || ""
-  const importContent = importStr.match(/{.+}/)
-  scriptCode = scriptCode.replace(importReg, `const ${importContent} = Vue`)
-
+  const importReg = /(import[\s\S]*?)(['|"]vue['|"]){1}/g
+  scriptCode = scriptCode.replaceAll(importReg, (...args) => {
+    const { modules } = switchImport2Destruct(args[0])
+    const importStr = modules.reduce((acc, { imported, local }, index) => {
+      acc += index ? ", " : ""
+      acc += imported === local ? imported : `${imported}: ${local}`
+      return acc
+    }, "")
+    return `const { ${importStr} } = Vue`
+  })
   // 获取template
   const templateCode = descriptor.template?.content.trim() || ""
 
@@ -156,7 +168,6 @@ export const compileVue = async (code: string): Promise<ICompileCodeMapResult> =
       }).mount("#app")
     </script>
   `.trim()
-
   return {
     success: true,
     result: {
