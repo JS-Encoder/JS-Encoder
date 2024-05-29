@@ -34,7 +34,7 @@ export const processLoop = async (code: string) => {
   // 将代码解析成AST，如果代码语法解析错误，直接返回源代码
   try {
     AST = espree.parse(codeCpy, {
-      ecmaVersion: 2022,
+      ecmaVersion: "latest",
       sourceType: "module",
       comment: true,
       tokens: true,
