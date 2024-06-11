@@ -1,3 +1,5 @@
+import { ILinkPos } from "@utils/tools"
+
 /** 日志类型 */
 export const enum LogType {
   /** 普通日志 */
@@ -82,4 +84,6 @@ export interface IConsoleValue {
   maxLength?: number
   /** 是否为链接，字符串类型可用 */
   isLink?: boolean
+  /** 链接开始和结束位置 */
+  linkPos?: ILinkPos[]
 }

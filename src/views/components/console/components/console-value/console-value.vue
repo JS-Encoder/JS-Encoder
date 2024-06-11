@@ -1,7 +1,20 @@
 <template>
   <div class="inline-flex flex-wrap console-common cursor-default">
     <div v-if="basicTypes.includes(type)" :class="`console-${type}`">
-      <span>{{ value }}</span>
+      <template v-if="type === 'string' && isLink">
+        <template v-for="(item, index) in linkPos" :key="index">
+          <span class="break-all" v-if="!index">{{ value.slice(0, item.start) }}</span>
+          <a
+            class="console-link cursor-pointer break-all"
+            :href="value.slice(item.start, item.end)"
+            target="_blank"
+          >{{ value.slice(item.start, item.end) }}</a>
+          <span v-if="index < linkPos!.length - 1">{{ value.slice(item.end, linkPos![index + 1].start) }}</span>
+        </template>
+      </template>
+      <template v-else>
+        <span class="break-all fill-w">{{ value }}</span>
+      </template>
     </div>
     <div v-else-if="type === 'Array'">
       <!-- ▶ (6) [{...}, 1, "123", true, ƒ, Array(0)] -->
@@ -208,7 +221,7 @@ const foldMapData: IConsoleValueMapData[] = []
 /** 展示的键值对数据（展开） */
 const unfoldMapData: IConsoleValueMapData[] = []
 // eslint-disable-next-line max-lines-per-function
-const setData = () => {
+const setFoldData = () => {
   const { type, value, attrs = [], minLength, maxLength, size = 0 } = props
   switch(type) {
     case "Array": {
@@ -271,9 +284,15 @@ const setData = () => {
       }
       break
     }
+    default: {}
   }
 }
-setData()
+
+const initData = () => {
+  setFoldData()
+}
+
+initData()
 </script>
 
 <style src="./console-value.scss" lang="scss" scoped></style>

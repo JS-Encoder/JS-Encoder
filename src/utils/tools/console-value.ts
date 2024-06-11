@@ -1,13 +1,20 @@
 import { IConsoleValue } from "@type/console"
-import { getObjEntries, getType, isBaseData } from "."
+import { getObjEntries, getType, isBaseData, parseLink } from "."
 import { isElement } from "./judge"
 
 export const processConsoleValueList = (list: any[]) => {
   return list.map((value, index) => {
     const type = getType(value)
     const result = formatConsoleValue(value)
-    if (!index && type === "string") {
-      result.value = value
+    if (type === "string") {
+      if (!index) {
+        result.value = value
+      }
+      const linkPos = parseLink(result.value)
+      if (linkPos.length) {
+        result.isLink = true
+        result.linkPos = linkPos
+      }
     }
     return result
   })
