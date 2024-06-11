@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted, ref, Ref } from "vue"
+import { onMounted, onUnmounted, Ref } from "vue"
 
 /** 按下ESC关闭弹窗 */
 const useEscClose = (canClose: Ref<boolean>, handler: () => void): void => {

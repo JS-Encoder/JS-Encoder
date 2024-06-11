@@ -45,6 +45,7 @@ import { onMounted, watch, onUnmounted } from "vue"
 import { getModulesHeight, getModulesWidth } from "./instance"
 import { useLayoutStore } from "@store/layout"
 import useWindowResize from "@hooks/use-window-resize"
+import useBeforeUnload from "@hooks/use-before-unload"
 import ModuleSizeService, { EDITOR_MIN_WIDTH, RESULT_MIN_WIDTH } from "@utils/services/module-size-service"
 import { storeToRefs } from "pinia"
 import { useCommonStore } from "@store/common"
@@ -73,6 +74,10 @@ const displayModalMap = {
   [ModalName.DOWNLOAD_CODE]: DownloadCodeModal,
   [ModalName.SHORTCUT]: ShortcutModal,
   [ModalName.UPDATE_LOG]: UpdateLogsModal,
+}
+
+if (import.meta.env.PROD) {
+  useBeforeUnload()
 }
 
 const moduleSizeService = new ModuleSizeService()
@@ -119,20 +124,13 @@ const handleResizeEditorAndResult = (e: MouseEvent): void => {
   })
 }
 
-// 生产环境刷新页面时提示
-const beforeunload = (event: BeforeUnloadEvent) => {
-  event.preventDefault()
-}
-if (import.meta.env.PROD) {
-  window.addEventListener("beforeunload", beforeunload)
-}
-onUnmounted(() => {
-  window.removeEventListener("beforeunload", beforeunload)
-})
 onBeforeRouteLeave(() => {
   if (import.meta.env.PROD) {
-    window.confirm("你所做的更改可能未保存。")
+    if (!window.confirm("你所做的更改可能未保存。")) {
+      return false
+    }
   }
+  return true
 })
 </script>
 
