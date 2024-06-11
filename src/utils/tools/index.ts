@@ -191,3 +191,18 @@ export function JSONStringify(data: any): string {
 export const getArrayIntersection = (arr1: any[], arr2: any[]): any[] => {
   return arr1.filter((item) => arr2.indexOf(item) > -1)
 }
+
+export interface ILinkPos {
+  start?: number
+  end?: number
+}
+
+const linkReg = /(?:[^\s()]+):\/\/[^\s()]+/gi
+/** 获取字符串中的链接位置 */
+export const parseLink = (text: string): ILinkPos[] => {
+  const result = []
+  for (const match of text.matchAll(linkReg)) {
+    result.push({ start: match.index, end: match.index + match[0].length })
+  }
+  return result
+}
