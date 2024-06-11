@@ -1,17 +1,19 @@
 <template>
   <div class="inline-flex flex-wrap console-common cursor-default">
     <div v-if="basicTypes.includes(type)" :class="`console-${type}`">
-      <span>{{ value }}</span>
       <template v-if="type === 'string' && isLink">
         <template v-for="(item, index) in linkPos" :key="index">
-          <span v-if="!index">{{ value.slice(0, item.start) }}</span>
+          <span class="break-all" v-if="!index">{{ value.slice(0, item.start) }}</span>
           <a
-            class="console-link cursor-pointer"
+            class="console-link cursor-pointer break-all"
             :href="value.slice(item.start, item.end)"
             target="_blank"
           >{{ value.slice(item.start, item.end) }}</a>
           <span v-if="index < linkPos!.length - 1">{{ value.slice(item.end, linkPos![index + 1].start) }}</span>
         </template>
+      </template>
+      <template v-else>
+        <span class="break-all fill-w">{{ value }}</span>
       </template>
     </div>
     <div v-else-if="type === 'Array'">
