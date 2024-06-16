@@ -7,7 +7,7 @@
       <editor-wrapper></editor-wrapper>
     </div>
     <!--结果-->
-    <div class="flex" :style="{ width: `${isShowResult ? modulesSize.resultWidth : 0}px` }">
+    <div class="flex" :style="{ width: `${resultWidth}px` }">
       <div class="resize-line fill-h">
         <!--分割线-->
         <split-line
@@ -17,7 +17,7 @@
           @mousedown.prevent="handleResizeEditorAndResult"
         ></split-line>
       </div>
-      <div class="flex-1">
+      <div :style="{ width: `calc(${resultWidth - resizeLineWidth}px)` }">
         <result></result>
       </div>
     </div>
@@ -41,7 +41,7 @@ import UpdateLogsModal from "@views/components/modals/update-logs-modal/update-l
 import SplitLine from "@components/split-line/split-line.vue"
 import Result from "@views/components/result/result.vue"
 import { SplitDirection } from "@type/editor"
-import { onMounted, watch, onUnmounted } from "vue"
+import { computed, onMounted, watch } from "vue"
 import { getModulesHeight, getModulesWidth } from "./instance"
 import { useLayoutStore } from "@store/layout"
 import useWindowResize from "@hooks/use-window-resize"
@@ -123,6 +123,9 @@ const handleResizeEditorAndResult = (e: MouseEvent): void => {
     },
   })
 }
+
+const resizeLineWidth = 1
+const resultWidth = computed(() => isShowResult ? modulesSize.resultWidth - resizeLineWidth : 0)
 
 onBeforeRouteLeave(() => {
   if (import.meta.env.PROD) {

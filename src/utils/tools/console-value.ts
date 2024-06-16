@@ -69,15 +69,6 @@ export const formatConsoleValue = (
       }
       break
     }
-    case "Object": {
-      consoleValue = {
-        ...consoleValue,
-        ...recordLengthLimit,
-        name: value?.constructor?.name,
-        attrs: getObjEntries(value),
-      }
-      break
-    }
     case "Map": {
       consoleValue = {
         ...consoleValue,
@@ -126,44 +117,43 @@ export const formatConsoleValue = (
       }
       break
     }
-    case "Window": {
-      consoleValue = {
-        type: "string",
-        value: "该类型数据暂不支持展示，请在浏览器控制台查看~",
-      }
-      break
-    }
     case "console": {
+      const attrs = Reflect.ownKeys(value).map((key: string | symbol) => {
+        const newValue = key === "memory"
+          ? {
+              // @ts-expect-error: memory exist
+              jsHeapSizeLimit: console.memory?.jsHeapSizeLimit,
+              // @ts-expect-error: memory exist
+              totalJSHeapSize: console.memory?.totalJSHeapSize,
+              // @ts-expect-error: memory exist
+              usedJSHeapSize: console.memory?.usedJSHeapSize,
+            }
+          : value[key]
+        return { key: String(key), value: newValue }
+      })
       consoleValue = {
         ...consoleValue,
         ...recordLengthLimit,
+        attrs,
         type: "Object",
         name: value?.constructor?.name,
-        attrs: Object.keys(value).map((key) => {
-          const newValue = key === "memory"
-            ? {
-                // @ts-expect-error: memory exist
-                jsHeapSizeLimit: console.memory?.jsHeapSizeLimit,
-                // @ts-expect-error: memory exist
-                totalJSHeapSize: console.memory?.totalJSHeapSize,
-                // @ts-expect-error: memory exist
-                usedJSHeapSize: console.memory?.usedJSHeapSize,
-              }
-            : value[key]
-          return { key, value: newValue }
-        }),
+        size: attrs.length,
       }
       break
     }
     default: {
       if (isElement(value)) {
+        const attrs = Array
+          .from((value as HTMLElement).attributes)
+          .map((item) => ({ key: item.name, value: item.value }))
         consoleValue = {
           ...consoleValue,
           ...listLengthLimit,
+          attrs,
           type: "Element",
           value: value.toString(),
           name: (value as HTMLElement).nodeName.toLowerCase(),
-          attrs: Array.from((value as HTMLElement).attributes).map((item) => ({ key: item.name, value: item.value })),
+          size: attrs.length,
           suffix: [
             (value as HTMLElement).id ? `#${(value as HTMLElement).id}` : "",
             (value as HTMLElement).classList?.length
@@ -172,12 +162,17 @@ export const formatConsoleValue = (
           ].join(""),
         }
       } else {
+        const attrs = Reflect.ownKeys(value).map((key: string | symbol) => ({
+          key: String(key),
+          value: value[key],
+        }))
         consoleValue = {
           ...consoleValue,
           ...recordLengthLimit,
+          attrs,
           type: "Object",
           name: value?.constructor?.name,
-          attrs: getObjEntries(value),
+          size: attrs.length,
         }
       }
     }

@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
+
 console.log(123)
 console.log("string")
 console.log(true)
@@ -37,3 +40,6 @@ console.log(console)
 console.log("Find me at http://www.example.com and also at http://stackoverflow.com")
 // eslint-disable-next-line max-len
 console.log("https://play.vuejs.org/#eNp9kUFLAzEQhf/KmMsq1C61nsq2oFJQDyoqeMmlbKfb1GwSkkktLPvfnaS09iCFHDLvvRm+YTpx59xwG1FMRBVqrxxBQIpuJo1qnfUEHXhcQQ8rb1soOFpII01tTSBoQwPT5F8Wj6i1hS/r9fKiuJKmKvfjeBAXhK3TC0KuAKr1aNZ1ubnvq5KrrCrjIsH2urVL1FMp2JcCSjar8qR/dDPmJwaCAkOsVDPcBGuYv0tTpKht65RG/+pIMaQUE8hO8hbM+POcNfIRBwe9XmP9/Y++CbukSfHmMaDfohRHjxa+Qdrb848X3PH/aPIOUXP6jPmOweqYGPex+2iWjH2Sy7RP+QrKNJ9hviM04bBUAk3JPuel4Ms8nFn9D3c8vM190vSi/wUJTKhh")
+const circle = {}
+circle.circle = circle
+console.log(circle)
