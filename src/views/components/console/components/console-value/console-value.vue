@@ -19,7 +19,7 @@
     <div v-else-if="type === 'Array'">
       <!-- ▶ (6) [{...}, 1, "123", true, ƒ, Array(0)] -->
       <span v-if="simple">Array({{ size }})</span>
-      <console-fold v-else v-model="isFold">
+      <console-fold v-else v-model="isUnfold">
         <template #default>
           <span v-if="size">({{ size }}) </span>
           <span>[</span>
@@ -43,7 +43,7 @@
     </div>
     <div v-else-if="type === 'Object'">
       <span v-if="simple">{{ name === 'Object' ? "{...}" : name }}</span>
-      <console-fold v-else v-model="isFold">
+      <console-fold v-else v-model="isUnfold">
         <template #default>
           <span v-if="name">{{ name === 'Object' ? "" : name }} </span>
           <span>{</span>
@@ -85,7 +85,7 @@
         <span>{{ toStringTag }}</span>
         <span v-if="size">({{ size }})</span>
       </template>
-      <console-fold v-else v-model="isFold">
+      <console-fold v-else v-model="isUnfold">
         <template #default>
           <span>{{ toStringTag }}</span>
           <span v-if="size">({{ size }})</span>
@@ -119,7 +119,7 @@
         <span>{{ toStringTag }}</span>
         <span v-if="size">({{ size }})</span>
       </template>
-      <console-fold v-else v-model="isFold">
+      <console-fold v-else v-model="isUnfold">
         <!-- ▶ Set(9) {{…}, Array(0), 3, 4, 5, …} -->
         <template #default>
           <span>{{ toStringTag }}</span>
@@ -154,7 +154,7 @@
         <span>{{ toStringTag }}</span>
         <span v-if="size">({{ size }})</span>
       </template>
-      <console-fold v-else v-model="isFold">
+      <console-fold v-else v-model="isUnfold">
         <template #default>
           <span>{{ toStringTag }}</span>
           <span v-if="size">({{ size }})</span>
@@ -200,7 +200,7 @@
 <script setup lang="ts">
 import { IConsoleValueMapData, IProps } from "./console-value"
 import ConsoleFold from "../console-fold/console-fold.vue"
-import { ref } from "vue"
+import { ref, watch } from "vue"
 import { formatConsoleValue } from "@utils/tools/console-value"
 import { IConsoleValue } from "@type/console"
 import { basicTypes } from "@utils/tools"
@@ -210,8 +210,8 @@ const props = withDefaults(defineProps<IProps>(), {
   maxLength: Infinity,
   simple: false,
 })
-const isFold = ref<boolean>(false)
-
+const isUnfold = ref<boolean>(false)
+const hasInitUnfoldData = ref<boolean>(false)
 /** 展示的数据（缩起） */
 const foldListData: IConsoleValue[] = []
 /** 展示的数据（展开） */
@@ -220,67 +220,79 @@ const unfoldListData: IConsoleValue[] = []
 const foldMapData: IConsoleValueMapData[] = []
 /** 展示的键值对数据（展开） */
 const unfoldMapData: IConsoleValueMapData[] = []
-// eslint-disable-next-line max-lines-per-function
-const setFoldData = () => {
-  const { type, value, attrs = [], minLength, maxLength, size = 0 } = props
+
+watch(isUnfold, (newState) => {
+  if (hasInitUnfoldData.value || !newState) { return }
+  setUnfoldData()
+  hasInitUnfoldData.value = true
+})
+
+const setUnfoldData = () => {
+  const { type, value, attrs = [], maxLength, size = 0 } = props
+  const loopTime = Math.min(size, maxLength)
   switch(type) {
-    case "Array": {
-      const loopTime = Math.min(size, maxLength)
+    case "Array":
+    case "NodeList": {
       for (let i = 0; i < loopTime; i ++) {
         const result = formatConsoleValue(value[i])
-        if (i < minLength) {
-          foldListData.push(result)
-        }
         unfoldListData.push(result)
       }
       break
     }
-    case "Object": {
-      const loopTime = Math.min(attrs.length, maxLength)
+    case "Object":
+    case "Set":
+    case "WeakSet": {
       for (let i = 0; i < loopTime; i ++) {
         const result = formatConsoleValue(attrs[i].value)
-        if (i < minLength) {
-          foldListData.push(result)
-        }
         unfoldListData.push(result)
       }
       break
     }
     case "Map":
     case "WeakMap": {
-      const loopTime = Math.min(attrs.length, maxLength)
       for (let i = 0; i < loopTime; i ++) {
         const result = {
           key: formatConsoleValue(attrs[i].key),
           value: formatConsoleValue(attrs[i].value),
         }
-        if (i < minLength) {
-          foldMapData.push(result)
-        }
         unfoldMapData.push(result)
       }
       break
     }
-    case "Set":
-    case "WeakSet": {
-      const loopTime = Math.min(attrs.length, maxLength)
+    default: {}
+  }
+}
+
+// eslint-disable-next-line max-lines-per-function
+const setFoldData = () => {
+  const { type, value, attrs = [], minLength, size = 0 } = props
+  const loopTime = Math.min(size, minLength)
+  switch(type) {
+    case "Array":
+    case "NodeList": {
       for (let i = 0; i < loopTime; i ++) {
-        const result = formatConsoleValue(attrs[i].value)
-        if (i < minLength) {
-          foldListData.push(result)
-        }
-        unfoldListData.push(result)
+        const result = formatConsoleValue(value[i])
+        foldListData.push(result)
       }
       break
     }
-    case "NodeList": {
-      const loopTime = Math.min(value.length, maxLength)
+    case "Object":
+    case "Set":
+    case "WeakSet": {
       for (let i = 0; i < loopTime; i ++) {
-        const result = formatConsoleValue(value[i])
-        if (i < minLength) {
-          foldListData.push(result)
+        const result = formatConsoleValue(attrs[i].value)
+        foldListData.push(result)
+      }
+      break
+    }
+    case "Map":
+    case "WeakMap": {
+      for (let i = 0; i < loopTime; i ++) {
+        const result = {
+          key: formatConsoleValue(attrs[i].key),
+          value: formatConsoleValue(attrs[i].value),
         }
-        unfoldListData.push(result)
+        foldMapData.push(result)
       }
       break
     }

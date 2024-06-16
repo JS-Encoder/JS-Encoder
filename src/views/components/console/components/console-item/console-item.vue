@@ -1,6 +1,6 @@
 <template>
   <div
-    class="console-item pl-xs pr-xxl p-y-xs font-xxs flex"
+    class="console-item pl-xs pr-xxl p-y-xs font-xxs flex over-hidden over-x-auto common-scrollbar"
     :class="[`console-${logInfo.type}`]">
     <!-- icon -->
     <div class="inline-flex flex-center mr-xs">

@@ -10,7 +10,7 @@
       <div @click="handleClickFold">
         <slot></slot>
       </div>
-      <div v-show="modelValue">
+      <div v-if="modelValue">
         <slot name="content"></slot>
       </div>
     </div>
