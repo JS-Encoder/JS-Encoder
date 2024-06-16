@@ -60,7 +60,7 @@
         </template>
         <template #content>
           <template v-for="(item, index) in attrs" :key="item.key">
-            <div v-if="index < maxLength">
+            <div class="flex" v-if="index < maxLength">
               <span class="console-attribute-name">{{ item.key }}</span>
               <span>:&nbsp;</span>
               <console-value v-bind="unfoldListData[index]"></console-value>
