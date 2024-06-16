@@ -74,7 +74,10 @@ export const formatConsoleValue = (
         ...consoleValue,
         ...recordLengthLimit,
         name: value?.constructor?.name,
-        attrs: getObjEntries(value),
+        attrs: Reflect.ownKeys(value).map((key: string | symbol) => ({
+          key: String(key),
+          value: value[key],
+        })),
       }
       break
     }
