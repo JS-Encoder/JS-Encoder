@@ -139,7 +139,7 @@ export const formatConsoleValue = (
         ...recordLengthLimit,
         type: "Object",
         name: value?.constructor?.name,
-        attrs: Object.keys(value).map((key) => {
+        attrs: Reflect.ownKeys(value).map((key: string | symbol) => {
           const newValue = key === "memory"
             ? {
                 // @ts-expect-error: memory exist
@@ -150,7 +150,7 @@ export const formatConsoleValue = (
                 usedJSHeapSize: console.memory?.usedJSHeapSize,
               }
             : value[key]
-          return { key, value: newValue }
+          return { key: String(key), value: newValue }
         }),
       }
       break
@@ -177,7 +177,10 @@ export const formatConsoleValue = (
           ...recordLengthLimit,
           type: "Object",
           name: value?.constructor?.name,
-          attrs: getObjEntries(value),
+          attrs: Reflect.ownKeys(value).map((key: string | symbol) => ({
+            key: String(key),
+            value: value[key],
+          })),
         }
       }
     }
