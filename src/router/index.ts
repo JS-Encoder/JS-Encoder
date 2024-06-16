@@ -19,13 +19,29 @@ const lazyLoad = (componentPath: string) => {
 }
 
 const routes = [
-  { path: "/", component: Home },
-  { path: "/code", component: lazyLoad("instance/instance") },
+  {
+    path: "/",
+    component: Home,
+  },
+  {
+    path: "/code",
+    component: lazyLoad("instance/instance"),
+    meta: { fullscreen: true },
+  },
 ]
 
 const router = createRouter({
   routes,
   history: createWebHistory(),
+})
+
+router.beforeEach((to) => {
+  // 设备问题（如分屏导致dpr不同）导致浏览器高度会出现小数点，但无法获取带有小数点的高度，因此只能强制为外部dom设置高度百分百
+  if (to.meta.fullscreen) {
+    document.querySelector("#app")?.classList.add("fill")
+  } else {
+    document.querySelector("#app")?.classList.remove("fill")
+  }
 })
 
 export default router
