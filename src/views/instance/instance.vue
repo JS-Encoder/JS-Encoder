@@ -125,7 +125,7 @@ const handleResizeEditorAndResult = (e: MouseEvent): void => {
 }
 
 const resizeLineWidth = 1
-const resultWidth = computed(() => isShowResult ? modulesSize.resultWidth - resizeLineWidth : 0)
+const resultWidth = computed(() => isShowResult.value ? modulesSize.resultWidth - resizeLineWidth : 0)
 
 onBeforeRouteLeave(() => {
   if (import.meta.env.PROD) {
