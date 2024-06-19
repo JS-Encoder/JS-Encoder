@@ -14,14 +14,18 @@ const codemirrorChunk = [
 
 /** 代码编译相关分包 */
 const compileChunk = [
-  "@vue/compiler-sfc", "espree", "estraverse", "marked", "marked-highlight",
+  "@vue/compiler-sfc", "espree", "estraverse", "marked", "marked-highlight", "hash-sum",
+]
+
+/** lint相关分包 */
+const lintChunk = [
+  "eslint4b-prebuilt", "stylelint", "stylelint-config-recommended-less", "stylelint-config-standard",
+  "stylelint-config-standard-scss", "stylelint-config-standard-vue", "htmlhint",
 ]
 
 /** 其他插件相关分包 */
 const pluginChunk = [
-  "eslint4b-prebuilt", "@typescript/vfs", "hash-sum", "htmlhint", "stylelint",
-  "stylelint-config-recommended-less", "stylelint-config-standard", "stylelint-config-standard-scss",
-  "jszip", "stylelint-config-standard-vue", "fflate",
+  "@typescript/vfs", "jszip", "fflate",
 ]
 
 const prettierChunk = [
@@ -32,6 +36,7 @@ export default {
   mainChunk,
   codemirrorChunk,
   compileChunk,
+  lintChunk,
   pluginChunk,
   prettierChunk,
 }
