@@ -2,7 +2,6 @@
 
 declare module "*.vue" {
   import type { DefineComponent } from "vue"
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
   const component: DefineComponent<{}, {}, any>
   export default component
 }
@@ -25,3 +24,9 @@ declare interface Window {
   hljs: GlobalType.hljs
 }
 
+/**
+ * vite define
+ */
+
+/** app版本 */
+declare const APP_VERSION: string

@@ -16,6 +16,9 @@ import chunks from "./chunks.conf"
 export default defineConfig(({ command }: ConfigEnv) => {
   const isBuild = command === "build"
   return {
+    define: {
+      "APP_VERSION": JSON.stringify(process.env.npm_package_version),
+    },
     base: "/",
     server: {
       port: 4000,
