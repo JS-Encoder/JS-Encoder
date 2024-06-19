@@ -21,7 +21,7 @@ const compileChunk = [
 const pluginChunk = [
   "eslint4b-prebuilt", "@typescript/vfs", "hash-sum", "htmlhint", "stylelint",
   "stylelint-config-recommended-less", "stylelint-config-standard", "stylelint-config-standard-scss",
-  "jszip", "stylelint-config-standard-vue",
+  "jszip", "stylelint-config-standard-vue", "fflate",
 ]
 
 const prettierChunk = [

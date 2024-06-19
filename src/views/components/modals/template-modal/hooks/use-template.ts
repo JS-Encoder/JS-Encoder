@@ -2,7 +2,7 @@ import useEditorWrapperState from "@hooks/use-editor-wrapper-state"
 import { useEditorConfigStore } from "@store/editor-config"
 import { useEditorWrapperStore } from "@store/editor-wrapper"
 import { OriginLang } from "@type/prep"
-import { TemplateLang, TemplateType } from "@type/template"
+import { ITemplateBase, TemplateLang, TemplateType } from "@type/template"
 import { DBStoreName, ITemplateInfo } from "@utils/config/indexed-db"
 import { DBService } from "@utils/services/indexed-db-service"
 import { storeToRefs } from "pinia"
@@ -14,14 +14,8 @@ const useTemplate = () => {
   const editorConfigStore = useEditorConfigStore()
   const { initDefaultWrapper, initComponentWrapper } = useEditorWrapperState()
 
-  /** 获取本地存储的自定义模板列表 */
-  const getCustomTemplateList = async () => {
-    return await dbService.getAll(DBStoreName.TEMPLATE)
-  }
-
-  /** 创建模板 */
-  const createTemplate = async (name: string) => {
-    const { codeMap, tabMap } = editorWrapperStore
+  const getTemplateBaseInfo = () => {
+    const { codeMap, tabMap, isComponentMode } = editorWrapperStore
     const { libraries, prepMap } = editorConfigStore
     // 获取源到编辑器代码的映射
     const origin2CodeMap = Object.keys(tabMap).reduce((acc, tabId) => {
@@ -29,12 +23,25 @@ const useTemplate = () => {
       acc[origin] = codeMap[Number(tabId)]
       return acc
     }, {} as Record<OriginLang, string>)
+    return {
+      codeMap: origin2CodeMap,
+      editorConfig: { libraries, prepMap },
+      isComponent: isComponentMode,
+    }
+  }
+
+  /** 获取本地存储的自定义模板列表 */
+  const getCustomTemplateList = async () => {
+    return await dbService.getAll(DBStoreName.TEMPLATE)
+  }
+
+  /** 创建模板 */
+  const createTemplate = async (name: string) => {
     const template: ITemplateInfo = {
       name,
       lang: TemplateLang.CUSTOM,
       type: TemplateType.CUSTOM,
-      codeMap: origin2CodeMap,
-      editorConfig: { libraries, prepMap },
+      ...getTemplateBaseInfo(),
     }
     const { success, data: id } = await dbService.add(DBStoreName.TEMPLATE, template)
     const data: ITemplateInfo | undefined = success ? { ...template, id } : undefined
@@ -47,7 +54,7 @@ const useTemplate = () => {
   }
 
   /** 应用模板 */
-  const applyTemplate = async (template: ITemplateInfo) => {
+  const applyTemplate = async (template: ITemplateBase) => {
     const { codeMap, editorConfig: { libraries = {}, prepMap }, isComponent } = template
     const { batchUpdateEditorConfig } = editorConfigStore
     const { batchUpdateEditorWrapper } = editorWrapperStore
@@ -73,6 +80,7 @@ const useTemplate = () => {
   }
 
   return {
+    getTemplateBaseInfo,
     getCustomTemplateList,
     createTemplate,
     updateTemplate,

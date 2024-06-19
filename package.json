@@ -48,6 +48,7 @@
     "eslint4b-prebuilt": "^6.7.2",
     "espree": "^10.0.1",
     "estraverse": "^5.3.0",
+    "fflate": "^0.8.2",
     "hash-sum": "^2.0.0",
     "highlight.js": "^11.9.0",
     "htmlhint": "^1.1.4",
@@ -99,6 +100,7 @@
     "unplugin-vue-define-options": "^1.4.1",
     "vite": "^5.0.11",
     "vite-plugin-compression": "^0.5.1",
+    "vite-plugin-remove-console": "^2.2.0",
     "vite-plugin-require-transform": "^1.0.21",
     "vue-tsc": "^1.8.27"
   }

@@ -8,6 +8,7 @@ import commonjs from "@rollup/plugin-commonjs"
 import { visualizer } from "rollup-plugin-visualizer"
 import externalGlobals from "rollup-plugin-external-globals"
 import viteCompression from "vite-plugin-compression"
+import removeConsole from "vite-plugin-remove-console"
 import autoprefixer from "autoprefixer"
 import chunks from "./chunks.conf"
 
@@ -16,6 +17,9 @@ import chunks from "./chunks.conf"
 export default defineConfig(({ command }: ConfigEnv) => {
   const isBuild = command === "build"
   return {
+    define: {
+      "APP_VERSION": JSON.stringify(process.env.npm_package_version),
+    },
     base: "/",
     server: {
       port: 4000,
@@ -71,6 +75,10 @@ export default defineConfig(({ command }: ConfigEnv) => {
       }),
       /** 查看打包大小 */
       visualizer({ open: true }),
+      removeConsole({
+        external: ["src/utils/services/console-service.ts"],
+        includes: ["log", "warn", "info"],
+      }),
     ],
     resolve: {
       alias: {
