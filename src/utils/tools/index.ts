@@ -48,7 +48,7 @@ export const getObjEntries = (obj: any): Array<{ key: any, value: any }> => {
           result.push({ key, value: obj[key] })
         })
       } catch (error) {
-        console.log(error)
+        console.error(error)
       }
     }
   }

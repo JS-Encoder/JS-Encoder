@@ -244,6 +244,9 @@ devDependencies:
   vite-plugin-compression:
     specifier: ^0.5.1
     version: 0.5.1(vite@5.0.11)
+  vite-plugin-remove-console:
+    specifier: ^2.2.0
+    version: 2.2.0
   vite-plugin-require-transform:
     specifier: ^1.0.21
     version: 1.0.21
@@ -5273,6 +5276,10 @@ packages:
       rollup: 2.79.1
       vite: 5.0.11(@types/node@18.0.5)(less@4.2.0)(sass@1.53.0)(stylus@0.63.0)
     dev: false
+
+  /vite-plugin-remove-console@2.2.0:
+    resolution: {integrity: sha512-qgjh5pz75MdE9Kzs8J0kBwaCfifHV0ezRbB9rpGsIOxam+ilcGV7WOk91vFJXquzRmiKrFh3Hxlh0JJWAmXTbQ==}
+    dev: true
 
   /vite-plugin-require-transform@1.0.21:
     resolution: {integrity: sha512-A3SrHhVg9tCW35O7E8kcuB71YTEdVd3EaM1zh6gbH4zxy4WzXSfcNf0UiWmaHHhr6wdFhiiAGdpR6S0SUxXkGQ==}

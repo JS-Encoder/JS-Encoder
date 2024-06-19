@@ -100,6 +100,7 @@
     "unplugin-vue-define-options": "^1.4.1",
     "vite": "^5.0.11",
     "vite-plugin-compression": "^0.5.1",
+    "vite-plugin-remove-console": "^2.2.0",
     "vite-plugin-require-transform": "^1.0.21",
     "vue-tsc": "^1.8.27"
   }

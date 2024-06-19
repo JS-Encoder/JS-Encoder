@@ -8,6 +8,7 @@ import commonjs from "@rollup/plugin-commonjs"
 import { visualizer } from "rollup-plugin-visualizer"
 import externalGlobals from "rollup-plugin-external-globals"
 import viteCompression from "vite-plugin-compression"
+import removeConsole from "vite-plugin-remove-console"
 import autoprefixer from "autoprefixer"
 import chunks from "./chunks.conf"
 
@@ -74,6 +75,10 @@ export default defineConfig(({ command }: ConfigEnv) => {
       }),
       /** 查看打包大小 */
       visualizer({ open: true }),
+      removeConsole({
+        external: ["src/utils/services/console-service.ts"],
+        includes: ["log", "warn", "info"],
+      }),
     ],
     resolve: {
       alias: {
