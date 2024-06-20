@@ -4,22 +4,54 @@ import vueCodeMap from "./code/vue"
 import reactCodeMap from "./code/react"
 import vanillaCodeMap from "./code/vanilla"
 import vueComponentCodeMap from "./code/vue-component"
+import elementPlusCodeMap from "./code/element-plus"
+import antDesignCodeMap from "./code/ant-design"
+import echartsCodeMap from "./code/echarts"
 import { OriginLang, Prep } from "@type/prep"
 
 export const templateCodeMap = {
   [TemplateLang.VUE]: vueCodeMap,
   [TemplateLang.REACT]: reactCodeMap,
   [TemplateLang.VANILLA]: vanillaCodeMap,
+  [TemplateLang.ELEMENT_PLUS]: elementPlusCodeMap,
+  [TemplateLang.ANT_DESIGN]: antDesignCodeMap,
+  [TemplateLang.ECHARTS]: echartsCodeMap,
 }
+
+const vueScript = ["https://unpkg.com/vue@3"]
+
+const reactScript = [
+  "https://unpkg.com/react@18.3.1/umd/react.production.min.js",
+  "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js",
+]
 
 export const templateLibrariesMap = {
   [TemplateLang.VUE]: {
-    script: ["https://cdn.bootcdn.net/ajax/libs/vue/3.3.4/vue.global.min.js"],
+    script: [...vueScript],
   },
   [TemplateLang.REACT]: {
+    script: [...reactScript],
+  },
+  [TemplateLang.ELEMENT_PLUS]: {
+    style: ["https://unpkg.com/element-plus/dist/index.css"],
     script: [
-      "https://cdn.staticfile.org/react/17.0.0/umd/react.development.min.js",
-      "https://cdn.staticfile.org/react-dom/17.0.0/umd/react-dom.development.min.js",
+      ...vueScript,
+      "https://unpkg.com/element-plus",
+    ],
+  },
+  [TemplateLang.ANT_DESIGN]: {
+    style: [
+      "https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/antd/4.18.9/antd.min.css",
+    ],
+    script: [
+      ...reactScript,
+      "https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/antd/4.18.9/antd.min.js",
+    ],
+  },
+  [TemplateLang.ECHARTS]: {
+    style: [],
+    script: [
+      "https://unpkg.com/echarts",
     ],
   },
 }
@@ -31,6 +63,12 @@ export const templatePrepMap = {
     ...initialPrepMap,
     [OriginLang.JAVASCRIPT]: Prep.BABEL,
   },
+  [TemplateLang.ELEMENT_PLUS]: initialPrepMap,
+  [TemplateLang.ANT_DESIGN]: {
+    ...initialPrepMap,
+    [OriginLang.JAVASCRIPT]: Prep.BABEL,
+  },
+  [TemplateLang.ECHARTS]: initialPrepMap,
 }
 
 export const componentTemplateCodeMap = {
@@ -39,9 +77,10 @@ export const componentTemplateCodeMap = {
 
 export const componentTemplateLibrariesMap = {
   [TemplateLang.VUE]: {
-    script: ["https://cdn.bootcdn.net/ajax/libs/vue/3.3.4/vue.global.min.js"],
+    script: [...vueScript],
   },
 }
+
 export const componentTemplatePrepMap = {
   [TemplateLang.VUE]: {
     [OriginLang.JAVASCRIPT]: Prep.VUE,

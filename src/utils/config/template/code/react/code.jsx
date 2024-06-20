@@ -1,4 +1,9 @@
-ReactDOM.render(
-  <h1>This is a template of React!</h1>,
-  document.getElementById("root"),
-)
+class App extends React.Component {
+  render() {
+    return (
+      <div>This is a template of React!</div>
+    )
+  }
+}
+
+ReactDOM.render(<App />, document.getElementById("root"))

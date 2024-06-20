@@ -8,7 +8,7 @@
   export default {
     data() {
       return {
-        message: "Welcome to vue Vue3 template!",
+        message: "This is a template of Vue3 Component!",
       }
     },
   }

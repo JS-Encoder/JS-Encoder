@@ -46,7 +46,7 @@ const templateIcon = getTemplateIcon(props.template)
   .lang-icon {
     width: 40px;
     height: 40px;
-    margin-right: 32px;
+    margin-right: 20px;
   }
   .template-lang {
     line-height: 18px;

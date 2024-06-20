@@ -2,11 +2,14 @@ import { OriginLang } from "./prep"
 import { IEditorConfig } from "./settings"
 import { DeepPartial } from "./types"
 
-/** 模板对应的语言 */
+/** 模板对应的语言或框架 */
 export const enum TemplateLang {
   VUE = "Vue",
   VANILLA = "Vanilla",
   REACT = "React",
+  ELEMENT_PLUS = "Element Plus",
+  ANT_DESIGN = "Ant Design",
+  ECHARTS = "Echarts",
   CUSTOM = "Custom",
 }
 

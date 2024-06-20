@@ -5,7 +5,6 @@ import { componentTemplateCodeMap, componentTemplateLibrariesMap, componentTempl
 /** 内置模板列表, 不存入数据库中，id从-1开始递减 */
 export const inbuiltTemplateList: ITemplateInfo[] = [
   {
-    id: -1,
     lang: TemplateLang.VANILLA,
     type: TemplateType.INBUILT,
     codeMap: templateCodeMap[TemplateLang.VANILLA],
@@ -14,7 +13,6 @@ export const inbuiltTemplateList: ITemplateInfo[] = [
     },
   },
   {
-    id: -2,
     lang: TemplateLang.VUE,
     type: TemplateType.INBUILT,
     codeMap: templateCodeMap[TemplateLang.VUE],
@@ -24,7 +22,6 @@ export const inbuiltTemplateList: ITemplateInfo[] = [
     },
   },
   {
-    id: -3,
     lang: TemplateLang.VUE,
     type: TemplateType.INBUILT,
     isComponent: true,
@@ -35,7 +32,6 @@ export const inbuiltTemplateList: ITemplateInfo[] = [
     },
   },
   {
-    id: -4,
     lang: TemplateLang.REACT,
     type: TemplateType.INBUILT,
     codeMap: templateCodeMap[TemplateLang.REACT],
@@ -44,4 +40,34 @@ export const inbuiltTemplateList: ITemplateInfo[] = [
       prepMap: templatePrepMap[TemplateLang.REACT],
     },
   },
-]
+  {
+    lang: TemplateLang.ELEMENT_PLUS,
+    type: TemplateType.INBUILT,
+    codeMap: templateCodeMap[TemplateLang.ELEMENT_PLUS],
+    editorConfig: {
+      libraries: templateLibrariesMap[TemplateLang.ELEMENT_PLUS],
+      prepMap: templatePrepMap[TemplateLang.ELEMENT_PLUS],
+    },
+  },
+  {
+    lang: TemplateLang.ANT_DESIGN,
+    type: TemplateType.INBUILT,
+    codeMap: templateCodeMap[TemplateLang.ANT_DESIGN],
+    editorConfig: {
+      libraries: templateLibrariesMap[TemplateLang.ANT_DESIGN],
+      prepMap: templatePrepMap[TemplateLang.ANT_DESIGN],
+    },
+  },
+  {
+    lang: TemplateLang.ECHARTS,
+    type: TemplateType.INBUILT,
+    codeMap: templateCodeMap[TemplateLang.ECHARTS],
+    editorConfig: {
+      libraries: templateLibrariesMap[TemplateLang.ECHARTS],
+      prepMap: templatePrepMap[TemplateLang.ECHARTS],
+    },
+  },
+].map((item, index) => ({
+  ...item,
+  id: -(index + 1),
+}))
