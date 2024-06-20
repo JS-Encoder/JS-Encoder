@@ -1,6 +1,14 @@
 .editor-bar {
   height: 36px;
 
+  &::-webkit-scrollbar {
+    height: 1px;
+    width: 0;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-primary1);
+  }
+
   .split-line {
     border-right: 0.5px solid var(--color-main-bg-3);
   }
@@ -33,6 +41,7 @@
   }
 
   .right-side {
+    right: 0;
     &.highlight {
       filter: brightness(1.5);
     }

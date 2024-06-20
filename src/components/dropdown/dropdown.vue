@@ -5,19 +5,22 @@
       <slot></slot>
     </div>
     <!--  菜单项列表  -->
-    <div
-      v-show="modelValue"
-      class="shadow p-y-xs absolute radius-m"
-      :class="`${namespace}-options-wrapper ${namespace}-align-${align}`">
-      <div :class="`${namespace}-options`" @click="handleClickOption">
-        <slot name="options"></slot>
+    <teleport to="body" :disabled="!appendToBody">
+      <div
+        v-show="modelValue"
+        class="shadow p-y-xs absolute radius-m"
+        :class="`${namespace}-options-wrapper ${namespace}-align-${align}`"
+        :style="{...optionsStyle}">
+        <div :class="`${namespace}-options relative`" @click="handleClickOption">
+          <slot name="options"></slot>
+        </div>
       </div>
-    </div>
+    </teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { shallowRef, watch } from "vue"
+import { onMounted, shallowRef, watch } from "vue"
 import useClickOutside from "@hooks/use-click-outside"
 import { Trigger, Position, Align } from "@type/interface"
 
@@ -32,6 +35,8 @@ interface IProps {
   align?: Align
   /** 是否显示三角 */
   showTriangle?: boolean
+  /** 是否将选择项列表插入到body中 */
+  appendToBody?: boolean
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -59,6 +64,34 @@ watch(isClickOutSide, () => {
   if (isClickOutSide.value) {
     emits("update:modelValue", false)
   }
+})
+
+/** 定位样式 */
+const optionsStyle = shallowRef<Record<string, string>>({})
+const setOptionStyle = () => {
+  if (!props.appendToBody || !dropdownOptsRef.value) { return }
+  const { height = 0, width = 0, top = 0, left = 0, right = 0 } = dropdownOptsRef.value.getBoundingClientRect()
+  const { align } = props
+  optionsStyle.value = {
+    width: "auto",
+    transform: "none",
+    top: `${top + height}px`,
+    right: align === Align.RIGHT ? `calc(100% - ${right}px)` : "auto",
+    bottom: "auto",
+    left: align === Align.LEFT
+      ? `${left}px`
+      : align === Align.MIDDLE
+        ? `${left - width / 2}px`
+        : "auto",
+  }
+}
+onMounted(() => {
+  setOptionStyle()
+})
+
+watch(() => props.modelValue, (newState) => {
+  if (!newState) { return }
+  setOptionStyle()
 })
 </script>
 
