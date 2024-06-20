@@ -1,5 +1,6 @@
 .editor-bar {
   height: 36px;
+  scroll-behavior: smooth;
 
   &::-webkit-scrollbar {
     height: 1px;
