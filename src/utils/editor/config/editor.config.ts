@@ -26,6 +26,7 @@ import { javascriptAutocomplete, typescriptAutocomplete } from "../auto-complete
 import { tsTypeDefinition, typescriptLSPPlugin } from "../lsp/typescript"
 import { indentationMarkers } from "@replit/codemirror-indentation-markers"
 import { getGoToLinePanel } from "../panels/go-to-line"
+import { getFormatCodeKeymap, prep2ParserNameMap } from "../formatter"
 
 /** 快捷键模式对应的按键映射扩展 */
 export const ShortCutMode2ExtensionMap = {
@@ -189,4 +190,9 @@ const prep2HoverTooltipExtensionMap: Partial<Record<Prep, () => Extension>> = {
 export const getPrepHoverTooltipExtension = (prep: Prep): Extension => {
   const extension = prep2HoverTooltipExtensionMap[prep]?.()
   return extension || []
+}
+
+export const getPrepFormatCodeExtension = (prep: Prep): Extension => {
+  if (!prep2ParserNameMap[prep]) { return [] }
+  return keymap.of(getFormatCodeKeymap(prep))
 }

@@ -1,8 +1,10 @@
+import { KeyBinding } from "@codemirror/view"
 import { Prep } from "@type/prep"
 import { PRETTIER_PLUGIN_PREFIX } from "@utils/tools/config"
 import prettier, { BuiltInParserName, RequiredOptions } from "prettier"
+import { CodemirrorBase } from "../utils/codemirror-base"
 
-const prep2ParserNameMap: Partial<Record<Prep, BuiltInParserName>> = {
+export const prep2ParserNameMap: Partial<Record<Prep, BuiltInParserName>> = {
   [Prep.HTML]: "html",
   [Prep.MARKDOWN]: "markdown",
   [Prep.CSS]: "css",
@@ -67,4 +69,18 @@ export const formatCode = async (code: string, prep: Prep, options?: Partial<Req
     ...initialFormatStyleOptions,
     ...options,
   })
+}
+
+export const getFormatCodeKeymap = (prep: Prep): KeyBinding[] => {
+  return [{
+    key: "Shift-Alt-f",
+    run: (view) => {
+      const baseTools = new CodemirrorBase(view)
+      const code = baseTools.getContent()
+      formatCode(code, prep).then((result) => {
+        baseTools.setContent(result)
+      })
+      return true
+    },
+  }]
 }
