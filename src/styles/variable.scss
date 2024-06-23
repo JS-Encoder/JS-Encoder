@@ -3,12 +3,16 @@
 $primary0: #254EDB;
 $primary1: #3366FF;
 $primary2: #6690FF;
-$dark-colors: (
+$common-colors: (
   emphasis1: rgb(255 255 255),
   emphasis2: rgb(255 255 255 / 90%),
   emphasis3: rgb(255 255 255 / 80%),
   emphasis4: rgb(255 255 255 / 70%),
   emphasis5: rgb(255 255 255 / 60%),
+  def-bg: #121214,
+  deep-bg-color: rgb(255 255 255 / 90%),
+);
+$dark-colors: (
   primary0: $primary0,
   primary1: $primary1,
   primary2: $primary2,
@@ -21,10 +25,10 @@ $dark-colors: (
   green0: #558B2F,
   green1: #689F38,
   green2: #7CB342,
+  main-bg-0: #28282A,
   main-bg-1: #222228,
   main-bg-2: #18181A,
   main-bg-3: #121214,
-  main-bg-4: #28282A,
   active-color: rgb(255 255 255 / 90%),
   describe: rgb(255 255 255 / 60%),
   no-active-color: rgb(255 255 255 / 40%),
@@ -32,8 +36,10 @@ $dark-colors: (
   disabled-bgc: rgb(255 255 255 / 8%),
   disabled-color: rgb(255 255 255 / 38%),
   golden: #ffca28,
-  /** 特殊 */
-  edit-bar-active: #f2f2f2,
+  
+  // 特殊
+  def-button-color: rgb(255 255 255 / 90%),
+  checkbox-color: rgb(255 255 255 / 90%),
   console-bar-color: #f2f2f2,
   preview-bar-color: #f2f2f2,
   badge-color: #f2f2f2,
@@ -50,7 +56,7 @@ $dark-colors: (
   console-message-border: rgb(51, 51, 51),
   console-info: #6690FF,
   console-info-bg: transparent,
-  console-info-border: rgb(51 51 51),
+  console-info-border: rgb(51, 51, 51),
   console-warn: #FFB300,
   console-warn-bg: rgb(51, 43, 0),
   console-warn-border: rgb(102, 85, 0),
@@ -60,7 +66,7 @@ $dark-colors: (
   console-command: rgb(51, 51, 51),
   console-command-bg: transparent,
   console-command-border: rgb(51, 51, 51),
-  console-result: rgb(51 51 51),
+  console-result: rgb(51, 51, 51),
   console-result-bg: transparent,
   console-result-border: rgb(51, 51, 51),
 
@@ -80,41 +86,109 @@ $dark-colors: (
   console-element-suffix: rgb(93, 176, 215),
   console-attribute-value: rgb(195, 232, 141),
   console-link: rgb(192, 153, 255),
+  console-fold-icon: rgb(255 255 255 / 60%),
   
   // console table
   console-table-header-bg: rgb(28, 28, 28),
   console-table-color: rgb(255 255 255 / 80%),
   console-table-border: rgb(85, 85, 85),
+  console-table-even-bg: rgba(51, 139, 255, 0.098),
 );
-$bright-colors: (
-  primary: #9246FF,
-  primary-active: #40a9ff,
-  error: #e06c75,
-  error-active: #ff7875,
-  warn: #f4ea2a,
-  warn-active: #ffc53d,
-  success: #4caf50,
-  success-active: #73d13d,
-  main-bg-1: #f0f2f3,
-  main-bg-2: #f2f2f2,
-  main-bg-3: #fff,
-  main-bg-4: #28282A,
-  active-color: #0085ff,
-  describe: #b0b0b0,
-  no-active-color: #bfbfbf,
+$light-colors: (
+  // 主色
+  primary0: $primary0,
+  primary1: $primary1,
+  primary2: $primary2,
+
+  // 错误
+  red0: #B71C1C,
+  red1: #C62828,
+  red2: #E53935,
+
+  // 警告
+  amber0: #FF6F00,
+  amber1: #FF8F00,
+  amber2: #FFB300,
+
+  // 成功
+  green0: #558B2F,
+  green1: #689F38,
+  green2: #7CB342,
+
+  // 背景
+  main-bg-0: #e5e7ea,
+  main-bg-1: #EBEEF5,
+  main-bg-2: #F5F7FA,
+  main-bg-3: #FFFFFF,
+
+  // 其他
+  golden: #FFB300,
+
+  // 文本/icon
+  active-color: rgb(0 0 0 / 90%),
+  no-active-color: rgb(0 0 0 / 40%),
+  describe: rgb(0 0 0 / 60%),
+
   shadow: #000,
-  disabled-bgc: #f5f5f5,
-  disabled-color: #00000040,
-  golden: #ffca28,
-  /** 特殊 */
-  edit-bar-active: #0085ff,
-  console-bar-color: #101010,
-  preview-bar-color: #101010,
+  disabled-bgc: rgb(0 0 0 / 8%),
+  disabled-color: rgb(0 0 0 / 38%),
+
+  // 特殊
+  def-button-color: rgb(255 255 255 / 90%),
+  checkbox-color: rgb(255 255 255 / 90%),
+  console-bar-color: #f2f2f2,
+  preview-bar-color: #f2f2f2,
   badge-color: #f2f2f2,
-  badge-border: #f0f2f3,
-  tooltip-color: #101010,
+  badge-border: #D4D7DE,
+  tooltip-color: rgb(0 0 0 / 80%),
   mask-bgc: rgb(16 16 16 / 50%),
-  modal-def-border: #181d1e,
+  modal-def-border: #D4D7DE,
+  popover-bg: #EBEEF5,
+  form-item: #EBEEF5,
+
+  // console
+  console-message: rgb(177, 177, 177),
+  console-message-bg: transparent,
+  console-message-border: rgb(236, 236, 236),
+  console-info: rgb(102, 144, 255),
+  console-info-bg: transparent,
+  console-info-border: rgb(236, 236, 236),
+  console-warn: rgb(255, 179, 0),
+  console-warn-bg: rgb(255, 250, 220),
+  console-warn-border: rgb(255, 244, 181),
+  console-error: rgb(252, 0, 5),
+  console-error-bg: rgb(255, 235, 235),
+  console-error-border: rgb(253, 204, 205),
+  console-command: rgb(210, 210, 210),
+  console-command-bg: transparent,
+  console-command-border: rgb(236, 236, 236),
+  console-result: rgb(210, 210, 210),
+  console-result-bg: transparent,
+  console-result-border: rgb(236, 236, 236),
+
+  // console value
+  console-common: rgb(0, 0, 0),
+  console-number: rgb(28, 0, 207),
+  console-string: rgb(233, 63, 59),
+  console-boolean: rgb(28, 0, 207),
+  console-null: rgb(128, 128, 128),
+  console-undefined: rgb(128, 128, 128),
+  console-symbol: rgb(233, 63, 59),
+  console-function-prefix: rgb(13, 34, 170),
+  console-regexp: rgb(233, 63, 59),
+  console-promise-state: rgb(233, 63, 59),
+  console-attribute-name: rgb(136, 19, 145),
+  console-element-name: rgb(136, 18, 128),
+  console-element-suffix: rgb(136, 19, 145),
+  console-attribute-value: rgb(233, 63, 59),
+  console-link: rgb(192, 153, 255),
+  console-fold-icon: rgb(0 0 0 / 40%),
+  
+  // console table
+  console-table-header-bg: rgb(238, 238, 238),
+  console-table-color: rgb(0, 0, 0),
+  console-table-border: rgb(170, 170, 170),
+  console-table-even-bg: rgb(234, 243, 255),
 );
 $def-font: "WenQuanYi Micro Hei","PingFang SC","Helvetica Neue","Hiragino Sans GB","Microsoft YaHei",simsun,sans-serif;
 $code-font: "JetBrains Mono", "Fira Code", "Consolas", "Source Code Pro", "Monaco";

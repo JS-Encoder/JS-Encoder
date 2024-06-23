@@ -19,6 +19,6 @@ new DBService(dbConfig).init()
 
 <style lang="scss">
 #app {
-  background-color: var(--color-main-bg-3);
+  background-color: var(--color-def-bg);
 }
 </style>

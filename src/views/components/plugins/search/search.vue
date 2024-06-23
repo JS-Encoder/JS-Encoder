@@ -281,10 +281,10 @@ defineExpose({
       align-items: center;
       flex-shrink: 0;
       &:hover {
-        background-color: var(--color-main-bg-4);
+        background-color: var(--color-main-bg-0);
       }
       &.active {
-        background-color: var(--color-main-bg-4);
+        background-color: var(--color-main-bg-0);
       }
       &.disabled {
         opacity: 0.5;

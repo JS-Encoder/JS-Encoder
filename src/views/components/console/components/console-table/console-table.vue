@@ -52,5 +52,8 @@ $namespace: "console-table";
   tbody tr:last-child td {
     border-bottom: 1px solid var(--color-console-table-border);
   }
+  tbody tr:nth-child(even) {
+    background-color: var(--color-console-table-even-bg);
+  }
 }
 </style>

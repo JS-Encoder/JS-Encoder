@@ -16,6 +16,7 @@ import { CodemirrorExtensionsUpdater, ExtensionToggler } from "@utils/editor/uti
 import { ShortcutMode } from "@type/settings"
 import { getPrepAutocompleteExtension, getPrepEmmetExtension, getPrepLintExtension } from "@utils/editor/config/editor.config"
 import { minimalSetup, basicSetup } from "codemirror"
+import { Theme } from "@type/interface"
 
 const props = withDefaults(defineProps<IProps>(), {
   modelValue: "",
@@ -28,6 +29,7 @@ const props = withDefaults(defineProps<IProps>(), {
     tabSize: 2,
     shortcutTemplate: ShortcutMode.VSCODE,
     style: {},
+    theme: Theme.DARK,
   }),
 })
 const emits = defineEmits<IEmits>()
@@ -111,6 +113,11 @@ onMounted(() => {
   watch(
     () => props.settings.style,
     (newStyle) => extensionsUpdater.setStyle(newStyle),
+    { immediate: true },
+  )
+  watch(
+    () => props.settings.theme,
+    (newTheme) => extensionsUpdater.setTheme(newTheme!),
     { immediate: true },
   )
   watch(

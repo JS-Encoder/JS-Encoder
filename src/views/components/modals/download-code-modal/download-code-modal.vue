@@ -11,9 +11,9 @@
         class="single-file-type full-h radius-l flex-1 mr-l cursor-pointer p-xxl no-active-text fade-ease over-hidden"
         :class="currDownloadType === DownloadType.SINGLE ? 'active' : ''"
         @click="currDownloadType = DownloadType.SINGLE">
-        <div class="flex-y-center active-text">
+        <div class="flex-y-center">
           <i class="icon iconfont icon-single-file fade-ease"></i>
-          <span class="type-title fw-bold fade-ease">单文件</span>
+          <span class="type-title fw-bold">单文件</span>
         </div>
         <div class="font-xxs mt-m">将编译后的 HTML、CSS 和 JS 代码整合成一个 HTML 文件</div>
       </div>
@@ -21,9 +21,9 @@
         class="multiple-file-type full-h radius-l flex-1 mr-l cursor-pointer p-xxl no-active-text fade-ease over-hidden"
         :class="currDownloadType === DownloadType.MULTIPLE ? 'active' : ''"
         @click="currDownloadType = DownloadType.MULTIPLE">
-        <div class="flex-y-center active-text">
+        <div class="flex-y-center">
           <i class="icon iconfont icon-multiple-file fade-ease"></i>
-          <span class="type-title fw-bold fade-ease">多文件</span>
+          <span class="type-title fw-bold">多文件</span>
         </div>
         <div class="font-xxs mt-m">生成一个包含编译后的 HTML、CSS 和 JS 文件的文件夹压缩包</div>
       </div>
@@ -99,9 +99,10 @@ const handleDownloadFiles = () => {
       font-size: 28px;
       opacity: 0;
       margin-left: -36px;
+      color: var(--color-deep-bg-color);
     }
     &.active {
-      color: var(--color-active-color);
+      color: var(--color-deep-bg-color);
       border-color: var(--color-primary2);
       background-color: var(--color-primary1);
       .icon {

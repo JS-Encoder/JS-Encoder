@@ -91,7 +91,7 @@ $horizontal-padding: (
     }
   } @else {
     .#{$namespace}--#{$type} {
-      color: var(--color-active-color);
+      color: var(--color-def-button-color);
     }
   }
   .#{$namespace}--#{$type} {

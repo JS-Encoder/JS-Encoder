@@ -11,7 +11,7 @@ export function setLocalStorage<T extends keyof ILocalStorageData>(
 
 export function getLocalStorage<T extends keyof ILocalStorageData>(key: T) {
   const data = localStorage.getItem(key)
-  return isNull(data) ? data : safeJSONParse<ILocalStorageData[T]>(data!)
+  return isNull(data) ? data as null : safeJSONParse<ILocalStorageData[T]>(data!)
 }
 
 export function setSessionStorage<T extends keyof ISessionStorageData>(

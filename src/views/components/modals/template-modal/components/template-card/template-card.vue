@@ -1,20 +1,20 @@
 <template>
   <div
-    class="template flex code-font p-l radius-l cursor-pointer fade-ease relative"
+    class="template active-text flex code-font p-l radius-l cursor-pointer fade-ease relative"
     :class="active ? 'active' : ''"
     @click="emits('choose', template)">
     <svg class="lang-icon flex-sh" aria-hidden="true">
       <use :xlink:href="`#${templateIcon}`"></use>
     </svg>
     <div class="flex-col flex-jcb">
-      <div class="active-text font-xs template-lang line-clamp1">{{template.name || template.lang}}</div>
+      <div class="font-xs template-lang line-clamp1">{{template.name || template.lang}}</div>
       <div
         class="font-xxs template-type"
         :class="template.isComponent ? 'golden-text' : 'describe-text'"
       >{{template.isComponent ? "component" : "default"}}</div>
       <i
         v-show="template.type === TemplateType.CUSTOM && active"
-        class="icon iconfont icon-edit-template active-text absolute pos-bottom pos-right mr-s mb-s"
+        class="icon iconfont icon-edit-template absolute pos-bottom pos-right mr-s mb-s"
         title="编辑模板"
         @click.stop="emits('edit', template)"
       ></i>
@@ -42,6 +42,7 @@ const templateIcon = getTemplateIcon(props.template)
   &.active {
     background-color: var(--color-primary1);
     border: 2px solid var(--color-primary2);
+    color: var(--color-deep-bg-color);
   }
   .lang-icon {
     width: 40px;

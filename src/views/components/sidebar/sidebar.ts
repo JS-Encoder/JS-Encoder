@@ -41,8 +41,8 @@ export const sidebarType2Text = {
 }
 
 export const themeIcon = {
-  [Theme.LIGHT]: "icon-moon",
-  [Theme.DARK]: "icon-sun",
+  [Theme.LIGHT]: "icon-sun",
+  [Theme.DARK]: "icon-moon",
 }
 
 export const sidebarType2Icon = {
@@ -77,7 +77,7 @@ export const sidebarTypeList: SidebarType[][] = [
   [SidebarType.SHORTCUT, SidebarType.UPDATE_LOG, SidebarType.HELP_DOCUMENT],
   [],
   // TODO: 添加黑白主题切换功能
-  [SidebarType.GITHUB],
+  [SidebarType.THEME, SidebarType.GITHUB],
 ]
 
 export interface ISidebarOption {

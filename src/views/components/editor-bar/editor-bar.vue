@@ -6,7 +6,7 @@
       <div class="split-line fill-h bg-main3" v-if="!!index"></div>
       <!-- tab本身 -->
       <div
-        class="editor-tab flex-y-center fill-h text-hover-active cursor-pointer transition-all flex-y-center"
+        class="editor-tab flex-y-center fill-h text-hover-active cursor-pointer flex-y-center"
         :class="{
           'active': tabId === editor.displayTabId,
           'dragging': tabId === draggingTabInfo?.tabId,

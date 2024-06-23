@@ -2,13 +2,13 @@ $home-navbar-height: 48px;
 $home-footer-height: 100px;
 $home-content-width: 1200px;
 $home-btn-bg-map: (
-  github: var(--color-main-bg-3),
+  github: var(--color-def-bg),
   docs: var(--color-emphasis2),
   start: linear-gradient(135deg, var(--color-primary2), var(--color-primary1)),
 );
 $home-btn-color-map: (
   github: var(--color-emphasis2),
-  docs: var(--color-main-bg-3),
+  docs: var(--color-def-bg),
   start: var(--color-emphasis2),
 );
 
@@ -40,6 +40,7 @@ $home-btn-color-map: (
   .container {
     width: $home-content-width;
     padding-top: $home-navbar-height;
+    color: var(--color-deep-bg-color);
     .introduce-wrapper {
       .typewrite-name {
         min-height: 75px;

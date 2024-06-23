@@ -4,18 +4,24 @@ import { storeToRefs } from "pinia"
 import { SidebarType, sidebarList, themeIcon } from "../sidebar"
 import { GITHUB_REPO_URL, HELP_DOCS_URL } from "@utils/tools/config"
 import useUpdateLogs from "@hooks/use-update-logs"
-import { getLocalStorage } from "@utils/tools/storage"
+import { getLocalStorage, setLocalStorage } from "@utils/tools/storage"
 import { LocalStorageKey } from "@utils/config/storage"
+import { watch } from "vue"
 
 const useSidebar = () => {
   const commonStore = useCommonStore()
   const { theme } = storeToRefs(commonStore)
   const { updateDisplayModal, updateTheme } = commonStore
 
+  watch(theme, (newTheme) => {
+    sidebarList[SidebarType.THEME].icon = themeIcon[newTheme]
+  }, { immediate: true })
+
   const processClickTheme = () => {
     const newTheme = theme.value === Theme.DARK ? Theme.LIGHT : Theme.DARK
     updateTheme(newTheme)
     sidebarList[SidebarType.THEME].icon = themeIcon[newTheme]
+    setLocalStorage(LocalStorageKey.THEME, newTheme)
   }
 
   const processClickGithub = () => {
