@@ -1,6 +1,6 @@
 import { Extension } from "@codemirror/state"
 import { EditorView } from "@codemirror/view"
-import { AnyObject } from "@type/interface"
+import { AnyObject, Theme } from "@type/interface"
 import { Prep } from "@type/prep"
 import { ShortcutMode } from "@type/settings"
 
@@ -15,6 +15,7 @@ export interface ICodemirrorEditorSettings {
   shortcutTemplate?: ShortcutMode
   autocomplete?: boolean
   style?: Record<string, AnyObject>
+  theme?: Theme
 }
 
 export interface IProps {

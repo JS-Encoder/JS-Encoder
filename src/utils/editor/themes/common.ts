@@ -14,7 +14,7 @@ const commonStyle = {
     backgroundColor: "var(--color-main-bg-1)",
   },
   ".cm-scroller::-webkit-scrollbar-thumb:hover": {
-    backgroundColor: "var(--color-main-bg-4)",
+    backgroundColor: "var(--color-main-bg-0)",
   },
   ".cm-scroller::-webkit-scrollbar-track": {
     backgroundColor: "transparent",
@@ -35,6 +35,15 @@ const commonStyle = {
     border: "1px solid #000",
     boxSizing: "border-box",
   },
+  "& .cm-gutters": {
+    borderRight: "none",
+  },
+  "& .cm-panels-top": {
+    borderBottom: "none",
+  },
+  "& .cm-panels-bottom": {
+    borderTop: "none",
+  },
   ".cm-gutterElement": {
     fontFamily: "monospace",
   },
@@ -47,7 +56,7 @@ const commonStyle = {
     backgroundColor: "var(--color-main-bg-2)",
   },
   "& .cm-tooltip.cm-tooltip-autocomplete > ul::-webkit-scrollbar-thumb:hover": {
-    backgroundColor: "var(--color-main-bg-4)",
+    backgroundColor: "var(--color-main-bg-0)",
   },
   "& .cm-tooltip.cm-tooltip-autocomplete > ul::-webkit-scrollbar-track": {
     backgroundColor: "transparent",

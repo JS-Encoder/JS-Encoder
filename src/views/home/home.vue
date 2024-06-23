@@ -20,7 +20,7 @@
         </div>
       </div>
     </nav>
-    <main class="container active-text flex-1 flex-y-center">
+    <main class="container flex-1 flex-y-center">
       <div class="introduce-wrapper fill-w">
         <div class="typewrite-name fw-bold">
           <span class="text-clip primary-bg-gradient">{{ typewriteName }}</span>

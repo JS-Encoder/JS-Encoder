@@ -3,7 +3,7 @@
     <div class="bg-main2 flex no-select pr-l flex-sh" :class="`${namespace}-bar`">
       <!--tab-->
       <div
-        class="fill-h text-hover-active cursor-pointer transition-all flex-y-center active"
+        class="fill-h text-hover-active cursor-pointer flex-y-center active"
         :class="`${namespace}-tab`">
         <span class="code-font">Output</span>
       </div>

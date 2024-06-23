@@ -2,9 +2,9 @@ import { indentWithTab } from "@codemirror/commands"
 import { indentUnit } from "@codemirror/language"
 import { Compartment, EditorState, Extension, StateEffect } from "@codemirror/state"
 import { EditorView, keymap, lineNumbers } from "@codemirror/view"
-import { AnyObject } from "@type/interface"
+import { AnyObject, Theme } from "@type/interface"
 import { ShortcutMode } from "@type/settings"
-import { ShortCutMode2ExtensionMap } from "../config/editor.config"
+import { ShortCutMode2ExtensionMap, getEditorThemeExtension } from "../config/editor.config"
 
 export type ExtensionToggler = (newStatus?: boolean | undefined) => void
 
@@ -17,6 +17,7 @@ export class CodemirrorExtensionsUpdater {
   private tabSizeUpdater = this.getExtensionUpdater()
   private styleUpdater = this.getExtensionUpdater()
   private keymapBindingUpdater = this.getExtensionUpdater()
+  private themeUpdater = this.getExtensionUpdater()
 
   constructor(view: EditorView) {
     this.view = view
@@ -69,5 +70,10 @@ export class CodemirrorExtensionsUpdater {
   /** 设置快捷键模式 */
   public setKeymapBinding(shortcutMode: ShortcutMode) {
     this.keymapBindingUpdater(keymap.of(ShortCutMode2ExtensionMap[shortcutMode]))
+  }
+
+  /** 设置主题 */
+  public setTheme(theme: Theme) {
+    this.themeUpdater(getEditorThemeExtension(theme))
   }
 }

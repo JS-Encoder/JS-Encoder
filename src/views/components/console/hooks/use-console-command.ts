@@ -4,7 +4,7 @@ import { keymap } from "@codemirror/view"
 import { useCommonStore } from "@store/common"
 import { AnyFunction } from "@type/interface"
 import { Prep } from "@type/prep"
-import { getEditorThemeExtension, getPrepBaseExtension } from "@utils/editor/config/editor.config"
+import { getPrepBaseExtension } from "@utils/editor/config/editor.config"
 import { CodemirrorBase } from "@utils/editor/utils/codemirror-base"
 import { ICodemirrorEditorSettings } from "@views/components/editor/editor"
 import { computed, nextTick, ref } from "vue"
@@ -85,34 +85,36 @@ const useConsoleCommand = (options: {
 
   /** 指令编辑器用codemirror，需要指定扩展 */
   const commandEditorExtensions = computed(() => {
-    const { theme } = useCommonStore()
     return [
       getPrepBaseExtension(Prep.JAVASCRIPT),
-      getEditorThemeExtension(theme),
       getExecuteKeymap(),
       getSwitchHistoryKeymap(),
     ]
   })
 
-  const commandEditorSettings: ICodemirrorEditorSettings = {
-    lineNumbers: false,
-    lineWrapping: true,
-    style: {
-      ".cm-scroller": {
-        fontSize: "12px",
-        fontFamily: "JetBrains Mono",
+  const commandEditorSettings = computed<ICodemirrorEditorSettings>(() => {
+    const { theme } = useCommonStore()
+    return {
+      lineNumbers: false,
+      lineWrapping: true,
+      style: {
+        ".cm-scroller": {
+          fontSize: "12px",
+          fontFamily: "JetBrains Mono",
+        },
+        ".cm-scroller .cm-line": {
+          paddingLeft: "4px",
+        },
+        ".cm-scroller .cm-content": {
+          padding: 0,
+        },
+        "&.cm-focused": {
+          outline: "none",
+        },
       },
-      ".cm-scroller .cm-line": {
-        paddingLeft: "4px",
-      },
-      ".cm-scroller .cm-content": {
-        padding: 0,
-      },
-      "&.cm-focused": {
-        outline: "none",
-      },
-    },
-  }
+      theme,
+    }
+  })
 
   return {
     command,

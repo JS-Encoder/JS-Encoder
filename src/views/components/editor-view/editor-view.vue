@@ -69,6 +69,7 @@ const editorSettings = computed<ICodemirrorEditorSettings>(() => {
     ...indent,
     style: getEditorStyle(),
     shortcutTemplate: other.shortcutTemplate,
+    theme: theme.value,
   }
 })
 
@@ -96,7 +97,7 @@ watch(tabId2PrepMap, (newMap, oldMap) => {
     const tabId = Number(item)
     if (!oldMap || newMap[tabId] !== oldMap[tabId]) {
       const prep = tabId2PrepMap.value[tabId]
-      tabId2Extensions.value[tabId] = editorExtensionsService.getEditorExtensions(prep, theme.value)
+      tabId2Extensions.value[tabId] = editorExtensionsService.getEditorExtensions(prep)
     }
   })
 }, { immediate: true })
