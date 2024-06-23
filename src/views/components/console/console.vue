@@ -1,5 +1,5 @@
 <template>
-  <div class="console flex-col fill-w code-font">
+  <div class="console flex-col fill-w code-font bg-main3">
     <!-- 头部 -->
     <div class="console-header bg-main1 active-text font-xs flex pl-l pr-l no-select">
       <div class="console-title flex-y-center">

@@ -2,7 +2,7 @@
   <div class="flex">
     <div class="fold-arrow fade-ease mr-xxs" @click="handleClickFold">
       <i
-        class="icon iconfont icon-triangle-right describe-text font-xxs inline-block"
+        class="icon iconfont icon-triangle-right font-xxs inline-block"
         :class="modelValue ? 'rotate-90' : ''"
       ></i>
     </div>
@@ -28,4 +28,4 @@ const handleClickFold = () => {
 }
 </script>
 
-<style scr="./console-fold.scss" lang="scss" scoped></style>
+<style src="./console-fold.scss" lang="scss" scoped></style>

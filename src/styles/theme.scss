@@ -2,8 +2,8 @@
 @import "./variable";
 @import "./mixins";
 
-:root[theme="bright"] {
-  @include color-list($bright-colors);
+:root[theme="light"] {
+  @include color-list($light-colors);
 }
 :root[theme="dark"] {
   @include color-list($dark-colors);

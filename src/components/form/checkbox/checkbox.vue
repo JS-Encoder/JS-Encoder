@@ -28,7 +28,7 @@ const handleClickCheckbox = (): void => {
     class="font-xs relative flex-y-center fade-ease flex line-h-fill no-select"
     :class="[
       `${namespace}`,
-      disabled ? 'disabled cursor-default' : 'active-text cursor-pointer',
+      disabled ? 'disabled cursor-default' : 'cursor-pointer',
       modelValue ? 'checked' : 'describe-text',
     ]"
     @click="handleClickCheckbox">
@@ -46,7 +46,7 @@ const handleClickCheckbox = (): void => {
       :class="`${namespace}-icon`">
       <i class="icon iconfont icon-ok"></i>
     </span>
-    <span><slot></slot></span>
+    <span class="active-text"><slot></slot></span>
   </div>
 </template>
 
@@ -88,6 +88,7 @@ $namespace: checkbox;
   .#{$namespace}-icon {
     width: 18px;
     height: 18px;
+    color: var(--color-checkbox-color);
   }
 }
 </style>

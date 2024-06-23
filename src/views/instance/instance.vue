@@ -49,9 +49,11 @@ import useBeforeUnload from "@hooks/use-before-unload"
 import ModuleSizeService, { EDITOR_MIN_WIDTH, RESULT_MIN_WIDTH } from "@utils/services/module-size-service"
 import { storeToRefs } from "pinia"
 import { useCommonStore } from "@store/common"
-import { ModalName } from "@type/interface"
+import { ModalName, Theme } from "@type/interface"
 import { listenMousemove } from "@utils/tools/event"
 import { onBeforeRouteLeave } from "vue-router"
+import { LocalStorageKey } from "@utils/config/storage"
+import { getLocalStorage } from "@utils/tools/storage"
 
 const layoutStore = useLayoutStore()
 const {
@@ -64,7 +66,16 @@ const { isShowResult, isFoldConsole } = storeToRefs(layoutStore)
 const { clientWidth, clientHeight } = useWindowResize()
 
 const commonStore = useCommonStore()
-const { displayModal } = storeToRefs(commonStore)
+const { updateTheme } = commonStore
+const { displayModal, theme } = storeToRefs(commonStore)
+const instanceTheme = getLocalStorage(LocalStorageKey.THEME) || Theme.LIGHT
+updateTheme(instanceTheme)
+onMounted(() => {
+  watch(theme, (newTheme) => {
+    document.documentElement.setAttribute("theme", newTheme)
+  }, { immediate: true })
+})
+
 const displayModalMap = {
   [ModalName.TEMPLATE]: TemplateModal,
   [ModalName.PREPROCESSOR]: PreprocessorModal,
