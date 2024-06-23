@@ -68,7 +68,7 @@ const { clientWidth, clientHeight } = useWindowResize()
 const commonStore = useCommonStore()
 const { updateTheme } = commonStore
 const { displayModal, theme } = storeToRefs(commonStore)
-const instanceTheme = getLocalStorage(LocalStorageKey.THEME) || Theme.LIGHT
+const instanceTheme = getLocalStorage(LocalStorageKey.THEME) || Theme.DARK
 updateTheme(instanceTheme)
 onMounted(() => {
   watch(theme, (newTheme) => {
