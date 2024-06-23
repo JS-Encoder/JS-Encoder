@@ -45,7 +45,7 @@ const commonStyle = {
     borderTop: "none",
   },
   ".cm-gutterElement": {
-    fontFamily: "monospace",
+    fontFamily: "JetBrains Mono, monospace, SFMono-Regular, Consolas, Liberation Mono, Menlo",
   },
   "& .cm-tooltip.cm-tooltip-autocomplete > ul::-webkit-scrollbar": {
     width: "8px",
