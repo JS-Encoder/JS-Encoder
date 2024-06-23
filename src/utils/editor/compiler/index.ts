@@ -94,6 +94,10 @@ export const compileJSX = async (code: string) => {
   return window.Babel.transform(code, { presets: ["react"] }).code || ""
 }
 
+export interface IVueCompileOptions {
+  plugins?: string[]
+}
+
 // eslint-disable-next-line max-lines-per-function
 export const compileVue = async (code: string): Promise<ICompileCodeMapResult> => {
   const { parse, compileStyle, compileScript, rewriteDefault } = await import("@vue/compiler-sfc")
@@ -162,10 +166,11 @@ export const compileVue = async (code: string): Promise<ICompileCodeMapResult> =
     <div id="app"></div>
     <script type="module">
       ${scriptCode}
-      const _sfc_app = Vue.createApp({
+      const App = Vue.createApp({
         template: \`${templateCode}\`,
         ...${mainName}
-      }).mount("#app")
+      })
+      App.mount("#app")
     </script>
   `.trim()
   return {
