@@ -1,7 +1,7 @@
 import { Extension } from "@codemirror/state"
 import { Prep } from "@type/prep"
 import SingleInstance from "@utils/decorators/single-instance"
-import { getDefaultEditorConfigByPrep, getDefaultEditorExtensions, getPanelExtension, getPrepAutocompleteExtension, getPrepBaseExtension, getPrepHoverTooltipExtension } from "../config/editor.config"
+import { getDefaultEditorConfigByPrep, getDefaultEditorExtensions, getPanelExtension, getPrepAutocompleteExtension, getPrepBaseExtension, getPrepFormatCodeExtension, getPrepHoverTooltipExtension } from "../config/editor.config"
 
 /**
  * 处理缓存编辑器的扩展
@@ -23,6 +23,7 @@ export default class EditorExtensionsService {
       getPanelExtension(),
       getPrepAutocompleteExtension(prep),
       getPrepHoverTooltipExtension(prep),
+      getPrepFormatCodeExtension(prep),
     ]
   }
 
