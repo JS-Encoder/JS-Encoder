@@ -27,6 +27,7 @@ import { tsTypeDefinition, typescriptLSPPlugin } from "../lsp/typescript"
 import { indentationMarkers } from "@replit/codemirror-indentation-markers"
 import { getGoToLinePanel } from "../panels/go-to-line"
 import { getFormatCodeKeymap, prep2ParserNameMap } from "../formatter"
+import { vueLanguageNoIndent } from "../indentation"
 
 /** 快捷键模式对应的按键映射扩展 */
 export const ShortCutMode2ExtensionMap = {
@@ -56,7 +57,7 @@ const Prep2DefaultExtensionMap: Record<Prep, () => Extension[]> = {
   [Prep.TYPESCRIPT]: () => [typescriptLSPPlugin],
   [Prep.BABEL]: () => [],
   [Prep.COFFEESCRIPT]: () => [],
-  [Prep.VUE]: () => [],
+  [Prep.VUE]: () => [vueLanguageNoIndent],
 }
 
 /** 获取每个预处理器的默认配置 */
