@@ -31,7 +31,7 @@ const START_INDEX = 0
 const timeGap = Math.floor(CYCLE_TIME / frames.length)
 const currFrameIdx = ref<number>(START_INDEX)
 
-const timer: NodeJS.Timer = setInterval(() => {
+const timer: NodeJS.Timeout = setInterval(() => {
   currFrameIdx.value = currFrameIdx.value < frames.length - 1 ? ++ currFrameIdx.value : START_INDEX
 }, timeGap)
 
