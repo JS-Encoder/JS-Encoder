@@ -8,7 +8,7 @@
     :mask-closable="false"
     :esc-closeable="false"
     @close="isShowModal = false"
-    @cancel="isShowModal = false"
+    @cancel="handleClickCancel"
     @confirm="handleApplyConfig">
     <div class="active-text code-font mb-s font-xs">
       <span>请在下方以 JSON 格式配置 Prettier 格式化，具体可选配置项请参考</span>
@@ -39,7 +39,7 @@ import Modal from "@components/modal/modal.vue"
 import editor from "@views/components/editor/editor.vue"
 import useFormattingEditor from "./hooks/use-formatting-editor"
 import { Prep } from "@type/prep"
-import { ref, watch } from "vue"
+import { ref } from "vue"
 import { PRETTIER_OPTIONS_URL } from "@utils/tools/config"
 import message from "@components/message-list/message-list"
 import { AnyObject } from "@type/interface"
@@ -57,7 +57,14 @@ const {
   parseFormattingConfig,
 } = useFormattingEditor()
 
-const formattingCode = ref<string>(getFormattingEditorCode())
+/** 编辑器格式化配置代码，缓存一份 */
+const formattingEditorCode = getFormattingEditorCode()
+const formattingCode = ref<string>(formattingEditorCode)
+
+const handleClickCancel = () => {
+  isShowModal.value = false
+  formattingCode.value = formattingEditorCode
+}
 
 const handleApplyConfig = async () => {
   const config = await parseFormattingConfig(formattingCode.value)

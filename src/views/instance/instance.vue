@@ -49,11 +49,13 @@ import useBeforeUnload from "@hooks/use-before-unload"
 import ModuleSizeService, { EDITOR_MIN_WIDTH, RESULT_MIN_WIDTH } from "@utils/services/module-size-service"
 import { storeToRefs } from "pinia"
 import { useCommonStore } from "@store/common"
-import { ModalName, Theme } from "@type/interface"
+import { ModalName } from "@type/interface"
 import { listenMousemove } from "@utils/tools/event"
 import { onBeforeRouteLeave } from "vue-router"
-import { LocalStorageKey } from "@utils/config/storage"
-import { getLocalStorage } from "@utils/tools/storage"
+import useInstanceInit from "./hooks/use-instance-init"
+
+const { initInstance } = useInstanceInit()
+initInstance()
 
 const layoutStore = useLayoutStore()
 const {
@@ -66,15 +68,7 @@ const { isShowResult, isFoldConsole } = storeToRefs(layoutStore)
 const { clientWidth, clientHeight } = useWindowResize()
 
 const commonStore = useCommonStore()
-const { updateTheme } = commonStore
-const { displayModal, theme } = storeToRefs(commonStore)
-const instanceTheme = getLocalStorage(LocalStorageKey.THEME) || Theme.DARK
-updateTheme(instanceTheme)
-onMounted(() => {
-  watch(theme, (newTheme) => {
-    document.documentElement.setAttribute("theme", newTheme)
-  }, { immediate: true })
-})
+const { displayModal } = storeToRefs(commonStore)
 
 const displayModalMap = {
   [ModalName.TEMPLATE]: TemplateModal,
@@ -85,10 +79,6 @@ const displayModalMap = {
   [ModalName.DOWNLOAD_CODE]: DownloadCodeModal,
   [ModalName.SHORTCUT]: ShortcutModal,
   [ModalName.UPDATE_LOG]: UpdateLogsModal,
-}
-
-if (import.meta.env.PROD) {
-  useBeforeUnload()
 }
 
 const moduleSizeService = new ModuleSizeService()
@@ -138,6 +128,12 @@ const handleResizeEditorAndResult = (e: MouseEvent): void => {
 const resizeLineWidth = 1
 const resultWidth = computed(() => isShowResult.value ? modulesSize.resultWidth - resizeLineWidth : 0)
 
+/**
+ * 离开时提示更改可能未保存
+ */
+if (import.meta.env.PROD) {
+  useBeforeUnload()
+}
 onBeforeRouteLeave(() => {
   if (import.meta.env.PROD) {
     if (!window.confirm("你所做的更改可能未保存。")) {
