@@ -115,7 +115,7 @@ const handleClickReloadUpdateLogs = () => {
 
 <style lang="scss" scoped>
 .update-logs-wrapper {
-  max-height: calc(100vh - 170px - 124px);
+  max-height: 500px;
   .version-list {
     width: 150px;
     max-height: 100%;
