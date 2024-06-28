@@ -39,7 +39,7 @@ export const getOriginByMimeType = (mimeType: string): OriginLang | void => {
     case MimeType.JAVASCRIPT:
     case MimeType.TYPESCRIPT:
     case MimeType.COFFEESCRIPT:
-    case MimeType.Babel:
+    case MimeType.BABEL:
     case MimeType.VUE:
      return OriginLang.JAVASCRIPT
     default: {
@@ -48,7 +48,7 @@ export const getOriginByMimeType = (mimeType: string): OriginLang | void => {
   }
 }
 
-export const prep2MimeTypeMap = {
+export const prep2MimeTypeMap: Partial<Record<Prep, MimeType>> = {
   [Prep.HTML]: MimeType.HTML,
   [Prep.MARKDOWN]: MimeType.MARKDOWN,
   [Prep.PUG]: MimeType.PUG,
@@ -60,11 +60,11 @@ export const prep2MimeTypeMap = {
   [Prep.JAVASCRIPT]: MimeType.JAVASCRIPT,
   [Prep.TYPESCRIPT]: MimeType.TYPESCRIPT,
   [Prep.COFFEESCRIPT]: MimeType.COFFEESCRIPT,
-  [Prep.BABEL]: MimeType.Babel,
+  [Prep.BABEL]: MimeType.BABEL,
   [Prep.VUE]: MimeType.VUE,
 }
 
-export const mimeType2PrepMap = {
+export const mimeType2PrepMap: Partial<Record<MimeType, Prep>> = {
   [MimeType.HTML]: Prep.HTML,
   [MimeType.MARKDOWN]: Prep.MARKDOWN,
   [MimeType.PUG]: Prep.PUG,
@@ -76,7 +76,7 @@ export const mimeType2PrepMap = {
   [MimeType.JAVASCRIPT]: Prep.JAVASCRIPT,
   [MimeType.TYPESCRIPT]: Prep.TYPESCRIPT,
   [MimeType.COFFEESCRIPT]: Prep.COFFEESCRIPT,
-  [MimeType.Babel]: Prep.BABEL,
+  [MimeType.BABEL]: Prep.BABEL,
   [MimeType.VUE]: Prep.VUE,
 }
 

@@ -7,6 +7,7 @@ import { tsLinter } from "../lsp/typescript"
 import LoaderService from "@utils/services/loader-service"
 import htmlLintRuleConfig from "./html-lint.config"
 import { CodemirrorBase } from "../utils/codemirror-base"
+import { jsonParseLinter } from "@codemirror/lang-json"
 
 const loaderService = new LoaderService()
 
@@ -75,3 +76,5 @@ export const stylusLinter = styleLinter(stylusLintRecommendConfig)
 export const javascriptLinter = linter(esLint(new Linter()))
 
 export const typescriptLinter = linter(() => tsLinter() as Diagnostic[])
+
+export const jsonLinter = linter(jsonParseLinter())

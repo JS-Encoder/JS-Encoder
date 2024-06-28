@@ -3,6 +3,8 @@ import { Prep } from "@type/prep"
 import { PRETTIER_PLUGIN_PREFIX } from "@utils/tools/config"
 import prettier, { BuiltInParserName, RequiredOptions } from "prettier"
 import { CodemirrorBase } from "../utils/codemirror-base"
+import { defaultFormatStyleOptions } from "./config"
+import useCodeFormatting from "@hooks/use-code-formatting"
 
 export const prep2ParserNameMap: Partial<Record<Prep, BuiltInParserName>> = {
   [Prep.HTML]: "html",
@@ -30,29 +32,6 @@ const prep2ParserName: Partial<Record<Prep, string[]>> = {
   [Prep.VUE]: ["html", "babel", "postcss"],
 }
 
-// TODO: 可以在设置里面添加prettier配置
-/** 初始格式化风格配置 */
-export const initialFormatStyleOptions: Partial<RequiredOptions> = {
-  /** 分号 */
-  semi: false,
-  /** 单引号 */
-  singleQuote: false,
-  /** jsx中使用单引号 */
-  jsxSingleQuote: false,
-  /** 尾随逗号 */
-  trailingComma: "all",
-  /** 对象大括号内部空格 */
-  bracketSpacing: true,
-  /** 将多行 HTML（HTML、JSX、Vue）元素的“>”放在最后一行的末尾，而不是单独放在下一行（不适用于自闭合元素）。 */
-  bracketSameLine: false,
-  /** 强制一行只能放一个属性(HTML、JSX、Vue) */
-  singleAttributePerLine: false,
-  /** tab大小 */
-  tabWidth: 2,
-  /** 用tab代替空格 */
-  useTabs: true,
-}
-
 const importFormatPlugin = async (prep: Prep) => {
   const list = prep2ParserName[prep] || []
   const reqList = list?.map((name) => {
@@ -66,18 +45,19 @@ export const formatCode = async (code: string, prep: Prep, options?: Partial<Req
   return prettier.format(code, {
     parser: prep2ParserNameMap[prep],
     plugins,
-    ...initialFormatStyleOptions,
+    ...defaultFormatStyleOptions,
     ...options,
   })
 }
 
 export const getFormatCodeKeymap = (prep: Prep): KeyBinding[] => {
+  const { formatEditorCode } = useCodeFormatting()
   return [{
     key: "Shift-Alt-f",
     run: (view) => {
       const baseTools = new CodemirrorBase(view)
       const code = baseTools.getContent()
-      formatCode(code, prep).then((result) => {
+      formatEditorCode(code, prep).then((result) => {
         baseTools.setContent(result)
       })
       return true

@@ -14,9 +14,9 @@ const useDownloadCode = () => {
     const { origin2CodeMap } = editorWrapperStore
     const { prepMap } = editorConfigStore
     const originFileList = [
-      { name: filename, content: origin2CodeMap.HTML, mimeType: prep2MimeTypeMap[prepMap.HTML] },
-      { name: filename, content: origin2CodeMap.CSS, mimeType: prep2MimeTypeMap[prepMap.CSS] },
-      { name: filename, content: origin2CodeMap.JAVASCRIPT, mimeType: prep2MimeTypeMap[prepMap.JAVASCRIPT] },
+      { name: filename, content: origin2CodeMap.HTML, mimeType: prep2MimeTypeMap[prepMap.HTML]! },
+      { name: filename, content: origin2CodeMap.CSS, mimeType: prep2MimeTypeMap[prepMap.CSS]! },
+      { name: filename, content: origin2CodeMap.JAVASCRIPT, mimeType: prep2MimeTypeMap[prepMap.JAVASCRIPT]! },
     ].filter(({ content }) => !!content)
     let compiledFileList: IZipFile[] = []
     if (needCompiled) {

@@ -12,7 +12,7 @@ const useEditorSideOptions = (editorId: number) => {
   const sideOptions = computed(() => {
     const { displayTabId } = editorMap.value[editorId]
     const prep = tabId2PrepMap.value[displayTabId]
-    return prep2EditorSideOptionsMap[prep]
+    return prep2EditorSideOptionsMap[prep] || { display: [], more: [] }
   })
 
   return {
@@ -42,7 +42,7 @@ export interface IEditorSideOptions {
 }
 
 /** 存储各个预处理器所包含的选项id，分为直接展示出的选项和在菜单中展示的更多选项 */
-export const prep2EditorSideOptionsMap: Record<Prep, IEditorSideOptions> = {
+export const prep2EditorSideOptionsMap: Partial<Record<Prep, IEditorSideOptions>> = {
   [Prep.HTML]: { display: [], more: [EditorSideOptionType.FORMAT_CODE] },
   [Prep.MARKDOWN]: { display: [EditorSideOptionType.MARKDOWN_TOOLS], more: [EditorSideOptionType.FORMAT_CODE] },
   [Prep.PUG]: { display: [], more: [] },
