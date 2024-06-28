@@ -96,6 +96,8 @@ import { initialSettings, useEditorConfigStore } from "@store/editor-config"
 import { deepCopy } from "@utils/tools/common"
 import { CodeFontFamily, IEditorSettings } from "@type/settings"
 import { AnyObject, BtnType } from "@type/interface"
+import { setLocalStorage } from "@utils/tools/storage"
+import { LocalStorageKey } from "@utils/config/storage"
 
 const commonStore = useCommonStore()
 const { updateDisplayModal } = commonStore
@@ -118,6 +120,7 @@ const handleResetSettings = () => {
 const handleConfirm = () => {
   updateSettings(settings.value)
   updateDisplayModal(null)
+  setLocalStorage(LocalStorageKey.EDITOR_SETTINGS, settings.value)
 }
 
 const isShowFormattingModal = ref<boolean>(false)

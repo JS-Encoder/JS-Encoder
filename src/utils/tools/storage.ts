@@ -23,5 +23,5 @@ export function setSessionStorage<T extends keyof ISessionStorageData>(
 
 export function getSessionStorage<T extends keyof ISessionStorageData>(key: T) {
   const data = sessionStorage.getItem(key)
-  return isNull(data) ? data : safeJSONParse<ISessionStorageData[T]>(data!)
+  return isNull(data) ? data as null : safeJSONParse<ISessionStorageData[T]>(data!)
 }
