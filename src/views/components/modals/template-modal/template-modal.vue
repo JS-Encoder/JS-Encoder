@@ -69,7 +69,7 @@
     v-model="isShowTipModal"
     :mask-closable="false"
     :esc-closeable="false"
-    :show-cancel="true"
+    show-cancel
     @cancel="isShowTipModal = false"
     @confirm="handleUseTemplate">
     <div class="active-text">⚠应用模板会覆盖当前编辑器的内容及配置哦~</div>

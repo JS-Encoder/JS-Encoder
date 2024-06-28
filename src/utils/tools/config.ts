@@ -10,6 +10,8 @@ export const GITHUB_REPO_URL = "https://github.com/JS-Encoder/JS-Encoder"
 export const HELP_DOCS_URL = "https://docs.jsencoder.cn/"
 /** 旧版本JS-Encoder地址 */
 export const OLD_VERSION_URL = "http://jsencoder.lliiooiill.cn/"
+/** prettier 配置项说明 */
+export const PRETTIER_OPTIONS_URL = "https://prettier.io/docs/en/options.html"
 
 /**
  * 库

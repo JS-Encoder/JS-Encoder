@@ -36,7 +36,7 @@ export const isSplitHTML = ref<boolean>(true)
 const getOrigin2FileInfoMap = (files: File[]) => {
   return files.reduce((acc, file) => {
     const mimeType = getFileMimeType(file.name) as MimeType
-    const prep = mimeType2PrepMap[mimeType]
+    const prep = mimeType2PrepMap[mimeType]!
     const originLang = getOriginByMimeType(mimeType)!
     const fileInfo = { file, mimeType, originLang, prep }
     // 在需要分割HTML时，html文件中的CSS和JavaScript代码会覆盖之前上传的同源(OriginLang)文件代码

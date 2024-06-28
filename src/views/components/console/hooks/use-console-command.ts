@@ -84,13 +84,11 @@ const useConsoleCommand = (options: {
   }
 
   /** 指令编辑器用codemirror，需要指定扩展 */
-  const commandEditorExtensions = computed(() => {
-    return [
-      getPrepBaseExtension(Prep.JAVASCRIPT),
-      getExecuteKeymap(),
-      getSwitchHistoryKeymap(),
-    ]
-  })
+  const commandEditorExtensions = [
+    getPrepBaseExtension(Prep.JAVASCRIPT),
+    getExecuteKeymap(),
+    getSwitchHistoryKeymap(),
+  ]
 
   const commandEditorSettings = computed<ICodemirrorEditorSettings>(() => {
     const { theme } = useCommonStore()

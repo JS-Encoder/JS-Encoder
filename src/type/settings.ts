@@ -1,3 +1,4 @@
+import { AnyObject } from "./interface"
 import { OriginLang, Prep } from "./prep"
 
 export interface IEditorConfig {
@@ -34,6 +35,9 @@ export interface IEditorSettings {
     fontSize: number
     /** 字体 */
     fontFamily: CodeFontFamily
+  },
+  formatting: {
+    config: AnyObject
   },
   other: {
     /** 头部标签 */

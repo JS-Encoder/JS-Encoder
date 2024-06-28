@@ -10,6 +10,7 @@ const codemirrorChunk = [
   "@codemirror/view", "@codemirror/lang-css", "@codemirror/lang-html", "@codemirror/lang-javascript",
   "@codemirror/lang-less", "@codemirror/lang-markdown", "@codemirror/lang-sass", "@codemirror/lang-vue",
   "@emmetio/codemirror6-plugin", "@replit/codemirror-indentation-markers", "@replit/codemirror-vscode-keymap",
+  "@codemirror/lang-json",
 ]
 
 /** 代码编译相关分包 */
@@ -25,7 +26,7 @@ const lintChunk = [
 
 /** 其他插件相关分包 */
 const pluginChunk = [
-  "@typescript/vfs", "jszip", "fflate",
+  "@typescript/vfs", "jszip", "fflate", "strip-json-comments",
 ]
 
 const prettierChunk = [

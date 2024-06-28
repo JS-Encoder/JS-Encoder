@@ -13,6 +13,7 @@ export enum Prep {
   COFFEESCRIPT = "CoffeeScript",
   BABEL = "Babel",
   VUE = "Vue",
+  JSON = "JSON",
 }
 
 /** 原生语言列表 */
@@ -35,6 +36,6 @@ export enum MimeType {
   JAVASCRIPT = "js",
   TYPESCRIPT = "ts",
   COFFEESCRIPT = "coffee",
-  Babel = "jsx",
+  BABEL = "jsx",
   VUE = "vue",
 }

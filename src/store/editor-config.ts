@@ -3,6 +3,7 @@ import { IEditorSettings, ShortcutMode, CodeFontFamily, IEditorLibraries, IEdito
 import { DeepPartial } from "@type/types"
 import { OriginLang, Prep } from "@type/prep"
 import { deepCopy, isHttpUrl } from "@utils/tools/common"
+import { defaultFormatStyleOptions } from "@utils/editor/formatter/config"
 
 export const initialSettings: IEditorSettings = {
   edit: {
@@ -22,6 +23,9 @@ export const initialSettings: IEditorSettings = {
   font: {
     fontSize: 13,
     fontFamily: CodeFontFamily.JET_BRAINS_MONO,
+  },
+  formatting: {
+    config: defaultFormatStyleOptions,
   },
   other: {
     headTags: "",

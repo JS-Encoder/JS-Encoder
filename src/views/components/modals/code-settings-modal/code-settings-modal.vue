@@ -5,6 +5,7 @@
     top="85"
     bottom="85"
     show-cancel
+    :esc-closeable="false"
     @close="updateDisplayModal(null)">
     <div class="flex">
       <div class="flex-col flex-1">
@@ -37,12 +38,14 @@
         <!-- <div class="mt-s">
           <custom-input :type="InputType.NUMBER" v-model="settings.execute.delayTimeOfExecute"/>
         </div> -->
+        <div class="modal-sub-title">格式化</div>
+        <div class="pt-xs"><custom-button @click="isShowFormattingModal = true">配置</custom-button></div>
       </div>
       <div class="flex-col flex-1">
         <div class="modal-sub-title">字体</div>
-        <div class="active-text font-xxs mt-m">字号(px)</div>
+        <div class="active-text font-xxs mt-xs">字号(px)</div>
         <div class="mt-s"><custom-input :type="InputType.NUMBER" v-model="settings.font.fontSize"/></div>
-        <div class="active-text font-xxs mt-m">字体</div>
+        <div class="active-text font-xxs mt-s">字体</div>
         <div class="mt-s">
           <custom-select
             appendToBody
@@ -52,7 +55,7 @@
         </div>
 
         <div class="modal-sub-title">其他</div>
-        <div class="active-text font-xxs mt-m">头部标签</div>
+        <div class="active-text font-xxs mt-xs">头部标签</div>
         <div class="mt-s">
           <custom-input
             placeholder="输入你想在<head>中添加的标签如<meta...>"
@@ -73,6 +76,10 @@
       </div>
     </template>
   </modal>
+  <formatting-modal
+    v-model="isShowFormattingModal"
+    @confirm="handleFormattingConfirm"
+  ></formatting-modal>
 </template>
 
 <script lang="ts" setup>
@@ -81,13 +88,14 @@ import Checkbox from "@components/form/checkbox/checkbox.vue"
 import CustomInput from "@components/form/custom-input/custom-input.vue"
 import CustomSelect from "@components/form/custom-select/custom-select.vue"
 import CustomButton from "@components/custom-button/custom-button.vue"
+import FormattingModal from "../formatting-modal/formatting-modal.vue"
 import { ref } from "vue"
 import { useCommonStore } from "@store/common"
 import { InputType } from "@components/form/custom-input/custom-input"
 import { initialSettings, useEditorConfigStore } from "@store/editor-config"
 import { deepCopy } from "@utils/tools/common"
 import { CodeFontFamily, IEditorSettings } from "@type/settings"
-import { BtnType } from "@type/interface"
+import { AnyObject, BtnType } from "@type/interface"
 
 const commonStore = useCommonStore()
 const { updateDisplayModal } = commonStore
@@ -110,6 +118,11 @@ const handleResetSettings = () => {
 const handleConfirm = () => {
   updateSettings(settings.value)
   updateDisplayModal(null)
+}
+
+const isShowFormattingModal = ref<boolean>(false)
+const handleFormattingConfirm = (config: AnyObject) => {
+  settings.value.formatting.config = config
 }
 </script>
 

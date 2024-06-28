@@ -74,8 +74,8 @@ import IconBtn from "@components/icon-btn/icon-btn.vue"
 import UtilService from "@utils/services/util-service"
 import { toggleMarkdownToolsPanel } from "@utils/editor/panels/markdown-tools"
 import EditorKeeperService from "@utils/services/editor-keeper-service"
-import { formatCode } from "@utils/editor/formatter"
 import useWheelDirective from "@hooks/use-wheel-directive"
+import useCodeFormatting from "@hooks/use-code-formatting"
 
 const props = defineProps<{
   editorId: number
@@ -241,11 +241,11 @@ const resetDragState = () => {
 /** 右侧工具栏菜单 */
 const { showSideMenu, sideOptions } = useEditorSideOptions(editor.id)
 const editorKeeperService = new EditorKeeperService()
-
+const { formatEditorCode } = useCodeFormatting()
 const sideOptionType2FuncMap = {
   [EditorSideOptionType.FORMAT_CODE]: async () => {
     const { id } = tabMap.value[editor.displayTabId]
-    const formattedCode = await formatCode(codeMap.value[id], tabId2PrepMap.value[id])
+    const formattedCode = await formatEditorCode(codeMap.value[id], tabId2PrepMap.value[id])
     updateCodeMap({ [id]: formattedCode })
     editorKeeperService.getEditorExposed(id).restoreViewScroll()
   },

@@ -5,11 +5,12 @@ import { html, htmlLanguage } from "@codemirror/lang-html"
 import { less } from "@codemirror/lang-less"
 import { vue } from "@codemirror/lang-vue"
 import { sass } from "@codemirror/lang-sass"
+import { json } from "@codemirror/lang-json"
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown"
 import { coffeeScript } from "@codemirror/legacy-modes/mode/coffeescript"
 import { stylus } from "@codemirror/legacy-modes/mode/stylus"
 import { Prep } from "@type/prep"
-import { cssLinter, htmlLinter, javascriptLinter, lessLinter, scssLinter, stylusLinter, typescriptLinter } from "@utils/editor/linter"
+import { cssLinter, htmlLinter, javascriptLinter, lessLinter, scssLinter, stylusLinter, typescriptLinter, jsonLinter } from "@utils/editor/linter"
 import { Extension, Prec } from "@codemirror/state"
 import { hoverTooltip, keymap } from "@codemirror/view"
 import { vscodeKeymap } from "@replit/codemirror-vscode-keymap"
@@ -44,25 +45,16 @@ export const getDefaultEditorExtensions = (): Extension[] => {
   ]
 }
 
-const Prep2DefaultExtensionMap: Record<Prep, () => Extension[]> = {
-  [Prep.HTML]: () => [],
+const Prep2DefaultExtensionMap: Partial<Record<Prep, () => Extension[]>> = {
   [Prep.MARKDOWN]: () => [markdownToolsState, keymap.of(markdownKeymap)],
-  [Prep.PUG]: () => [],
-  [Prep.CSS]: () => [],
-  [Prep.SASS]: () => [],
-  [Prep.SCSS]: () => [],
-  [Prep.LESS]: () => [],
-  [Prep.STYLUS]: () => [],
   [Prep.JAVASCRIPT]: () => [typescriptLSPPlugin],
   [Prep.TYPESCRIPT]: () => [typescriptLSPPlugin],
-  [Prep.BABEL]: () => [],
-  [Prep.COFFEESCRIPT]: () => [],
   [Prep.VUE]: () => [vueLanguageNoIndent],
 }
 
 /** 获取每个预处理器的默认配置 */
 export const getDefaultEditorConfigByPrep = (prep: Prep): Extension[] => {
-  return Prep2DefaultExtensionMap[prep]()
+  return Prep2DefaultExtensionMap[prep]?.() || []
 }
 
 const markdownCodeLanguages = (info: string) => {
@@ -86,13 +78,12 @@ const markdownCodeLanguages = (info: string) => {
   }
 }
 
-const Prep2LanguageExtensionMap: Record<Prep, () => Extension | StreamLanguage<unknown>> = {
+const Prep2LanguageExtensionMap: Partial<Record<Prep, () => Extension | StreamLanguage<unknown>>> = {
   [Prep.HTML]: () => html(),
   [Prep.MARKDOWN]: () => markdown({
     base: markdownLanguage,
     codeLanguages: markdownCodeLanguages,
   }),
-  [Prep.PUG]: () => [],
   [Prep.CSS]: () => css(),
   [Prep.SASS]: () => sass({ indented: true }),
   [Prep.SCSS]: () => sass(),
@@ -100,6 +91,7 @@ const Prep2LanguageExtensionMap: Record<Prep, () => Extension | StreamLanguage<u
   [Prep.JAVASCRIPT]: () => javascript({ typescript: false, jsx: false }),
   [Prep.TYPESCRIPT]: () => javascript({ typescript: true }),
   [Prep.BABEL]: () => javascript({ jsx: true }),
+  [Prep.JSON]: () => json(),
   // maybe should support tsx :)
   [Prep.VUE]: () => vue({ base: html() }),
   // legacy-modes 下面的语言扩展
@@ -109,7 +101,7 @@ const Prep2LanguageExtensionMap: Record<Prep, () => Extension | StreamLanguage<u
 
 /** 获取语言对应的基础扩展 */
 export const getPrepBaseExtension = (prep: Prep): Extension => {
-  return Prep2LanguageExtensionMap[prep]()
+  return Prep2LanguageExtensionMap[prep]?.() || []
 }
 
 /** 语言对应的linter扩展 */
@@ -122,6 +114,7 @@ const Prep2LinterExtensionMap: Partial<Record<Prep, () => Extension>> = {
   [Prep.STYLUS]: () => stylusLinter,
   [Prep.JAVASCRIPT]: () => javascriptLinter,
   [Prep.TYPESCRIPT]: () => typescriptLinter,
+  [Prep.JSON]: () => jsonLinter,
 }
 
 /** 获取语言对应的linter扩展 */
@@ -131,13 +124,13 @@ export const getPrepLintExtension = (prep: Prep): Extension => {
 }
 
 const Prep2EmmetSyntaxMap: Partial<Record<Prep, EmmetKnownSyntax>> = {
-  [Prep.HTML]: "html",
-  [Prep.PUG]: "pug",
-  [Prep.CSS]: "css",
-  [Prep.SASS]: "sass",
-  [Prep.SCSS]: "scss",
-  [Prep.LESS]: "less",
-  [Prep.VUE]: "vue",
+  [Prep.HTML]: EmmetKnownSyntax.html,
+  [Prep.PUG]: EmmetKnownSyntax.pug,
+  [Prep.CSS]: EmmetKnownSyntax.css,
+  [Prep.SASS]: EmmetKnownSyntax.sass,
+  [Prep.SCSS]: EmmetKnownSyntax.scss,
+  [Prep.LESS]: EmmetKnownSyntax.less,
+  [Prep.VUE]: EmmetKnownSyntax.vue,
 }
 
 /** 获取语言对应的Emmet扩展 */
@@ -188,6 +181,7 @@ export const getPrepAutocompleteExtension = (prep: Prep): Extension => {
 const prep2HoverTooltipExtensionMap: Partial<Record<Prep, () => Extension>> = {
   [Prep.TYPESCRIPT]: () => hoverTooltip(tsTypeDefinition),
 }
+
 export const getPrepHoverTooltipExtension = (prep: Prep): Extension => {
   const extension = prep2HoverTooltipExtensionMap[prep]?.()
   return extension || []
