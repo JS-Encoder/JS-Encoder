@@ -41,7 +41,7 @@
               <span v-if="currentMatch">{{ currentMatch }} of {{ matchesCount }}</span>
               <span v-else>{{ matchesCount }} results</span>
             </template>
-            <span v-else :class="searchValue ? 'error-text' : ''">No results</span>
+            <span v-else :class="searchValue ? 'red1-text' : ''">No results</span>
           </div> -->
           <div
             class="cursor-pointer search-option"

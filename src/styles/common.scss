@@ -101,14 +101,14 @@
 .bg-white { background: #FFF; }
 
 /** color */
-.emphasis0-text { color: var(--color-emphasis0) }
-.emphasis1-text { color: var(--color-emphasis1) }
-.emphasis2-text { color: var(--color-emphasis2) }
-.emphasis3-text { color: var(--color-emphasis3) }
-.emphasis4-text { color: var(--color-emphasis4) }
-.green0-text { color: var(--color-green0) }
-.green1-text { color: var(--color-green1) }
-.green2-text { color: var(--color-green2) }
+.emphasis0-text { color: var(--color-emphasis0); }
+.emphasis1-text { color: var(--color-emphasis1); }
+.emphasis2-text { color: var(--color-emphasis2); }
+.emphasis3-text { color: var(--color-emphasis3); }
+.emphasis4-text { color: var(--color-emphasis4); }
+.green0-text { color: var(--color-green0); }
+.green1-text { color: var(--color-green1); }
+.green2-text { color: var(--color-green2); }
 .no-active-text { color: var(--color-no-active-color); }
 .active-text { color: var(--color-active-color); }
 .primary0-text { color: var(--color-primary0); }
@@ -117,7 +117,9 @@
 .describe-text { color: var(--color-describe); }
 .golden-text { color: var(--color-golden); }
 .form-item-color { color: var(--color-form-item); }
-.error-text { color: var(--color-red1); }
+.red1-text { color: var(--color-red1); }
+.red2-text { color: var(--color-red2); }
+.amber2-text { color: var(--color-amber2); }
 
 /** 省略 */
 %line-clamp {

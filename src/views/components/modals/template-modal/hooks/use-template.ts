@@ -79,12 +79,19 @@ const useTemplate = () => {
     })
   }
 
+  /** 删除模板 */
+  const deleteTemplate = async (template: ITemplateInfo) => {
+    const { id } = template
+    return dbService.delete(DBStoreName.TEMPLATE, id!)
+  }
+
   return {
     getTemplateBaseInfo,
     getCustomTemplateList,
     createTemplate,
     updateTemplate,
     applyTemplate,
+    deleteTemplate,
   }
 }
 
