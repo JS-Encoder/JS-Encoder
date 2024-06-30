@@ -22,7 +22,13 @@
       </div>
     </template>
     <!-- 占位 -->
-    <div class="flex-1"></div>
+    <div
+      class="flex-1 bg-main2"
+      :class="isOverlapRightSide ? 'highlight' : ''"
+      @dragover.prevent="handleTabDragOverRightSide()"
+      @dragleave.prevent="handleTabDragLeaveRightSide()"
+      @drop.prevent="handleTabDrop()"
+    ></div>
     <div
       class="flex flex-sh bg-main2 right-side pr-s sticky"
       :class="isOverlapRightSide ? 'highlight' : ''"

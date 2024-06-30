@@ -28,10 +28,6 @@
     &.dragging {
       opacity: 0.3;
     }
-
-    &.highlight {
-      filter: brightness(1.5);
-    }
   }
 
   .more-opts {
@@ -43,8 +39,8 @@
 
   .right-side {
     right: 0;
-    &.highlight {
-      filter: brightness(1.5);
-    }
+  }
+  .highlight {
+    filter: brightness(1.5);
   }
 }
