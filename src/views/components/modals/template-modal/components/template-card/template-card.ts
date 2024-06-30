@@ -11,6 +11,7 @@ export const inbuiltTemplateIconMap = {
   [TemplateLang.ELEMENT_PLUS]: "icon-element-plus",
   [TemplateLang.ANT_DESIGN]: "icon-ant-design",
   [TemplateLang.ECHARTS]: "icon-echarts",
+  [TemplateLang.RXJS]: "icon-rxjs",
 }
 
 export interface IProps {

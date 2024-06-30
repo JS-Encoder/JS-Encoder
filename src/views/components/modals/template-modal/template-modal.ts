@@ -67,6 +67,15 @@ export const inbuiltTemplateList: ITemplateInfo[] = [
       prepMap: templatePrepMap[TemplateLang.ECHARTS],
     },
   },
+  {
+    lang: TemplateLang.RXJS,
+    type: TemplateType.INBUILT,
+    codeMap: templateCodeMap[TemplateLang.RXJS],
+    editorConfig: {
+      libraries: templateLibrariesMap[TemplateLang.RXJS],
+      prepMap: templatePrepMap[TemplateLang.RXJS],
+    },
+  },
 ].map((item, index) => ({
   ...item,
   id: -(index + 1),

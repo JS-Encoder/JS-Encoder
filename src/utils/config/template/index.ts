@@ -7,6 +7,7 @@ import vueComponentCodeMap from "./code/vue-component"
 import elementPlusCodeMap from "./code/element-plus"
 import antDesignCodeMap from "./code/ant-design"
 import echartsCodeMap from "./code/echarts"
+import rxjsCodeMap from "./code/rxjs"
 import { OriginLang, Prep } from "@type/prep"
 
 export const templateCodeMap = {
@@ -16,6 +17,7 @@ export const templateCodeMap = {
   [TemplateLang.ELEMENT_PLUS]: elementPlusCodeMap,
   [TemplateLang.ANT_DESIGN]: antDesignCodeMap,
   [TemplateLang.ECHARTS]: echartsCodeMap,
+  [TemplateLang.RXJS]: rxjsCodeMap,
 }
 
 const vueScript = ["https://unpkg.com/vue@3"]
@@ -49,9 +51,13 @@ export const templateLibrariesMap = {
     ],
   },
   [TemplateLang.ECHARTS]: {
-    style: [],
     script: [
       "https://unpkg.com/echarts",
+    ],
+  },
+  [TemplateLang.RXJS]: {
+    script: [
+      "https://cdn.bootcdn.net/ajax/libs/rxjs/7.8.1/rxjs.umd.min.js",
     ],
   },
 }
@@ -69,6 +75,7 @@ export const templatePrepMap = {
     [OriginLang.JAVASCRIPT]: Prep.BABEL,
   },
   [TemplateLang.ECHARTS]: initialPrepMap,
+  [TemplateLang.RXJS]: initialPrepMap,
 }
 
 export const componentTemplateCodeMap = {
