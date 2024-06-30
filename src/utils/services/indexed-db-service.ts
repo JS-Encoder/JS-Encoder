@@ -178,8 +178,11 @@ export class DBService {
   }
 
   /** 删除数据 */
-  public delete(storeName: DBStoreName, primaryKey: IDBValidKey | IDBKeyRange): Promise<any> {
-    return this.setSingleReqCallback(
+  public delete(
+    storeName: DBStoreName,
+    primaryKey: IDBValidKey | IDBKeyRange,
+  ) {
+    return this.setSingleReqCallback<void>(
       () => this.beginTransaction(storeName).delete(primaryKey),
       ErrorCode.DB_DELETE_FAILED,
       storeName, primaryKey,

@@ -8,11 +8,18 @@
     <teleport to="body" :disabled="!appendToBody">
       <div
         v-show="modelValue"
-        class="shadow p-y-xs absolute radius-m"
-        :class="`${namespace}-options-wrapper ${namespace}-align-${align}`"
-        :style="{...optionsStyle}">
-        <div :class="`${namespace}-options relative`" @click="handleClickOption">
-          <slot name="options"></slot>
+        class="absolute pos-origin"
+        :class="[
+          appendToBody ? '' : 'absolute pos-origin no-append-to-body',
+        ]"
+        :style="{ zIndex: level }">
+        <div
+          class="shadow p-y-xs absolute radius-m pos-origin"
+          :class="`${namespace}-options-wrapper ${namespace}-align-${align}`"
+          :style="{ ...offsetStyle, ...optionsStyle }">
+          <div :class="`${namespace}-options relative`" @click="handleClickOption">
+            <slot name="options"></slot>
+          </div>
         </div>
       </div>
     </teleport>
@@ -23,6 +30,7 @@
 import { onMounted, shallowRef, watch } from "vue"
 import useClickOutside from "@hooks/use-click-outside"
 import { Trigger, Position, Align } from "@type/interface"
+import { getOffsetStyle, getPosStyle } from "@components/utils/common"
 
 interface IProps {
   /** 是否显示下拉菜单 */
@@ -30,13 +38,15 @@ interface IProps {
   /** 触发下拉的行为 */
   trigger?: string
   /** 菜单显示的位置 */
-  position?: Position
+  position?: Position | string
   /** 菜单沿着哪一边对齐 */
-  align?: Align
+  align?: Align | string
   /** 是否显示三角 */
   showTriangle?: boolean
   /** 是否将选择项列表插入到body中 */
   appendToBody?: boolean
+  /** 层级，对应z-index */
+  level?: string | number
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -44,6 +54,7 @@ const props = withDefaults(defineProps<IProps>(), {
   align: Align.LEFT,
   trigger: Trigger.CLICK,
   modelValue: false,
+  level: "auto",
 })
 const emits = defineEmits(["update:modelValue"])
 
@@ -68,21 +79,22 @@ watch(isClickOutSide, () => {
 
 /** 定位样式 */
 const optionsStyle = shallowRef<Record<string, string>>({})
+/** 偏移样式 */
+const offsetStyle = getOffsetStyle(0, props.position as Position)
 const setOptionStyle = () => {
   if (!props.appendToBody || !dropdownOptsRef.value) { return }
-  const { height = 0, width = 0, top = 0, left = 0, right = 0 } = dropdownOptsRef.value.getBoundingClientRect()
-  const { align } = props
+  const {
+    height = 0, width = 0, bottom = 0, top = 0, left = 0, right = 0,
+  } = dropdownOptsRef.value.getBoundingClientRect()
   optionsStyle.value = {
-    width: "auto",
-    transform: "none",
-    top: `${top + height}px`,
-    right: align === Align.RIGHT ? `calc(100% - ${right}px)` : "auto",
-    bottom: "auto",
-    left: align === Align.LEFT
+    ...getPosStyle({ left, top, bottom, right, width, height, position: props.position as Position }),
+    right: props.align === Align.RIGHT ? `calc(100% - ${right}px)` : "auto",
+    left: props.align === Align.LEFT
       ? `${left}px`
-      : align === Align.MIDDLE
+      : props.align === Align.MIDDLE
         ? `${left - width / 2}px`
         : "auto",
+    transform: "none",
   }
 }
 onMounted(() => {

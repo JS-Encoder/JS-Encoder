@@ -10,7 +10,7 @@
       <span>支持 HTML、CSS、JS、MD、PUG、SASS、SCSS、STYL、LESS、COFFEE、TS、VUE 及 JSX 格式的文件</span>
     </div>
     <div class="mt-xs">
-      <div class="font-xs error-text flex-y-center renew-line-s">
+      <div class="font-xs red1-text flex-y-center renew-line-s">
         <span class="mr-xs">注意: 上传相应格式的文件会覆盖对应窗口的代码</span>
         <help-popover
           append-to-body

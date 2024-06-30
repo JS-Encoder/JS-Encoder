@@ -23,7 +23,7 @@ interface IProps {
   /** icon类名 */
   iconClass?: string
   /** 三种尺寸：sm|md|lg */
-  size?: IconBtnSize
+  size?: "sm" | "md" | "lg"
   title?: string
   highlight?: boolean
   highlightStyle?: AnyObject

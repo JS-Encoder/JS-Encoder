@@ -45,6 +45,7 @@
         :active="item.id === currTemplate?.id"
         @choose="handleChooseTemplate(item)"
         @edit="handleClickEditTemplate(item)"
+        @delete="handleClickDeleteTemplate(item)"
       ></template-card>
     </div>
     <template v-else>
@@ -56,8 +57,8 @@
     <!-- 创建/编辑模板 -->
     <edit-template-modal
       v-if="isShowEditModal"
-      :isEdit="!!currEditTemplate"
-      :template="currEditTemplate"
+      :isEdit="!!currOperateTemplate"
+      :template="currOperateTemplate"
       :confirm-loading="isEditModalLoading"
       @confirm="handleUpdateTemplate"
       @cancel="handleCancelUpdateTemplate"
@@ -66,13 +67,32 @@
   <!-- 确认提示 -->
   <modal
     title="提示"
-    v-model="isShowTipModal"
+    v-model="isShowEditTipModal"
     :mask-closable="false"
     :esc-closeable="false"
     show-cancel
-    @cancel="isShowTipModal = false"
+    @cancel="isShowEditTipModal = false"
     @confirm="handleUseTemplate">
-    <div class="active-text">⚠应用模板会覆盖当前编辑器的内容及配置哦~</div>
+    <div class="active-text">
+      <i class="icon iconfont icon-message-warning amber2-text"></i>
+      <span>&nbsp;应用模板会覆盖当前编辑器的内容及配置哦~</span>
+    </div>
+  </modal>
+  <!-- 删除提示 -->
+  <modal
+    title="提示"
+    v-model="isShowDeleteTipModal"
+    :mask-closable="false"
+    :esc-closeable="false"
+    show-cancel
+    @cancel="isShowDeleteTipModal = false"
+    @confirm="handleDeleteTemplate">
+    <div class="active-text">
+      <i class="icon iconfont icon-message-warning amber2-text"></i>
+      <span>&nbsp;确认删除模板</span>
+      <span class="fw-bold red2-text">&nbsp;{{ currOperateTemplate?.name }}&nbsp;</span>
+      <span>么？</span>
+    </div>
   </modal>
 </template>
 
@@ -97,12 +117,12 @@ const commonStore = useCommonStore()
 const { updateDisplayModal } = commonStore
 
 /** 当前选中的自定义模板id */
-const currTemplate= ref<ITemplateInfo>()
+const currTemplate= ref<ITemplateInfo | null>(null)
 const handleChooseTemplate = (template: ITemplateInfo) => {
   currTemplate.value = template
 }
 
-const { getCustomTemplateList, createTemplate, updateTemplate, applyTemplate } = useTemplate()
+const { getCustomTemplateList, createTemplate, updateTemplate, applyTemplate, deleteTemplate } = useTemplate()
 const customTemplateList = ref<ITemplateInfo[]>([])
 const isTemplateLoading = ref<boolean>(false)
 /** 设置自定义模板 */
@@ -119,22 +139,23 @@ setCustomTemplateList()
 
 const isShowEditModal = ref<boolean>(false)
 const isEditModalLoading = ref<boolean>(false)
-const currEditTemplate = shallowRef<ITemplateInfo | undefined>(undefined)
+/** 当前正在编辑或删除的模板 */
+const currOperateTemplate = shallowRef<ITemplateInfo | undefined>(undefined)
 
 /** 点击编辑模板 */
 const handleClickEditTemplate = (template: ITemplateInfo) => {
-  currEditTemplate.value = template
+  currOperateTemplate.value = template
   isShowEditModal.value = true
 }
 
 const processCloseEditModal = () => {
-  currEditTemplate.value = undefined
+  currOperateTemplate.value = undefined
   isShowEditModal.value = false
 }
 
 /** 创建/更新模板 */
 const handleUpdateTemplate = async (info: IEditTemplateForm) => {
-  if (currEditTemplate.value) {
+  if (currOperateTemplate.value) {
     processUpdateTemplate(info)
   } else {
     processCreateTemplate(info)
@@ -156,7 +177,7 @@ const handleClickCreateBtn = () => {
 
 /** 更新模板信息 */
 const processUpdateTemplate = async (info: IEditTemplateForm) => {
-  const { id } = currEditTemplate.value!
+  const { id } = currOperateTemplate.value!
   const editIndex = customTemplateList.value.findIndex((template) => id === template.id)
   const newTemplate = {
     ...customTemplateList.value[editIndex],
@@ -188,12 +209,12 @@ const processCreateTemplate = async (info: IEditTemplateForm) => {
   isEditModalLoading.value = false
 }
 
-const isShowTipModal = ref<boolean>(false)
+const isShowEditTipModal = ref<boolean>(false)
 const handleConfirmModal = () => {
   if (checkIsCodeEmpty()) {
     processUseTemplate()
   } else {
-    isShowTipModal.value = true
+    isShowEditTipModal.value = true
   }
 }
 const handleUseTemplate = () => {
@@ -201,9 +222,31 @@ const handleUseTemplate = () => {
 }
 const processUseTemplate = async () => {
   await applyTemplate(currTemplate.value!)
-  isShowTipModal.value = false
+  isShowEditTipModal.value = false
   updateDisplayModal(null)
   message.success("应用模板成功")
+}
+
+const isShowDeleteTipModal = ref<boolean>(false)
+const handleClickDeleteTemplate = (template: ITemplateInfo) => {
+  currOperateTemplate.value = template
+  isShowDeleteTipModal.value = true
+}
+const handleDeleteTemplate = async () => {
+  const template = currOperateTemplate.value!
+  const result = await deleteTemplate(template)
+  if (!result.success) {
+    message.error("删除模板失败")
+    return
+  }
+  const deleteIndex = customTemplateList.value.findIndex((item) => template.id === item.id)
+  customTemplateList.value.splice(deleteIndex, 1)
+  isShowDeleteTipModal.value = false
+  if (template.id === currTemplate.value?.id) {
+    currTemplate.value = null
+  }
+  currOperateTemplate.value = undefined
+  message.success("删除模板成功")
 }
 </script>
 
