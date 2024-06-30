@@ -10,6 +10,7 @@ export const enum TemplateLang {
   ELEMENT_PLUS = "Element Plus",
   ANT_DESIGN = "Ant Design",
   ECHARTS = "Echarts",
+  RXJS = "RxJS",
   CUSTOM = "Custom",
 }
 
