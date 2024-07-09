@@ -25,6 +25,8 @@ export enum ConsoleMethods {
   TIME = "time",
   TIME_LOG = "timeLog",
   TIME_END = "timeEnd",
+  COUNT = "count",
+  COUNT_RESET = "countReset",
   CLEAR = "clear",
   TABLE = "table",
 }
