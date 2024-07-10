@@ -9,6 +9,7 @@
     :confirm-btn-opts="{
       customClass: 'p-l',
       disabled: !currTemplate,
+      loading: isConfirmLoading,
     }"
     @close="updateDisplayModal(null)"
     @confirm="handleConfirmModal">
@@ -220,7 +221,9 @@ const handleConfirmModal = () => {
 const handleUseTemplate = () => {
   processUseTemplate()
 }
+const isConfirmLoading = ref<boolean>(false)
 const processUseTemplate = async () => {
+  isConfirmLoading.value = true
   await applyTemplate(currTemplate.value!)
   isShowEditTipModal.value = false
   updateDisplayModal(null)
