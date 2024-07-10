@@ -1,3 +1,4 @@
+import useCodeFormatting from "@hooks/use-code-formatting"
 import useEditorWrapperState from "@hooks/use-editor-wrapper-state"
 import { useEditorConfigStore } from "@store/editor-config"
 import { useEditorWrapperStore } from "@store/editor-wrapper"
@@ -13,6 +14,7 @@ const useTemplate = () => {
   const editorWrapperStore = useEditorWrapperStore()
   const editorConfigStore = useEditorConfigStore()
   const { initDefaultWrapper, initComponentWrapper } = useEditorWrapperState()
+  const { formatEditorCode } = useCodeFormatting()
 
   const getTemplateBaseInfo = () => {
     const { codeMap, tabMap, isComponentMode } = editorWrapperStore
@@ -55,7 +57,7 @@ const useTemplate = () => {
 
   /** 应用模板 */
   const applyTemplate = async (template: ITemplateBase) => {
-    const { codeMap, editorConfig: { libraries = {}, prepMap }, isComponent } = template
+    const { codeMap, editorConfig: { libraries = {}, prepMap = {} }, isComponent } = template
     const { batchUpdateEditorConfig } = editorConfigStore
     const { batchUpdateEditorWrapper } = editorWrapperStore
     const { origin2TabIdMap } = storeToRefs(editorWrapperStore)
@@ -66,11 +68,12 @@ const useTemplate = () => {
     } else {
       await initDefaultWrapper()
     }
-    // 设置代码内容
-    const finalCodeMap = Object.entries(origin2TabIdMap.value).reduce((acc, [origin, tabId]) => {
-      acc[tabId] = codeMap[origin as OriginLang] || ""
-      return acc
-    }, {} as Record<number, string>)
+    const finalCodeMap: Record<number, string> = {}
+    for (const [origin, tabId] of Object.entries(origin2TabIdMap.value)) {
+      const code = codeMap[origin as OriginLang] || ""
+      const prep = prepMap[origin as OriginLang]
+      finalCodeMap[tabId] = await formatEditorCode(code, prep!)
+    }
     batchUpdateEditorWrapper({ codeMap: finalCodeMap })
     // 设置编辑器预处理、库等配置
     batchUpdateEditorConfig({
