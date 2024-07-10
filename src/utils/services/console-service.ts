@@ -4,6 +4,7 @@ import { getArrayIntersection, getType, isBaseData } from "@utils/tools"
 import { AnyArray, AnyObject } from "@type/interface"
 import { ConsoleMethods, ConsoleUpdateType, ITableLogInfo, LogInfo, LogType, enableConsoleMethods } from "@type/console"
 import { processConsoleValueList } from "@utils/tools/console-value"
+import { isUndefined } from "@utils/tools/judge"
 
 export interface IConsoleOptions {
   /** 刷新前回调 */
@@ -19,6 +20,7 @@ export default class ConsoleService {
   /** iframe中的window */
   private window!: Window & typeof globalThis
   private timeStamps: Record<string, number> = {}
+  private countMap: Record<string, number> = {}
   private consoleOptions: IConsoleOptions = {}
 
   constructor(iframe?: HTMLIFrameElement) {
@@ -29,6 +31,7 @@ export default class ConsoleService {
     if (iframe) {
       this.iframe = iframe
       this.window = this.iframe!.contentWindow as Window & typeof globalThis
+      this.clearCacheData()
       this.setConsole()
     } else {
       if (!this.iframe) {
@@ -120,6 +123,25 @@ export default class ConsoleService {
     return `${label}: ${duration}ms`
   }
 
+  public count(label: string = "default") {
+    const countMap = this.countMap
+    if (isUndefined(countMap[label])) {
+      countMap[label] = 1
+    } else {
+      countMap[label]++
+    }
+    this.log(`${label}: ${countMap[label]}`)
+  }
+
+  public countReset(label: string = "default") {
+    const countMap = this.countMap
+    if (isUndefined(countMap[label])) {
+      this.warn(`Counter "${label}" doesn’t exist.`)
+    } else {
+      countMap[label] = 0
+    }
+  }
+
   public assert(...args: AnyArray) {
     const [assertion, ...restArgs] = args
     const result = this.window.eval(assertion)
@@ -206,6 +228,11 @@ export default class ConsoleService {
     this.consoleOptions.onLogsUpdated?.(ConsoleUpdateType.ADD, logInfo)
   }
 
+  private clearCacheData = () => {
+    this.timeStamps = {}
+    this.countMap = {}
+  }
+
   private setConsole() {
     enableConsoleMethods.forEach((method) => {
       // @ts-expect-error: method为console内部方法
@@ -227,6 +254,8 @@ export default class ConsoleService {
       [ConsoleMethods.TIME]: () => this.time(...args),
       [ConsoleMethods.TIME_LOG]: () => this.timeLog(...args),
       [ConsoleMethods.TIME_END]: () => this.timeEnd(args[0]),
+      [ConsoleMethods.COUNT]: () => this.count(args[0]),
+      [ConsoleMethods.COUNT_RESET]: () => this.countReset(args[0]),
       [ConsoleMethods.ASSERT]: () => this.assert(...args),
       [ConsoleMethods.CLEAR]: () => this.clear(),
       [ConsoleMethods.TABLE]: () => this.table(args[0], args[1]),
