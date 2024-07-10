@@ -123,7 +123,7 @@ const processRefreshIframe = () => {
     codeMap,
     prepMap,
     libraries,
-    settings.value.other.headTags,
+    () => settings.value.other.headTags,
   ], () => {
     if (settings.value.execute.autoExecute) {
       previewService.refreshIframe()

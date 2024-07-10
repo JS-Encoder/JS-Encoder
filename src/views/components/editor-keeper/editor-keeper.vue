@@ -11,7 +11,10 @@ interface IProps extends IEditorProps {
   tabId: number
 }
 
-const props = defineProps<IProps>()
+const props = withDefaults(defineProps<IProps>(), {
+  code: "",
+  modelValue: "",
+})
 const editorKeeperService = new EditorKeeperService()
 const attrs = useAttrs()
 
